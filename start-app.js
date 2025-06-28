@@ -300,7 +300,14 @@ async function main() {
       stdio: 'inherit',
       detached: false 
     });
-    
+
+    backendProcess.on('exit', (code, signal) => {
+      printError(`El servidor backend se detuvo (código: ${code}, señal: ${signal})`);
+    });
+    backendProcess.on('error', (err) => {
+      printError(`Error en el servidor backend: ${err.message}`);
+    });
+
     // Esperar a que el backend esté listo
     if (await waitForPort(3001)) {
       printMessage('Servidor backend iniciado correctamente');
@@ -316,7 +323,14 @@ async function main() {
       stdio: 'inherit',
       detached: false 
     });
-    
+
+    frontendProcess.on('exit', (code, signal) => {
+      printError(`El servidor frontend se detuvo (código: ${code}, señal: ${signal})`);
+    });
+    frontendProcess.on('error', (err) => {
+      printError(`Error en el servidor frontend: ${err.message}`);
+    });
+
     // Esperar a que el frontend esté listo
     if (await waitForPort(3000)) {
       printMessage('Servidor frontend iniciado correctamente');
