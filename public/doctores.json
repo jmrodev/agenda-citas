@@ -1,0 +1,20 @@
+{
+  "doctores": [
+    {
+      "id": "654321",
+      "nombre": "Juan García",
+      "especialidad": "Clínica Médica",
+      "matricula": "12345",
+      "telefono": "+54 11 6000-0000",
+      "email": "dr.garcia@email.com"
+    },
+    {
+      "id": "765432",
+      "nombre": "Ana Martínez",
+      "especialidad": "Cardiología",
+      "matricula": "67890",
+      "telefono": "+54 11 7000-0000",
+      "email": "dr.martinez@email.com"
+    }
+  ]
+} 

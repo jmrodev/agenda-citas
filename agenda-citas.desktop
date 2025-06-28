@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Agenda de Citas
+Comment=Gestor de turnos médicos
+Exec=node /mnt/discoDos/jmro/Documentos/repositorios/agenda-citas/start-app.js
+Icon=/mnt/discoDos/jmro/Documentos/repositorios/agenda-citas/public/favicon.ico
+Terminal=true
+Type=Application
+Categories=Utility; 
