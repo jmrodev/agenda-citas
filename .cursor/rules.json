@@ -1,0 +1,88 @@
+{
+    "rules": [
+      {
+        "name": "Project Stack and Language Preference",
+        "when": "always",
+        "apply": {
+          "priority": "highest",
+          "instructions": [
+            "Always prioritize JavaScript/TypeScript for Node.js (backend) and React (frontend) code examples.",
+            "Use ES Modules syntax (import/export) for JavaScript.",
+            "Prefer Node.js with Express.js for backend solutions.",
+            "Prefer React with Vite for frontend solutions.",
+            "Assume pnpm as the package manager for all code examples and instructions (e.g., 'pnpm install', 'pnpm dev').",
+            "Generated code should be compatible with MySQL database operations.",
+            "Favor functional components and React Hooks for React code.",
+            "Keep comments in code clear and concise, explaining complex logic or unusual choices.",
+            "All explanations and prose should be in Spanish, clear, and direct."
+          ]
+        }
+      },
+      {
+        "name": "Code Style and Formatting",
+        "when": "always",
+        "apply": {
+          "priority": "high",
+          "instructions": [
+            "Use 2 spaces for indentation.",
+            "Prefer single quotes for strings.",
+            "Use semicolons at the end of statements.",
+            "Place opening curly braces on the same line as the statement (K&R style for blocks).",
+            "Favor camelCase for JavaScript variables, functions, and object properties.",
+            "Favor snake_case for MySQL table and column names in SQL queries/schema."
+          ]
+        }
+      },
+      {
+        "name": "Backend Atomic Structure Guidelines",
+        "when": {
+          "file_path": "backend/**"
+        },
+        "apply": {
+          "priority": "medium",
+          "instructions": [
+            "When generating or modifying backend code, adhere to the atomic structure (config, middleware, models, services, controllers, routes, utils).",
+            "Ensure logical separation of concerns: models for DB interaction, services for business logic, controllers for request handling, routes for endpoints.",
+            "For database interactions, prefer an ORM like Sequelize if code examples are needed, otherwise raw SQL queries are acceptable."
+          ]
+        }
+      },
+      {
+        "name": "Frontend Atomic Design Guidelines",
+        "when": {
+          "file_path": "frontend/**"
+        },
+        "apply": {
+          "priority": "medium",
+          "instructions": [
+            "When generating or modifying frontend code, strictly follow Atomic Design principles (atoms, molecules, organisms, templates, pages).",
+            "For component styles, use CSS Modules (.module.css) for scoped styles.",
+            "Refer to global CSS variables from 'src/styles/abstracts/_variables.css' where applicable (e.g., 'var(--primary-color)').",
+            "Component files should typically be in a dedicated folder with their own .jsx/.tsx and .module.css files (e.g., 'Button/Button.jsx', 'Button/Button.module.css')."
+          ]
+        }
+      },
+      {
+        "name": "Security and Authentication Context",
+        "when": "always",
+        "apply": {
+          "priority": "high",
+          "instructions": [
+            "Assume JWT (JSON Web Tokens) for authentication across the application.",
+            "Consider user roles (admin, secretary, doctor) when discussing authorization logic."
+          ]
+        }
+      },
+      {
+        "name": "Deployment Context",
+        "when": "always",
+        "apply": {
+          "priority": "low",
+          "instructions": [
+            "Consider Vercel for frontend and Vercel Functions for backend deployment.",
+            "Assume MySQL database is external and managed separately from Vercel deployments."
+          ]
+        }
+      }
+    ]
+  }0
