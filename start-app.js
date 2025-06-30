@@ -39,13 +39,13 @@ function printHeader() {
 }
 
 // Función para ejecutar comandos
-function executeCommand(command, args = []) {
+function executeCommand(command, args = [], options = {}) {
   return new Promise((resolve, reject) => {
-    const child = spawn(command, args, { 
+    const child = spawn(command, args, {
       stdio: 'inherit',
-      shell: true 
+      shell: true,
+      ...options
     });
-    
     child.on('close', (code) => {
       if (code === 0) {
         resolve();
@@ -53,7 +53,6 @@ function executeCommand(command, args = []) {
         reject(new Error(`Comando falló con código ${code}`));
       }
     });
-    
     child.on('error', (error) => {
       reject(error);
     });
@@ -258,27 +257,13 @@ async function openBrowser(url) {
   }
 }
 
-// Función para verificar dependencias
-async function checkDependencies() {
-  if (!fs.existsSync('node_modules')) {
-    printWarning('Instalando dependencias...');
-    try {
-      await executeCommand('npm', ['install']);
-      printMessage('Dependencias instaladas correctamente');
-    } catch (error) {
-      printError(`Error instalando dependencias: ${error.message}`);
-      throw error;
-    }
-  }
-}
-
 // Función principal
 async function main() {
   try {
     printHeader();
     
     // Verificar que estamos en el directorio correcto
-    if (!fs.existsSync('package.json') || !fs.existsSync('server.js')) {
+    if (!fs.existsSync('frontend/package.json') || !fs.existsSync('server/server.js')) {
       printError('Este script debe ejecutarse desde el directorio agenda-citas');
       process.exit(1);
     }
@@ -291,14 +276,24 @@ async function main() {
       process.exit(1);
     }
     
-    // Verificar dependencias
-    await checkDependencies();
+    // Verificar dependencias del frontend
+    if (!fs.existsSync('frontend/node_modules')) {
+      printWarning('Instalando dependencias del frontend...');
+      try {
+        await executeCommand('npm', ['install'], { cwd: 'frontend' });
+        printMessage('Dependencias del frontend instaladas correctamente');
+      } catch (error) {
+        printError(`Error instalando dependencias del frontend: ${error.message}`);
+        throw error;
+      }
+    }
     
     // Iniciar servidor backend
     printMessage('Iniciando servidor backend (puerto 3001)...');
-    const backendProcess = spawn('node', ['server.js'], { 
+    const backendProcess = spawn('npm', ['start'], { 
       stdio: 'inherit',
-      detached: false 
+      detached: false,
+      cwd: 'server'
     });
 
     backendProcess.on('exit', (code, signal) => {
@@ -321,7 +316,8 @@ async function main() {
     printMessage('Iniciando servidor frontend (puerto 3000)...');
     const frontendProcess = spawn('npm', ['start'], { 
       stdio: 'inherit',
-      detached: false 
+      detached: false,
+      cwd: 'frontend'
     });
 
     frontendProcess.on('exit', (code, signal) => {
