@@ -9,6 +9,15 @@ async function getAll(req, res) {
   }
 }
 
+async function getAllWithFilters(req, res) {
+  try {
+    const appointments = await appointmentService.listAppointmentsWithFilters(req.query);
+    res.json(appointments);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 async function create(req, res) {
   try {
     const appointment = await appointmentService.createAppointment(req.body);
@@ -46,4 +55,4 @@ async function getMyAppointments(req, res) {
   }
 }
 
-module.exports = { getAll, create, update, remove, getMyAppointments }; 
+module.exports = { getAll, getAllWithFilters, create, update, remove, getMyAppointments }; 

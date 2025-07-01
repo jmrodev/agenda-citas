@@ -1,7 +1,14 @@
 const pool = require('../config/db');
+const { buildAppointmentFilters } = require('../filters/appointmentFilters');
 
 async function getAllAppointments() {
   const [rows] = await pool.query('SELECT * FROM appointments');
+  return rows;
+}
+
+async function findAppointmentsWithFilters(query) {
+  const { sql, params } = buildAppointmentFilters(query);
+  const [rows] = await pool.query(`SELECT * FROM appointments ${sql}`, params);
   return rows;
 }
 
@@ -28,4 +35,4 @@ async function deleteAppointment(id) {
   return { appointment_id: id };
 }
 
-module.exports = { getAllAppointments, createAppointment, updateAppointment, deleteAppointment }; 
+module.exports = { getAllAppointments, findAppointmentsWithFilters, createAppointment, updateAppointment, deleteAppointment }; 
