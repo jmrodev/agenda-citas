@@ -7,7 +7,12 @@ async function getAll(req, res) {
       date: req.query.date,
       date_from: req.query.date_from,
       date_to: req.query.date_to,
-      activity_type: req.query.activity_type
+      activity_type: req.query.activity_type,
+      activity_types: req.query.activity_types,
+      activity_id: req.query.activity_id,
+      detail: req.query.detail,
+      time_from: req.query.time_from,
+      time_to: req.query.time_to
     };
     const activities = await secretaryActivityService.listSecretaryActivities(filters);
     res.json(activities);

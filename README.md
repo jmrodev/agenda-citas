@@ -463,13 +463,28 @@ El filtrado se realiza en el backend para eficiencia y seguridad. Se pueden usar
 - `date`: filtra por fecha exacta (YYYY-MM-DD)
 - `date_from`: filtra desde una fecha (inclusive)
 - `date_to`: filtra hasta una fecha (inclusive)
-- `activity_type`: filtra por tipo de actividad
+- `activity_type`: filtra por tipo de actividad (uno solo)
+- `activity_types`: filtra por varios tipos de actividad (separados por coma, ej: `registro_cita,emision_receta`)
+- `activity_id`: filtra por ID exacto de actividad
+- `detail`: busca palabra clave en el detalle de la actividad
+- `time_from`: filtra desde una hora (inclusive, formato HH:MM:SS)
+- `time_to`: filtra hasta una hora (inclusive, formato HH:MM:SS)
 
-#### Ejemplo de uso:
+#### Ejemplos de uso:
 
 ```http
-GET /api/secretary-activities?secretary_id=3&date_from=2024-06-01&date_to=2024-06-30&activity_type=registro
+GET /api/secretary-activities?secretary_id=3&date_from=2024-06-01&date_to=2024-06-30&activity_types=registro_cita,emision_receta
 Authorization: Bearer <token>
 ```
 
-Esto retorna todas las actividades de la secretaria 3, de tipo 'registro', realizadas en junio de 2024.
+```http
+GET /api/secretary-activities?detail=receta&time_from=08:00:00&time_to=12:00:00
+Authorization: Bearer <token>
+```
+
+```http
+GET /api/secretary-activities?activity_id=800001
+Authorization: Bearer <token>
+```
+
+Esto permite búsquedas avanzadas y auditoría eficiente de las actividades de secretarias.

@@ -23,6 +23,31 @@ async function getAllSecretaryActivities(filters = {}) {
     query += ' AND activity_type = ?';
     params.push(filters.activity_type);
   }
+  if (filters.activity_types) {
+    const types = Array.isArray(filters.activity_types)
+      ? filters.activity_types
+      : filters.activity_types.split(',');
+    if (types.length > 0) {
+      query += ` AND activity_type IN (${types.map(() => '?').join(',')})`;
+      params.push(...types);
+    }
+  }
+  if (filters.activity_id) {
+    query += ' AND activity_id = ?';
+    params.push(filters.activity_id);
+  }
+  if (filters.detail) {
+    query += ' AND detail LIKE ?';
+    params.push(`%${filters.detail}%`);
+  }
+  if (filters.time_from) {
+    query += ' AND time >= ?';
+    params.push(filters.time_from);
+  }
+  if (filters.time_to) {
+    query += ' AND time <= ?';
+    params.push(filters.time_to);
+  }
   const [rows] = await pool.query(query, params);
   return rows;
 }

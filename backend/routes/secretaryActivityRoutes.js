@@ -5,7 +5,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 const roleMiddleware = require('../middleware/roleMiddleware');
 
 // GET /api/secretary-activities
-// Filtros disponibles por query: secretary_id, date, date_from, date_to, activity_type
+// Filtros disponibles por query: secretary_id, date, date_from, date_to, activity_type, activity_types, activity_id, detail, time_from, time_to
 router.get('/', authMiddleware, roleMiddleware(['admin', 'secretary']), secretaryActivityController.getAll);
 
 // POST /api/secretary-activities
