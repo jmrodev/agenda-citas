@@ -6,6 +6,7 @@ const { authorizeRoles } = require('../middleware/roleMiddleware');
 
 // Listar referencias de un paciente
 router.get('/:patient_id', authenticateToken, authorizeRoles('admin', 'secretary', 'doctor', 'patient'), patientReferenceController.getAll);
+router.get('/filtros', authenticateToken, authorizeRoles('admin', 'secretary', 'doctor', 'patient'), patientReferenceController.getAllWithFilters);
 
 // Agregar referencia
 router.post('/:patient_id', authenticateToken, authorizeRoles('admin', 'secretary', 'doctor', 'patient'), patientReferenceController.create);

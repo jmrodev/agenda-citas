@@ -1,8 +1,18 @@
 const patientReferenceModel = require('../models/patientReferenceModel');
+const patientReferenceService = require('../services/patientReferenceService');
 
 async function getAll(req, res) {
   try {
     const references = await patientReferenceModel.getReferencesByPatientId(req.params.patient_id);
+    res.json(references);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function getAllWithFilters(req, res) {
+  try {
+    const references = await patientReferenceService.listReferencePersonsWithFilters(req.query);
     res.json(references);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -49,4 +59,4 @@ async function remove(req, res) {
   }
 }
 
-module.exports = { getAll, create, update, remove }; 
+module.exports = { getAll, getAllWithFilters, create, update, remove }; 

@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const { buildReferencePersonFilters } = require('../filters/referencePersonFilters');
 
 async function existsReferenceByDni(patient_id, dni) {
   const [rows] = await pool.query(
@@ -10,6 +11,12 @@ async function existsReferenceByDni(patient_id, dni) {
 
 async function getReferencesByPatientId(patient_id) {
   const [rows] = await pool.query('SELECT * FROM patient_references WHERE patient_id = ?', [patient_id]);
+  return rows;
+}
+
+async function findReferencePersonsWithFilters(query) {
+  const { sql, params } = buildReferencePersonFilters(query);
+  const [rows] = await pool.query(`SELECT * FROM patient_references ${sql}`, params);
   return rows;
 }
 
@@ -47,4 +54,4 @@ async function referenceBelongsToPatient(patient_id, reference_id) {
   return rows.length > 0;
 }
 
-module.exports = { getReferencesByPatientId, addReference, updateReference, deleteReference, referenceBelongsToPatient }; 
+module.exports = { getReferencesByPatientId, findReferencePersonsWithFilters, addReference, updateReference, deleteReference, referenceBelongsToPatient }; 
