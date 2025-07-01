@@ -5,6 +5,11 @@ async function getAllPrescriptions() {
   return rows;
 }
 
+async function getPrescriptionById(id) {
+  const [rows] = await pool.query('SELECT * FROM prescriptions WHERE prescription_id=?', [id]);
+  return rows;
+}
+
 async function createPrescription(data) {
   const { patient_id, doctor_id, date, issued_by_secretary_id, amount, payment_method, payment_date } = data;
   const [result] = await pool.query(
@@ -28,4 +33,4 @@ async function deletePrescription(id) {
   return { prescription_id: id };
 }
 
-module.exports = { getAllPrescriptions, createPrescription, updatePrescription, deletePrescription }; 
+module.exports = { getAllPrescriptions, getPrescriptionById, createPrescription, updatePrescription, deletePrescription }; 
