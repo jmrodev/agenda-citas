@@ -14,6 +14,7 @@ Sistema integral para la gestión de consultorios médicos, centralizando la adm
 - [Licencia](#licencia)
 - [Seguridad y Doble Verificación de Pertenencia en Endpoints](#seguridad-y-doble-verificación-de-pertenencia-en-endpoints)
 - [Gestión de Personas de Referencia](#gestión-de-personas-de-referencia)
+- [Actividades de secretarias (log inmutable)](#actividades-de-secretarias-log-inmutable)
 
 ---
 
@@ -451,3 +452,24 @@ Cada paciente puede tener **múltiples personas de referencia** asociadas. Estas
   ]
 }
 ```
+
+## Actividades de secretarias (log inmutable)
+
+Las actividades de secretarias se gestionan como un log inmutable: **solo se permite crear y listar actividades**. No es posible editar ni eliminar registros, garantizando la integridad del historial.
+
+### Filtros disponibles en el endpoint de listado
+El filtrado se realiza en el backend para eficiencia y seguridad. Se pueden usar los siguientes parámetros de query:
+- `secretary_id`: filtra por secretaria
+- `date`: filtra por fecha exacta (YYYY-MM-DD)
+- `date_from`: filtra desde una fecha (inclusive)
+- `date_to`: filtra hasta una fecha (inclusive)
+- `activity_type`: filtra por tipo de actividad
+
+#### Ejemplo de uso:
+
+```http
+GET /api/secretary-activities?secretary_id=3&date_from=2024-06-01&date_to=2024-06-30&activity_type=registro
+Authorization: Bearer <token>
+```
+
+Esto retorna todas las actividades de la secretaria 3, de tipo 'registro', realizadas en junio de 2024.
