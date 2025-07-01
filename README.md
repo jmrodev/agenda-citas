@@ -1,4 +1,3 @@
-
 # Agenda Citas – Sistema de Secretaría Médica
 
 Sistema integral para la gestión de consultorios médicos, centralizando la administración de pacientes, turnos, médicos, pagos, historial clínico y más. Pensado para secretarías que desean optimizar la organización diaria.
@@ -13,6 +12,8 @@ Sistema integral para la gestión de consultorios médicos, centralizando la adm
   - [3. Frontend](#3-frontend)
 - [Despliegue](#despliegue)
 - [Licencia](#licencia)
+- [Seguridad y Doble Verificación de Pertenencia en Endpoints](#seguridad-y-doble-verificación-de-pertenencia-en-endpoints)
+- [Gestión de Personas de Referencia](#gestión-de-personas-de-referencia)
 
 ---
 
@@ -301,3 +302,152 @@ El frontend estará disponible por defecto en http://localhost:5173
 Este proyecto está bajo licencia MIT.
 
 ---
+
+## Seguridad y Doble Verificación de Pertenencia en Endpoints
+
+Para garantizar la integridad y seguridad de los datos, este sistema implementa el patrón de **doble verificación de pertenencia** en todas las operaciones de actualización y eliminación de entidades hijas (por ejemplo, medicamentos de recetas, personas de referencia, pagos, etc.).
+
+### ¿Qué significa esto?
+
+- **Siempre que modifiques o elimines un recurso hijo, la ruta requiere el ID del padre y del hijo.**
+- El backend valida que el hijo realmente pertenezca al padre antes de permitir la operación.
+- Esto evita accesos indebidos, errores de lógica y mejora la trazabilidad.
+
+---
+
+### Ejemplos de Endpoints Seguros
+
+#### Personas de referencia de paciente
+
+- **Actualizar persona de referencia:**
+  ```
+  PUT /api/patient-references/:patient_id/:reference_id
+  ```
+- **Eliminar persona de referencia:**
+  ```
+  DELETE /api/patient-references/:patient_id/:reference_id
+  ```
+
+#### Medicamentos de receta
+
+- **Actualizar medicamento:**
+  ```
+  PUT /api/prescriptions/:prescription_id/medications/:med_id
+  ```
+- **Eliminar medicamento:**
+  ```
+  DELETE /api/prescriptions/:prescription_id/medications/:med_id
+  ```
+
+#### Pagos de doctor
+
+- **Actualizar pago:**
+  ```
+  PUT /api/facility-payments/:doctor_id/payments/:payment_id
+  ```
+- **Eliminar pago:**
+  ```
+  DELETE /api/facility-payments/:doctor_id/payments/:payment_id
+  ```
+
+#### Medicamentos de historial médico
+
+- **Actualizar medicamento:**
+  ```
+  PUT /api/medical-history/:record_id/prescribed-meds/:med_id
+  ```
+- **Eliminar medicamento:**
+  ```
+  DELETE /api/medical-history/:record_id/prescribed-meds/:med_id
+  ```
+
+---
+
+### ¿Qué ocurre si la relación no es válida?
+
+Si intentas modificar o eliminar un recurso hijo que **no pertenece** al padre indicado, el backend responderá con un error 404 y un mensaje claro, por ejemplo:
+
+```json
+{
+  "error": "El medicamento no pertenece a la receta"
+}
+```
+
+---
+
+### Ventajas de este patrón
+
+- **Evita errores y accesos indebidos.**
+- **Mejora la seguridad y la trazabilidad.**
+- **Facilita la comprensión y el mantenimiento del API.**
+
+---
+
+### Recomendación
+
+Sigue este patrón para cualquier entidad hija que dependa de una entidad padre en tu sistema.  
+Consulta los archivos de ejemplos HTTP (`http/api-*.rest`) para ver cómo usar estos endpoints en la práctica.
+
+## Gestión de Personas de Referencia
+
+Cada paciente puede tener **múltiples personas de referencia** asociadas. Estas personas pueden ser familiares, tutores, responsables, etc. y se gestionan en la tabla `patient_references`.
+
+### Campos de una persona de referencia
+- `reference_id`: ID único de la referencia
+- `dni`: Documento de identidad (obligatorio y único por paciente)
+- `name`: Nombre
+- `last_name`: Apellido
+- `address`: Dirección
+- `phone`: Teléfono
+- `relationship`: Relación con el paciente
+
+### Endpoints principales
+- **Agregar referencia:**
+  ```
+  POST /api/patient-references/:patient_id
+  {
+    "dni": "12345678",
+    "name": "Laura",
+    "last_name": "Pérez",
+    "address": "Calle Nueva 123",
+    "phone": "555111222",
+    "relationship": "Tía"
+  }
+  ```
+- **Listar referencias:**
+  ```
+  GET /api/patient-references/:patient_id
+  ```
+- **Actualizar referencia:**
+  ```
+  PUT /api/patient-references/:patient_id/:reference_id
+  ```
+- **Eliminar referencia:**
+  ```
+  DELETE /api/patient-references/:patient_id/:reference_id
+  ```
+
+### Validaciones
+- No se puede agregar una persona de referencia con el mismo DNI para el mismo paciente.
+- El backend responde con error 409 si se intenta.
+- Todas las operaciones de actualización/eliminación requieren ambos IDs y validan pertenencia.
+
+### Ejemplo de respuesta al consultar un paciente
+```json
+{
+  "patient_id": 100001,
+  "first_name": "Juan",
+  ...,
+  "reference_persons": [
+    {
+      "reference_id": 1,
+      "dni": "12345678",
+      "name": "Laura",
+      "last_name": "Pérez",
+      "address": "Calle Nueva 123",
+      "phone": "555111222",
+      "relationship": "Tía"
+    }
+  ]
+}
+```
