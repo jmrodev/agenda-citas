@@ -1,5 +1,6 @@
 const pool = require('../config/db');
 const { buildPrescriptionFilters } = require('../filters/prescriptionFilters');
+const { buildPaginationAndOrder } = require('../filters/paginationUtils');
 
 async function getAllPrescriptions() {
   const [rows] = await pool.query('SELECT * FROM prescriptions');
@@ -8,7 +9,14 @@ async function getAllPrescriptions() {
 
 async function findPrescriptionsWithFilters(query) {
   const { sql, params } = buildPrescriptionFilters(query);
-  const [rows] = await pool.query(`SELECT * FROM prescriptions ${sql}`, params);
+  let fullQuery = `SELECT * FROM prescriptions ${sql}`;
+  // Paginación y ordenamiento
+  const { sql: pagSql, params: pagParams } = buildPaginationAndOrder(
+    query,
+    ['prescription_id', 'patient_id', 'doctor_id', 'date', 'status', 'amount']
+  );
+  fullQuery += pagSql;
+  const [rows] = await pool.query(fullQuery, [...params, ...pagParams]);
   return rows;
 }
 

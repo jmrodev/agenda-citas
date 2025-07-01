@@ -1,5 +1,6 @@
 const pool = require('../config/db');
 const { buildAppointmentFilters } = require('../filters/appointmentFilters');
+const { buildPaginationAndOrder } = require('../filters/paginationUtils');
 
 async function getAllAppointments() {
   const [rows] = await pool.query('SELECT * FROM appointments');
@@ -8,7 +9,14 @@ async function getAllAppointments() {
 
 async function findAppointmentsWithFilters(query) {
   const { sql, params } = buildAppointmentFilters(query);
-  const [rows] = await pool.query(`SELECT * FROM appointments ${sql}`, params);
+  let fullQuery = `SELECT * FROM appointments ${sql}`;
+  // Paginación y ordenamiento
+  const { sql: pagSql, params: pagParams } = buildPaginationAndOrder(
+    query,
+    ['appointment_id', 'patient_id', 'doctor_id', 'date', 'time', 'status', 'type']
+  );
+  fullQuery += pagSql;
+  const [rows] = await pool.query(fullQuery, [...params, ...pagParams]);
   return rows;
 }
 

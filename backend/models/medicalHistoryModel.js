@@ -1,5 +1,6 @@
 const pool = require('../config/db');
 const { buildMedicalHistoryFilters } = require('../filters/medicalHistoryFilters');
+const { buildPaginationAndOrder } = require('../filters/paginationUtils');
 
 async function getAllMedicalHistories() {
   const [rows] = await pool.query('SELECT * FROM medical_histories');
@@ -8,7 +9,14 @@ async function getAllMedicalHistories() {
 
 async function findMedicalHistoriesWithFilters(query) {
   const { sql, params } = buildMedicalHistoryFilters(query);
-  const [rows] = await pool.query(`SELECT * FROM medical_histories ${sql}`, params);
+  let fullQuery = `SELECT * FROM medical_histories ${sql}`;
+  // Paginación y ordenamiento
+  const { sql: pagSql, params: pagParams } = buildPaginationAndOrder(
+    query,
+    ['historial_id', 'paciente_id', 'doctor_id', 'fecha', 'diagnostico']
+  );
+  fullQuery += pagSql;
+  const [rows] = await pool.query(fullQuery, [...params, ...pagParams]);
   return rows;
 }
 

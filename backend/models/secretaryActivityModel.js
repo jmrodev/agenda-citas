@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const { buildPaginationAndOrder } = require('../filters/paginationUtils');
 
 async function getAllSecretaryActivities(filters = {}) {
   let query = 'SELECT * FROM secretary_activities WHERE 1=1';
@@ -48,6 +49,13 @@ async function getAllSecretaryActivities(filters = {}) {
     query += ' AND time <= ?';
     params.push(filters.time_to);
   }
+  // Paginación y ordenamiento
+  const { sql: pagSql, params: pagParams } = buildPaginationAndOrder(
+    filters,
+    ['activity_id', 'secretary_id', 'date', 'time', 'activity_type']
+  );
+  query += pagSql;
+  params.push(...pagParams);
   const [rows] = await pool.query(query, params);
   return rows;
 }

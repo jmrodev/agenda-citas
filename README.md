@@ -488,3 +488,59 @@ Authorization: Bearer <token>
 ```
 
 Esto permite búsquedas avanzadas y auditoría eficiente de las actividades de secretarias.
+
+## Filtros, paginación y ordenamiento en endpoints de búsqueda avanzada
+
+Todos los endpoints de búsqueda avanzada (filtros) soportan los siguientes parámetros adicionales:
+
+- `limit`: cantidad máxima de resultados por página (ej: 20)
+- `offset`: desde qué registro empezar (ej: 0 para la primera página, 20 para la segunda si limit=20)
+- `order_by`: campo permitido por el que ordenar (ver lista por entidad)
+- `order_dir`: dirección de orden ('asc' o 'desc')
+
+### Ejemplo general:
+```http
+GET /api/entidad/filtros?nombre=Juan&limit=10&offset=20&order_by=apellido&order_dir=desc
+Authorization: Bearer <token>
+```
+
+---
+
+### Pacientes
+- Endpoint: `/api/patients/filtros`
+- Campos permitidos para `order_by`: `patient_id`, `first_name`, `last_name`, `dni`, `address`, `phone`, `email`, `date_of_birth`
+
+### Citas médicas
+- Endpoint: `/api/appointments/filtros`
+- Campos permitidos para `order_by`: `appointment_id`, `patient_id`, `doctor_id`, `date`, `time`, `status`, `type`
+
+### Recetas
+- Endpoint: `/api/prescriptions/filtros`
+- Campos permitidos para `order_by`: `prescription_id`, `patient_id`, `doctor_id`, `date`, `status`, `amount`
+
+### Historial médico
+- Endpoint: `/api/medical-histories/filtros`
+- Campos permitidos para `order_by`: `historial_id`, `paciente_id`, `doctor_id`, `fecha`, `diagnostico`
+
+### Personas de referencia
+- Endpoint: `/api/patient-references/filtros`
+- Campos permitidos para `order_by`: `reference_id`, `patient_id`, `dni`, `nombre`, `apellido`, `telefono`, `direccion`, `parentesco`
+
+### Logs de secretarias
+- Endpoint: `/api/secretary-activities`
+- Campos permitidos para `order_by`: `activity_id`, `secretary_id`, `date`, `time`, `activity_type`
+
+---
+
+#### Ejemplo de uso con paginación y ordenamiento:
+```http
+GET /api/patients/filtros?nombre=Juan&limit=10&offset=0&order_by=last_name&order_dir=asc
+Authorization: Bearer <token>
+```
+
+```http
+GET /api/secretary-activities?activity_types=registro_cita,emision_receta&limit=5&offset=10&order_by=date&order_dir=desc
+Authorization: Bearer <token>
+```
+
+Esto permite obtener resultados paginados y ordenados en todos los endpoints de búsqueda avanzada.

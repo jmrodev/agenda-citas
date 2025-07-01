@@ -1,5 +1,6 @@
 const pool = require('../config/db');
 const { buildReferencePersonFilters } = require('../filters/referencePersonFilters');
+const { buildPaginationAndOrder } = require('../filters/paginationUtils');
 
 async function existsReferenceByDni(patient_id, dni) {
   const [rows] = await pool.query(
@@ -16,7 +17,14 @@ async function getReferencesByPatientId(patient_id) {
 
 async function findReferencePersonsWithFilters(query) {
   const { sql, params } = buildReferencePersonFilters(query);
-  const [rows] = await pool.query(`SELECT * FROM patient_references ${sql}`, params);
+  let fullQuery = `SELECT * FROM patient_references ${sql}`;
+  // Paginación y ordenamiento
+  const { sql: pagSql, params: pagParams } = buildPaginationAndOrder(
+    query,
+    ['reference_id', 'patient_id', 'dni', 'nombre', 'apellido', 'telefono', 'direccion', 'parentesco']
+  );
+  fullQuery += pagSql;
+  const [rows] = await pool.query(fullQuery, [...params, ...pagParams]);
   return rows;
 }
 
