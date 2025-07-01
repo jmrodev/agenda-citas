@@ -1,0 +1,9 @@
+---
+description: 
+globs: frontend/**
+alwaysApply: false
+---
+Al generar o modificar código de frontend, seguir estrictamente los principios de Atomic Design (atoms, molecules, organisms, templates, pages).
+Para los estilos de componentes, usar CSS Modules (.module.css) para scoped styles.
+Referirse a global CSS variables de 'src/styles/abstracts/_variables.css' donde sea aplicable (ej., 'var(--primary-color)').
+Los archivos de componentes deben estar típicamente en una carpeta dedicada con sus propios archivos .jsx/.tsx y .module.css (ej., 'Button/Button.jsx', 'Button/Button.module.css').

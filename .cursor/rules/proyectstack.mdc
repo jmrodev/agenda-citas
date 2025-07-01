@@ -1,0 +1,20 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Siempre priorizar JavaScript/TypeScript para Node.js (backend) y React (frontend) code examples.
+Usar ES Modules syntax (import/export) para JavaScript.
+Preferir Node.js con Express.js para backend solutions.
+Preferir React con Vite para frontend solutions.
+Asumir pnpm como el package manager para all code examples and instructions (ej., 'pnpm install', 'pnpm dev').
+Generated code should be compatible with MySQL database operations.
+Favor functional components y React Hooks for React code.
+Mantener comentarios en código claros y concisos, explicando lógica compleja o decisiones inusuales.
+Todas las explicaciones y prosa deben ser en español, claras y directas.
+Usar 2 espacios para indentación.
+Preferir comillas simples para strings.
+Usar punto y coma al final de las statements.
+Colocar llaves de apertura en la misma línea que la statement (K&R style for blocks).
+Favor camelCase para JavaScript variables, functions, and object properties.
+Favor snake_case para MySQL table and column names in SQL queries/schema.

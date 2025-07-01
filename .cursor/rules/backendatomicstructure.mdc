@@ -1,0 +1,8 @@
+---
+description: 
+globs: backend/**
+alwaysApply: false
+---
+Al generar o modificar código de backend, adherirse a la estructura atómica (config, middleware, models, services, controllers, routes, utils).
+Asegurar la separación lógica de concerns: models para DB interaction, services para business logic, controllers para request handling, routes para endpoints.
+Para database interactions, preferir un ORM como Sequelize si code examples son necesarios, de lo contrario raw SQL queries son aceptables.
