@@ -1,9 +1,9 @@
-const patientService = require('../services/patientService');
+const appointmentService = require('../services/appointmentService');
 
 async function getAll(req, res) {
   try {
-    const patients = await patientService.listPatients();
-    res.json(patients);
+    const appointments = await appointmentService.listAppointments();
+    res.json(appointments);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -11,8 +11,8 @@ async function getAll(req, res) {
 
 async function create(req, res) {
   try {
-    const patient = await patientService.createPatient(req.body);
-    res.status(201).json(patient);
+    const appointment = await appointmentService.createAppointment(req.body);
+    res.status(201).json(appointment);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -20,8 +20,8 @@ async function create(req, res) {
 
 async function update(req, res) {
   try {
-    const patient = await patientService.updatePatient(req.params.id, req.body);
-    res.json(patient);
+    const appointment = await appointmentService.updateAppointment(req.params.id, req.body);
+    res.json(appointment);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -29,8 +29,8 @@ async function update(req, res) {
 
 async function remove(req, res) {
   try {
-    await patientService.deletePatient(req.params.id);
-    res.json({ message: 'Paciente eliminado' });
+    await appointmentService.deleteAppointment(req.params.id);
+    res.json({ message: 'Cita eliminada' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

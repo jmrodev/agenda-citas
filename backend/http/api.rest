@@ -1,0 +1,66 @@
+### Registro de usuario (doctor)
+# @name register_doctor
+POST http://localhost:3001/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "doctor@mail.com",
+  "password": "123456",
+  "role": "doctor"
+}
+
+### Registro de usuario (secretaria)
+# @name register_secretary
+POST http://localhost:3001/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "secretaria@mail.com",
+  "password": "123456",
+  "role": "secretary"
+}
+
+### Login (guarda el token automáticamente)
+# @name login
+POST http://localhost:3001/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "doctor@mail.com",
+  "password": "123456"
+}
+
+### Token guardado en variable global
+@token = {{login.response.body.token}}
+
+### Endpoint protegido (verifica JWT)
+GET http://localhost:3001/api/protected
+Authorization: Bearer {{token}}
+
+### Obtener pacientes
+GET http://localhost:3001/api/patients
+Authorization: Bearer {{token}}
+
+### Obtener doctores
+GET http://localhost:3001/api/doctors
+Authorization: Bearer {{token}}
+
+### Obtener citas
+GET http://localhost:3001/api/appointments
+Authorization: Bearer {{token}}
+
+### Obtener recetas
+GET http://localhost:3001/api/prescriptions
+Authorization: Bearer {{token}}
+
+### Obtener historial médico
+GET http://localhost:3001/api/medical-history
+Authorization: Bearer {{token}}
+
+### Obtener obras sociales
+GET http://localhost:3001/api/health-insurances
+Authorization: Bearer {{token}}
+
+### Obtener actividades de secretarias
+GET http://localhost:3001/api/secretary-activities
+Authorization: Bearer {{token}} 

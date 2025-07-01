@@ -152,6 +152,16 @@ CREATE TABLE doctor_health_insurances (
     FOREIGN KEY (insurance_id) REFERENCES health_insurances(insurance_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Tabla de usuarios para autenticación
+CREATE TABLE users (
+  user_id INT(6) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  role VARCHAR(20) NOT NULL, -- admin, doctor, secretary
+  entity_id INT(6) UNSIGNED, -- referencia opcional a doctor_id, secretary_id, etc.
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE INDEX idx_patients_health_insurance_id ON patients (health_insurance_id);
