@@ -11,6 +11,15 @@ async function getAll(req, res) {
   }
 }
 
+async function getAllWithFilters(req, res) {
+  try {
+    const patients = await patientService.listPatientsWithFilters(req.query);
+    res.json(patients);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 async function create(req, res) {
   try {
     const patient = await patientService.createPatient(req.body);
@@ -117,4 +126,4 @@ async function getById(req, res) {
   }
 }
 
-module.exports = { getAll, create, update, remove, registerPatientWithUser, getMe, updateMe, getById }; 
+module.exports = { getAll, getAllWithFilters, create, update, remove, registerPatientWithUser, getMe, updateMe, getById }; 

@@ -1,7 +1,14 @@
 const pool = require('../config/db');
+const { buildPersonFilters } = require('../filters/personFilters');
 
 async function getAllPatients() {
   const [rows] = await pool.query('SELECT * FROM patients');
+  return rows;
+}
+
+async function findPatientsWithFilters(query) {
+  const { sql, params } = buildPersonFilters(query);
+  const [rows] = await pool.query(`SELECT * FROM patients ${sql}`, params);
   return rows;
 }
 
@@ -36,7 +43,7 @@ async function updatePatient(id, data) {
 }
 
 async function deletePatient(id) {
-  await pool.query('DELETE FROM patients WHERE patient_id=?', [id]);
+  await pool.query('DELETE FROM patients WHERE patient_id = ?', [id]);
   return { patient_id: id };
 }
 
@@ -45,4 +52,4 @@ async function getPatientById(id) {
   return rows[0];
 }
 
-module.exports = { getAllPatients, createPatient, updatePatient, deletePatient, getPatientById }; 
+module.exports = { getAllPatients, findPatientsWithFilters, createPatient, updatePatient, deletePatient, getPatientById }; 

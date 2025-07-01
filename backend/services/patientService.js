@@ -22,8 +22,17 @@ function mapReferencePerson(row) {
   };
 }
 
-async function listPatients() {
+async function listPatients(query) {
   const rows = await patientModel.getAllPatients();
+  const patients = await Promise.all(rows.map(async (row) => {
+    const references = await patientReferenceModel.getReferencesByPatientId(row.patient_id);
+    return { ...row, reference_persons: references };
+  }));
+  return patients;
+}
+
+async function listPatientsWithFilters(query) {
+  const rows = await patientModel.findPatientsWithFilters(query);
   const patients = await Promise.all(rows.map(async (row) => {
     const references = await patientReferenceModel.getReferencesByPatientId(row.patient_id);
     return { ...row, reference_persons: references };
@@ -60,4 +69,4 @@ async function getPatientWithReferences(id) {
   return { ...patient, reference_persons: references };
 }
 
-module.exports = { listPatients, createPatient, updatePatient, deletePatient, getPatientById, getPatientWithReferences }; 
+module.exports = { listPatients, listPatientsWithFilters, createPatient, updatePatient, deletePatient, getPatientById, getPatientWithReferences }; 

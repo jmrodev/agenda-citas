@@ -5,6 +5,7 @@ const { authenticateToken } = require('../middleware/authMiddleware');
 const { authorizeRoles } = require('../middleware/roleMiddleware');
 
 router.get('/', authenticateToken, patientController.getAll);
+router.get('/filtros', authenticateToken, patientController.getAllWithFilters);
 router.post('/', authenticateToken, authorizeRoles('secretary', 'admin'), patientController.create);
 router.put('/:id', authenticateToken, authorizeRoles('secretary', 'admin'), patientController.update);
 router.delete('/:id', authenticateToken, authorizeRoles('admin'), patientController.remove);
