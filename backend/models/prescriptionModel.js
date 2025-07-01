@@ -1,7 +1,14 @@
 const pool = require('../config/db');
+const { buildPrescriptionFilters } = require('../filters/prescriptionFilters');
 
 async function getAllPrescriptions() {
   const [rows] = await pool.query('SELECT * FROM prescriptions');
+  return rows;
+}
+
+async function findPrescriptionsWithFilters(query) {
+  const { sql, params } = buildPrescriptionFilters(query);
+  const [rows] = await pool.query(`SELECT * FROM prescriptions ${sql}`, params);
   return rows;
 }
 
@@ -33,4 +40,4 @@ async function deletePrescription(id) {
   return { prescription_id: id };
 }
 
-module.exports = { getAllPrescriptions, getPrescriptionById, createPrescription, updatePrescription, deletePrescription }; 
+module.exports = { getAllPrescriptions, findPrescriptionsWithFilters, getPrescriptionById, createPrescription, updatePrescription, deletePrescription }; 

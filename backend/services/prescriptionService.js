@@ -4,6 +4,10 @@ async function listPrescriptions() {
   return await prescriptionModel.getAllPrescriptions();
 }
 
+async function listPrescriptionsWithFilters(query) {
+  return await prescriptionModel.findPrescriptionsWithFilters(query);
+}
+
 async function getPrescriptionById(id) {
   const [prescription] = await prescriptionModel.getPrescriptionById(id);
   return prescription;
@@ -21,4 +25,4 @@ async function deletePrescription(id) {
   return await prescriptionModel.deletePrescription(id);
 }
 
-module.exports = { listPrescriptions, getPrescriptionById, createPrescription, updatePrescription, deletePrescription }; 
+module.exports = { listPrescriptions, listPrescriptionsWithFilters, getPrescriptionById, createPrescription, updatePrescription, deletePrescription }; 

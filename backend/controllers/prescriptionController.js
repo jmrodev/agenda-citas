@@ -10,6 +10,15 @@ async function getAll(req, res) {
   }
 }
 
+async function getAllWithFilters(req, res) {
+  try {
+    const prescriptions = await prescriptionService.listPrescriptionsWithFilters(req.query);
+    res.json(prescriptions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 async function create(req, res) {
   try {
     const prescription = await prescriptionService.createPrescription(req.body);
@@ -95,4 +104,4 @@ async function removeMedication(req, res) {
   }
 }
 
-module.exports = { getAll, create, update, remove, getMyPrescriptions, updateMedication, removeMedication }; 
+module.exports = { getAll, getAllWithFilters, create, update, remove, getMyPrescriptions, updateMedication, removeMedication }; 
