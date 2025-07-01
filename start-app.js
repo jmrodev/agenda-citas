@@ -2,8 +2,8 @@
 
 /**
  * Script de Node.js para iniciar la aplicación de Agenda de Citas
- * Autor: JMRO
- * Fecha: 2024
+ * Autor: JMRODEV
+ * Fecha: 2025
  */
 
 const { spawn, exec } = require('child_process');
@@ -263,7 +263,7 @@ async function main() {
     printHeader();
     
     // Verificar que estamos en el directorio correcto
-    if (!fs.existsSync('frontend/package.json') || !fs.existsSync('server/server.js')) {
+    if (!fs.existsSync('frontend/package.json') || !fs.existsSync('backend/index.js')) {
       printError('Este script debe ejecutarse desde el directorio agenda-citas');
       process.exit(1);
     }
@@ -280,7 +280,7 @@ async function main() {
     if (!fs.existsSync('frontend/node_modules')) {
       printWarning('Instalando dependencias del frontend...');
       try {
-        await executeCommand('npm', ['install'], { cwd: 'frontend' });
+        await executeCommand('pnpm', ['install'], { cwd: 'frontend' });
         printMessage('Dependencias del frontend instaladas correctamente');
       } catch (error) {
         printError(`Error instalando dependencias del frontend: ${error.message}`);
@@ -290,10 +290,10 @@ async function main() {
     
     // Iniciar servidor backend
     printMessage('Iniciando servidor backend (puerto 3001)...');
-    const backendProcess = spawn('npm', ['start'], { 
+    const backendProcess = spawn('pnpm', ['dev'], { 
       stdio: 'inherit',
       detached: false,
-      cwd: 'server'
+      cwd: 'backend'
     });
 
     backendProcess.on('exit', (code, signal) => {
@@ -312,9 +312,9 @@ async function main() {
       process.exit(1);
     }
     
-    // Iniciar servidor frontend
+   /*  // Iniciar servidor frontend
     printMessage('Iniciando servidor frontend (puerto 3000)...');
-    const frontendProcess = spawn('npm', ['start'], { 
+    const frontendProcess = spawn('pnpm', ['dev'], { 
       stdio: 'inherit',
       detached: false,
       cwd: 'frontend'
@@ -342,10 +342,10 @@ async function main() {
     await new Promise(resolve => setTimeout(resolve, 5000));
     
     // Abrir navegador
-    await openBrowser('http://localhost:3000');
+    await openBrowser('http://localhost:3000'); */
     
     printMessage('Aplicación iniciada correctamente!');
-    printMessage('Frontend: http://localhost:3000');
+    // printMessage('Frontend: http://localhost:3000');
     printMessage('Backend: http://localhost:3001');
     printMessage('');
     printMessage('Presiona Ctrl+C para detener todos los servidores');
@@ -353,7 +353,7 @@ async function main() {
     // Manejar Ctrl+C
     process.on('SIGINT', async () => {
       printMessage('Limpiando procesos al salir...');
-      frontendProcess.kill();
+      // frontendProcess.kill();
       backendProcess.kill();
       await cleanupAllProcesses();
       printMessage('Limpieza completada');
