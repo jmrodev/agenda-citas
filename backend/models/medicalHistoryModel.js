@@ -1,4 +1,16 @@
 const pool = require('../config/db');
+const { buildMedicalHistoryFilters } = require('../filters/medicalHistoryFilters');
+
+async function getAllMedicalHistories() {
+  const [rows] = await pool.query('SELECT * FROM medical_histories');
+  return rows;
+}
+
+async function findMedicalHistoriesWithFilters(query) {
+  const { sql, params } = buildMedicalHistoryFilters(query);
+  const [rows] = await pool.query(`SELECT * FROM medical_histories ${sql}`, params);
+  return rows;
+}
 
 async function getAllMedicalHistory() {
   const [rows] = await pool.query('SELECT * FROM medical_history_records');
@@ -28,4 +40,4 @@ async function deleteMedicalHistory(id) {
   return { record_id: id };
 }
 
-module.exports = { getAllMedicalHistory, createMedicalHistory, updateMedicalHistory, deleteMedicalHistory }; 
+module.exports = { getAllMedicalHistories, findMedicalHistoriesWithFilters, getAllMedicalHistory, createMedicalHistory, updateMedicalHistory, deleteMedicalHistory }; 

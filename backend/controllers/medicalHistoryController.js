@@ -3,8 +3,17 @@ const medicalRecordPrescribedMedModel = require('../models/medicalRecordPrescrib
 
 async function getAll(req, res) {
   try {
-    const history = await medicalHistoryService.listMedicalHistory();
-    res.json(history);
+    const histories = await medicalHistoryService.listMedicalHistories();
+    res.json(histories);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function getAllWithFilters(req, res) {
+  try {
+    const histories = await medicalHistoryService.listMedicalHistoriesWithFilters(req.query);
+    res.json(histories);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -75,4 +84,4 @@ async function removePrescribedMed(req, res) {
   }
 }
 
-module.exports = { getAll, create, update, remove, getMyMedicalHistory, updatePrescribedMed, removePrescribedMed }; 
+module.exports = { getAll, getAllWithFilters, create, update, remove, getMyMedicalHistory, updatePrescribedMed, removePrescribedMed }; 

@@ -1,5 +1,13 @@
 const medicalHistoryModel = require('../models/medicalHistoryModel');
 
+async function listMedicalHistories() {
+  return await medicalHistoryModel.getAllMedicalHistories();
+}
+
+async function listMedicalHistoriesWithFilters(query) {
+  return await medicalHistoryModel.findMedicalHistoriesWithFilters(query);
+}
+
 async function listMedicalHistory() {
   return await medicalHistoryModel.getAllMedicalHistory();
 }
@@ -16,4 +24,4 @@ async function deleteMedicalHistory(id) {
   return await medicalHistoryModel.deleteMedicalHistory(id);
 }
 
-module.exports = { listMedicalHistory, createMedicalHistory, updateMedicalHistory, deleteMedicalHistory }; 
+module.exports = { listMedicalHistories, listMedicalHistoriesWithFilters, listMedicalHistory, createMedicalHistory, updateMedicalHistory, deleteMedicalHistory }; 
