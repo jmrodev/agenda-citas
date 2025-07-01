@@ -32,6 +32,9 @@ const { authenticateToken } = require('./middleware/authMiddleware');
 const doctorConsultationHourRoutes = require('./routes/doctorConsultationHourRoutes');
 app.use('/api/doctor-consultation-hours', doctorConsultationHourRoutes);
 
+const patientReferenceRoutes = require('./routes/patientReferenceRoutes');
+app.use('/api/patient-references', patientReferenceRoutes);
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });

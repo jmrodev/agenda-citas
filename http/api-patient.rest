@@ -1,0 +1,120 @@
+### Login como paciente
+# @name login_patient
+POST http://localhost:3001/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "juan.perez@mail.com",
+  "password": "123456"
+}
+
+@token_patient = {{login_patient.response.body.token}}
+
+### Ver mis turnos
+GET http://localhost:3001/api/appointments/my
+Authorization: Bearer {{token_patient}}
+
+### Crear turno válido (no solapado, no repetido doctor)
+POST http://localhost:3001/api/appointments/my
+Content-Type: application/json
+Authorization: Bearer {{token_patient}}
+
+{
+  "doctor_id": 200002,
+  "date": "2024-07-10",
+  "time": "15:00:00",
+  "reason": "Consulta general",
+  "type": "en consultorio"
+}
+
+### Crear turno solapado (debe fallar)
+POST http://localhost:3001/api/appointments/my
+Content-Type: application/json
+Authorization: Bearer {{token_patient}}
+
+{
+  "doctor_id": 200003,
+  "date": "2024-07-10",
+  "time": "15:00:00",
+  "reason": "Otro motivo",
+  "type": "en consultorio"
+}
+
+### Crear turno con mismo doctor (debe fallar)
+POST http://localhost:3001/api/appointments/my
+Content-Type: application/json
+Authorization: Bearer {{token_patient}}
+
+{
+  "doctor_id": 200002,
+  "date": "2024-07-15",
+  "time": "10:00:00",
+  "reason": "Repetido doctor",
+  "type": "en consultorio"
+}
+
+### Actualizar mi persona de referencia (paciente)
+PUT http://localhost:3001/api/patients/me
+Content-Type: application/json
+Authorization: Bearer {{token_patient}}
+
+{
+  "reference_person": {
+    "name": "Elena",
+    "last_name": "Pérez",
+    "address": "Calle Nueva 999",
+    "phone": "555333444",
+    "relationship": "Abuela"
+  }
+}
+
+### Agregar persona de referencia a mi usuario
+POST http://localhost:3001/api/patient-references/{{my_patient_id}}
+Content-Type: application/json
+Authorization: Bearer {{token_patient}}
+
+{
+  "dni": "45678901",
+  "name": "Elena",
+  "last_name": "Pérez",
+  "address": "Calle Nueva 999",
+  "phone": "555333444",
+  "relationship": "Abuela"
+}
+
+### Listar mis personas de referencia
+GET http://localhost:3001/api/patient-references/{{my_patient_id}}
+Authorization: Bearer {{token_patient}}
+
+### Actualizar persona de referencia
+PUT http://localhost:3001/api/patient-references/{{my_patient_id}}/4
+Content-Type: application/json
+Authorization: Bearer {{token_patient}}
+
+{
+  "dni": "45678901",
+  "name": "Elena",
+  "last_name": "Pérez",
+  "address": "Calle Nueva 999",
+  "phone": "555333445",
+  "relationship": "Abuela actualizada"
+}
+
+### Eliminar persona de referencia
+DELETE http://localhost:3001/api/patient-references/{{my_patient_id}}/4
+Authorization: Bearer {{token_patient}}
+
+### Actualizar medicamento de historial médico
+PUT http://localhost:3001/api/medical-history/700001/prescribed-meds/930001
+Content-Type: application/json
+Authorization: Bearer {{token_patient}}
+
+{
+  "medication_name": "Losartán",
+  "dose": "100mg",
+  "instructions": "1 comprimido diario"
+}
+
+### Eliminar medicamento de historial médico
+DELETE http://localhost:3001/api/medical-history/700001/prescribed-meds/930001
+Authorization: Bearer {{token_patient}} 

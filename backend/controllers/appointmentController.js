@@ -36,4 +36,14 @@ async function remove(req, res) {
   }
 }
 
-module.exports = { getAll, create, update, remove }; 
+async function getMyAppointments(req, res) {
+  try {
+    const patientId = req.user.entity_id;
+    const appointments = await appointmentService.getAppointmentsByPatientId(patientId);
+    res.json(appointments);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+module.exports = { getAll, create, update, remove, getMyAppointments }; 

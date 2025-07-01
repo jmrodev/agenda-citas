@@ -1,4 +1,5 @@
 const prescriptionService = require('../services/prescriptionService');
+const prescriptionMedicationModel = require('../models/prescriptionMedicationModel');
 
 async function getAll(req, res) {
   try {
@@ -56,4 +57,42 @@ async function remove(req, res) {
   }
 }
 
-module.exports = { getAll, create, update, remove }; 
+async function getMyPrescriptions(req, res) {
+  try {
+    const patientId = req.user.entity_id;
+    const prescriptions = await prescriptionService.getByPatientId(patientId);
+    res.json(prescriptions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function updateMedication(req, res) {
+  try {
+    const { prescription_id, med_id } = req.params;
+    const belongs = await prescriptionMedicationModel.medicationBelongsToPrescription(prescription_id, med_id);
+    if (!belongs) {
+      return res.status(404).json({ error: 'El medicamento no pertenece a la receta' });
+    }
+    await prescriptionMedicationModel.updateMedication(med_id, req.body);
+    res.json({ message: 'Medicamento actualizado' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function removeMedication(req, res) {
+  try {
+    const { prescription_id, med_id } = req.params;
+    const belongs = await prescriptionMedicationModel.medicationBelongsToPrescription(prescription_id, med_id);
+    if (!belongs) {
+      return res.status(404).json({ error: 'El medicamento no pertenece a la receta' });
+    }
+    await prescriptionMedicationModel.deleteMedication(med_id);
+    res.json({ message: 'Medicamento eliminado' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+module.exports = { getAll, create, update, remove, getMyPrescriptions, updateMedication, removeMedication }; 

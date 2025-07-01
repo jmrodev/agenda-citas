@@ -5,7 +5,7 @@ USE agenda_citas;
 SET FOREIGN_KEY_CHECKS = 0;
 
 CREATE TABLE patients (
-    patient_id INT(6) UNSIGNED PRIMARY KEY,
+    patient_id INT(6) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     date_of_birth DATE,
@@ -13,7 +13,12 @@ CREATE TABLE patients (
     phone VARCHAR(20),
     email VARCHAR(100) UNIQUE,
     preferred_payment_methods VARCHAR(255),
-    health_insurance_id INT(6) UNSIGNED
+    health_insurance_id INT(6) UNSIGNED,
+    reference_name VARCHAR(100),
+    reference_last_name VARCHAR(100),
+    reference_address VARCHAR(255),
+    reference_phone VARCHAR(20),
+    reference_relationship VARCHAR(50)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE doctors (
@@ -48,7 +53,7 @@ CREATE TABLE health_insurances (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE doctor_consultation_hours (
-    consultation_hour_id INT(6) UNSIGNED PRIMARY KEY,
+    consultation_hour_id INT(6) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     doctor_id INT(6) UNSIGNED NOT NULL,
     day_of_week VARCHAR(15) NOT NULL,
     start_time TIME NOT NULL,
@@ -162,6 +167,19 @@ CREATE TABLE users (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE patient_references (
+  reference_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  patient_id INT(6) UNSIGNED NOT NULL,
+  dni VARCHAR(20) NOT NULL,
+  name VARCHAR(100),
+  last_name VARCHAR(100),
+  address VARCHAR(255),
+  phone VARCHAR(20),
+  relationship VARCHAR(50),
+  FOREIGN KEY (patient_id) REFERENCES patients(patient_id) ON DELETE CASCADE,
+  UNIQUE (patient_id, dni)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE INDEX idx_patients_health_insurance_id ON patients (health_insurance_id);
@@ -190,10 +208,10 @@ CREATE INDEX idx_appointments_status ON appointments (status);
 CREATE INDEX idx_prescriptions_date ON prescriptions (date);
 CREATE INDEX idx_medical_history_records_date ON medical_history_records (date);
 
-INSERT INTO patients (patient_id, first_name, last_name, date_of_birth, address, phone, email, preferred_payment_methods, health_insurance_id) VALUES
-  (100001, 'Juan', 'Pérez', '1980-01-01', 'Calle Falsa 123', '111111111', 'juan.perez@mail.com', 'efectivo', NULL),
-  (100002, 'María', 'López', '1985-07-12', 'Calle 123', '123456789', 'maria.lopez@mail.com', 'efectivo', NULL),
-  (100003, 'Carlos', 'Sánchez', '1990-03-22', 'Av. Siempre Viva 742', '987654321', 'carlos.sanchez@mail.com', 'transferencia', NULL);
+INSERT INTO patients (patient_id, first_name, last_name, date_of_birth, address, phone, email, preferred_payment_methods, health_insurance_id, reference_name, reference_last_name, reference_address, reference_phone, reference_relationship) VALUES
+  (100001, 'Juan', 'Pérez', '1980-01-01', 'Calle Falsa 123', '111111111', 'juan.perez@mail.com', 'efectivo', NULL, 'Juan', 'Pérez', 'Calle Falsa 123', '111111111', 'Padre'),
+  (100002, 'María', 'López', '1985-07-12', 'Calle 123', '123456789', 'maria.lopez@mail.com', 'efectivo', NULL, 'María', 'López', 'Calle 123', '123456789', 'Madre'),
+  (100003, 'Carlos', 'Sánchez', '1990-03-22', 'Av. Siempre Viva 742', '987654321', 'carlos.sanchez@mail.com', 'transferencia', NULL, 'Carlos', 'Sánchez', 'Av. Siempre Viva 742', '987654321', 'Hermano');
 
 INSERT INTO doctors (doctor_id, first_name, last_name, specialty, license_number, phone, email, consultation_fee, prescription_fee, last_earnings_collection_date) VALUES
   (200001, 'Ana', 'García', 'Clínica', 'LIC123', '222333444', 'ana.garcia@mail.com', 5000.00, 2000.00, '2024-06-01'),

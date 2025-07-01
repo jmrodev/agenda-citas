@@ -6,6 +6,8 @@
  * Fecha: 2025
  */
 
+require('dotenv').config({ path: './backend/.env' });
+
 const { spawn, exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -86,12 +88,12 @@ async function isPortInUse(port) {
 async function killPort(port) {
   try {
     printWarning(`Matando procesos en puerto ${port}...`);
-    
+
     const pids = await executeCommandWithOutput('lsof', ['-ti', `:${port}`]);
     if (pids) {
       const pidArray = pids.split('\n').filter(pid => pid.trim());
       printWarning(`Matando PIDs: ${pidArray.join(', ')}`);
-      
+
       for (const pid of pidArray) {
         try {
           await executeCommandWithOutput('kill', ['-9', pid]);
@@ -99,10 +101,10 @@ async function killPort(port) {
           printWarning(`No se pudo matar PID ${pid}: ${error.message}`);
         }
       }
-      
+
       // Esperar un poco y verificar
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       if (await isPortInUse(port)) {
         printError(`Puerto ${port} aún está en uso después de intentar matar procesos`);
         return false;
@@ -124,22 +126,22 @@ async function killPort(port) {
 async function killNodeProcesses() {
   try {
     printWarning('Buscando y matando procesos de Node.js relacionados...');
-    
+
     // Matar procesos que contengan "server.js" o "react-scripts"
     const nodePids = await executeCommandWithOutput('ps', ['aux']);
     const lines = nodePids.split('\n');
     const targetPids = [];
-    
+
     for (const line of lines) {
-      if (line.includes('server.js') || line.includes('react-scripts') || 
-          (line.includes('node') && line.includes('agenda-citas'))) {
+      if (line.includes('server.js') || line.includes('react-scripts') ||
+        (line.includes('node') && line.includes('agenda-citas'))) {
         const parts = line.trim().split(/\s+/);
         if (parts.length > 1) {
           targetPids.push(parts[1]);
         }
       }
     }
-    
+
     if (targetPids.length > 0) {
       printWarning(`Matando procesos de Node.js: ${targetPids.join(', ')}`);
       for (const pid of targetPids) {
@@ -151,22 +153,22 @@ async function killNodeProcesses() {
       }
       await new Promise(resolve => setTimeout(resolve, 2000));
     }
-    
+
     // Matar procesos de npm
     const npmPids = await executeCommandWithOutput('ps', ['aux']);
     const npmLines = npmPids.split('\n');
     const npmTargetPids = [];
-    
+
     for (const line of npmLines) {
-      if ((line.includes('npm') && line.includes('start')) || 
-          (line.includes('npm') && line.includes('server'))) {
+      if ((line.includes('npm') && line.includes('start')) ||
+        (line.includes('npm') && line.includes('server'))) {
         const parts = line.trim().split(/\s+/);
         if (parts.length > 1) {
           npmTargetPids.push(parts[1]);
         }
       }
     }
-    
+
     if (npmTargetPids.length > 0) {
       printWarning(`Matando procesos de npm: ${npmTargetPids.join(', ')}`);
       for (const pid of npmTargetPids) {
@@ -178,7 +180,7 @@ async function killNodeProcesses() {
       }
       await new Promise(resolve => setTimeout(resolve, 2000));
     }
-    
+
   } catch (error) {
     printWarning(`Error matando procesos de Node.js: ${error.message}`);
   }
@@ -187,28 +189,28 @@ async function killNodeProcesses() {
 // Función para limpiar completamente todos los procesos
 async function cleanupAllProcesses() {
   printMessage('Iniciando limpieza completa de procesos...');
-  
+
   // Matar procesos específicos de la aplicación
   await killNodeProcesses();
-  
+
   // Matar procesos en puertos específicos
   await killPort(3000);
   await killPort(3001);
-  
+
   // Esperar un poco para asegurar que los procesos se terminen
   await new Promise(resolve => setTimeout(resolve, 3000));
-  
+
   // Verificar que los puertos estén libres
   if (await isPortInUse(3000)) {
     printError('Puerto 3000 aún está en uso después de la limpieza');
     return false;
   }
-  
+
   if (await isPortInUse(3001)) {
     printError('Puerto 3001 aún está en uso después de la limpieza');
     return false;
   }
-  
+
   printMessage('Limpieza de procesos completada exitosamente');
   return true;
 }
@@ -216,7 +218,7 @@ async function cleanupAllProcesses() {
 // Función para esperar a que un puerto esté disponible
 async function waitForPort(port, maxAttempts = 30) {
   printMessage(`Esperando a que el puerto ${port} esté disponible...`);
-  
+
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     if (await isPortInUse(port)) {
       printMessage(`Puerto ${port} está disponible`);
@@ -224,7 +226,7 @@ async function waitForPort(port, maxAttempts = 30) {
     }
     await new Promise(resolve => setTimeout(resolve, 1000));
   }
-  
+
   printError(`Timeout esperando puerto ${port}`);
   return false;
 }
@@ -232,11 +234,11 @@ async function waitForPort(port, maxAttempts = 30) {
 // Función para abrir navegador
 async function openBrowser(url) {
   printMessage(`Abriendo navegador en: ${url}`);
-  
+
   try {
     // Detectar el navegador disponible
     const browsers = ['google-chrome', 'firefox', 'chromium', 'xdg-open'];
-    
+
     for (const browser of browsers) {
       try {
         await executeCommandWithOutput('which', [browser]);
@@ -250,10 +252,34 @@ async function openBrowser(url) {
         continue;
       }
     }
-    
+
     printWarning(`No se pudo detectar un navegador. Abre manualmente: ${url}`);
   } catch (error) {
     printWarning(`Error abriendo navegador: ${error.message}`);
+  }
+}
+
+// Función para ejecutar el script main.sql en la base de datos
+async function resetDatabase() {
+  printMessage('Reseteando la base de datos con main.sql...');
+  const sqlPath = path.join(__dirname, 'BBDD', 'main.sql');
+  if (!fs.existsSync(sqlPath)) {
+    printError('No se encontró el archivo main.sql');
+    process.exit(1);
+  }
+  // Leer variables de entorno para usuario y contraseña
+  const dbUser = process.env.DB_USER || 'root';
+  const dbPass = process.env.DB_PASSWORD || '';
+  const dbName = process.env.DB_NAME || 'agenda_citas';
+  let cmd = `mysql -u${dbUser}`;
+  if (dbPass) cmd += ` -p${dbPass}`;
+  cmd += ` ${dbName} < \"${sqlPath}\"`;
+  try {
+    await executeCommand(cmd, [], { shell: true });
+    printMessage('Base de datos reseteada correctamente');
+  } catch (error) {
+    printError('Error al resetear la base de datos: ' + error.message);
+    process.exit(1);
   }
 }
 
@@ -261,21 +287,25 @@ async function openBrowser(url) {
 async function main() {
   try {
     printHeader();
-    
+    if (process.argv.includes('--resetdb')) {
+      await resetDatabase();
+      process.exit(0);
+    }
+
     // Verificar que estamos en el directorio correcto
     if (!fs.existsSync('frontend/package.json') || !fs.existsSync('backend/index.js')) {
       printError('Este script debe ejecutarse desde el directorio agenda-citas');
       process.exit(1);
     }
-    
+
     printMessage('Iniciando aplicación de Agenda de Citas...');
-    
+
     // Limpieza completa de procesos existentes
     if (!(await cleanupAllProcesses())) {
       printError('No se pudo completar la limpieza de procesos. Abortando...');
       process.exit(1);
     }
-    
+
     // Verificar dependencias del frontend
     if (!fs.existsSync('frontend/node_modules')) {
       printWarning('Instalando dependencias del frontend...');
@@ -287,10 +317,53 @@ async function main() {
         throw error;
       }
     }
-    
+
+    // Iniciar servicios de base de datos y Apache solo si no están activos
+    printMessage('Verificando estado de MariaDB...');
+    let mariadbActive = false;
+    try {
+      const status = await executeCommandWithOutput('systemctl', ['is-active', 'mariadb']);
+      if (status === 'active') {
+        printMessage('MariaDB ya está activo');
+        mariadbActive = true;
+      }
+    } catch (error) {
+      // ignorar
+    }
+    if (!mariadbActive) {
+      printMessage('Levantando servicio MariaDB...');
+      try {
+        await executeCommand('sudo', ['systemctl', 'start', 'mariadb']);
+        printMessage('MariaDB iniciado correctamente');
+      } catch (error) {
+        printError('No se pudo iniciar MariaDB: ' + error.message);
+      }
+    }
+
+    printMessage('Verificando estado de Apache (httpd)...');
+    let httpdActive = false;
+    try {
+      const status = await executeCommandWithOutput('systemctl', ['is-active', 'httpd']);
+      if (status === 'active') {
+        printMessage('Apache (httpd) ya está activo');
+        httpdActive = true;
+      }
+    } catch (error) {
+      // ignorar
+    }
+    if (!httpdActive) {
+      printMessage('Levantando servicio Apache (httpd)...');
+      try {
+        await executeCommand('sudo', ['systemctl', 'start', 'httpd']);
+        printMessage('Apache (httpd) iniciado correctamente');
+      } catch (error) {
+        printError('No se pudo iniciar Apache (httpd): ' + error.message);
+      }
+    }
+
     // Iniciar servidor backend
     printMessage('Iniciando servidor backend (puerto 3001)...');
-    const backendProcess = spawn('pnpm', ['dev'], { 
+    const backendProcess = spawn('pnpm', ['dev'], {
       stdio: 'inherit',
       detached: false,
       cwd: 'backend'
@@ -311,45 +384,45 @@ async function main() {
       backendProcess.kill();
       process.exit(1);
     }
-    
-   /*  // Iniciar servidor frontend
-    printMessage('Iniciando servidor frontend (puerto 3000)...');
-    const frontendProcess = spawn('pnpm', ['dev'], { 
-      stdio: 'inherit',
-      detached: false,
-      cwd: 'frontend'
-    });
 
-    frontendProcess.on('exit', (code, signal) => {
-      printError(`El servidor frontend se detuvo (código: ${code}, señal: ${signal})`);
-    });
-    frontendProcess.on('error', (err) => {
-      printError(`Error en el servidor frontend: ${err.message}`);
-    });
+    /*  // Iniciar servidor frontend
+     printMessage('Iniciando servidor frontend (puerto 3000)...');
+     const frontendProcess = spawn('pnpm', ['dev'], { 
+       stdio: 'inherit',
+       detached: false,
+       cwd: 'frontend'
+     });
+ 
+     frontendProcess.on('exit', (code, signal) => {
+       printError(`El servidor frontend se detuvo (código: ${code}, señal: ${signal})`);
+     });
+     frontendProcess.on('error', (err) => {
+       printError(`Error en el servidor frontend: ${err.message}`);
+     });
+ 
+     // Esperar a que el frontend esté listo
+     if (await waitForPort(3000)) {
+       printMessage('Servidor frontend iniciado correctamente');
+     } else {
+       printError('Error al iniciar servidor frontend');
+       frontendProcess.kill();
+       backendProcess.kill();
+       process.exit(1);
+     }
+     
+     // Esperar un poco más para que React compile completamente
+     printMessage('Esperando compilación completa...');
+     await new Promise(resolve => setTimeout(resolve, 5000));
+     
+     // Abrir navegador
+     await openBrowser('http://localhost:3000'); */
 
-    // Esperar a que el frontend esté listo
-    if (await waitForPort(3000)) {
-      printMessage('Servidor frontend iniciado correctamente');
-    } else {
-      printError('Error al iniciar servidor frontend');
-      frontendProcess.kill();
-      backendProcess.kill();
-      process.exit(1);
-    }
-    
-    // Esperar un poco más para que React compile completamente
-    printMessage('Esperando compilación completa...');
-    await new Promise(resolve => setTimeout(resolve, 5000));
-    
-    // Abrir navegador
-    await openBrowser('http://localhost:3000'); */
-    
     printMessage('Aplicación iniciada correctamente!');
     // printMessage('Frontend: http://localhost:3000');
     printMessage('Backend: http://localhost:3001');
     printMessage('');
     printMessage('Presiona Ctrl+C para detener todos los servidores');
-    
+
     // Manejar Ctrl+C
     process.on('SIGINT', async () => {
       printMessage('Limpiando procesos al salir...');
@@ -359,10 +432,10 @@ async function main() {
       printMessage('Limpieza completada');
       process.exit(0);
     });
-    
+
     // Mantener el script corriendo
-    await new Promise(() => {});
-    
+    await new Promise(() => { });
+
   } catch (error) {
     printError(`Error en la aplicación: ${error.message}`);
     process.exit(1);
