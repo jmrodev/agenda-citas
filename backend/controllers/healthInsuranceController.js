@@ -9,6 +9,15 @@ async function getAll(req, res) {
   }
 }
 
+async function getAllWithFilters(req, res) {
+  try {
+    const insurances = await healthInsuranceService.listHealthInsurancesWithFilters(req.query);
+    res.json(insurances);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 async function create(req, res) {
   try {
     const insurance = await healthInsuranceService.createHealthInsurance(req.body);
@@ -36,4 +45,4 @@ async function remove(req, res) {
   }
 }
 
-module.exports = { getAll, create, update, remove }; 
+module.exports = { getAll, getAllWithFilters, create, update, remove }; 

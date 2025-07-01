@@ -1,7 +1,11 @@
 const healthInsuranceModel = require('../models/healthInsuranceModel');
 
-async function listHealthInsurances() {
+async function listHealthInsurances(query) {
   return await healthInsuranceModel.getAllHealthInsurances();
+}
+
+async function listHealthInsurancesWithFilters(query) {
+  return await healthInsuranceModel.findHealthInsurancesWithFilters(query);
 }
 
 async function createHealthInsurance(data) {
@@ -16,4 +20,4 @@ async function deleteHealthInsurance(id) {
   return await healthInsuranceModel.deleteHealthInsurance(id);
 }
 
-module.exports = { listHealthInsurances, createHealthInsurance, updateHealthInsurance, deleteHealthInsurance }; 
+module.exports = { listHealthInsurances, listHealthInsurancesWithFilters, createHealthInsurance, updateHealthInsurance, deleteHealthInsurance }; 
