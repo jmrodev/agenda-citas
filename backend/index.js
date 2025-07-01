@@ -29,6 +29,9 @@ const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
 const { authenticateToken } = require('./middleware/authMiddleware');
 
+const doctorConsultationHourRoutes = require('./routes/doctorConsultationHourRoutes');
+app.use('/api/doctor-consultation-hours', doctorConsultationHourRoutes);
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
