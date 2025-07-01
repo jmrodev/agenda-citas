@@ -1,37 +1,77 @@
-Medical Consultation Secretary SystemProject OverviewThis project is a comprehensive management system designed for a medical consultation secretary, streamlining the process of managing patients, doctors, appointments, prescriptions, and financial aspects related to medical office operations. It aims to provide an efficient and organized platform for medical practices.Key FeaturesUser Management: Patients, Doctors, and Secretaries with distinct roles and permissions.Appointment Management:Schedule and track appointments with various consultation types (in-office, virtual, home visit).Calendar view with monthly, weekly, and daily selections.CRUD operations primarily on the daily calendar view.Filtering appointments by doctor.Patient Management:Detailed patient records, including personal information and medical history.Tracking of overdue consultations (patients who haven't attended within a configurable time frame).Medical Records: Comprehensive medical history records for patients, including diagnoses, treatments, and prescribed medications.Prescription Management: Issue and track prescriptions, including medication details.Health Insurance Integration: Manage health insurance companies and associate them with patients and doctors (doctors can attend through specific insurance providers).Financial Tracking:Overview of doctor earnings (consultations, prescriptions).Management and tracking of facility usage payments by doctors.Partial and total financial summaries per doctor.Secretary Activity Log: Detailed log of actions performed by secretaries, providing accountability and oversight.Role-Based Access Control (RBAC): Secure access to features based on user roles (admin, secretary, doctor).Technologies UsedThis project is built with a modern and robust technology stack, prioritizing performance, scalability, and maintainability.BackendNode.js: JavaScript runtime environment.Express.js: Fast, unopinionated, minimalist web framework.Sequelize (ORM): Object-Relational Mapper for interacting with MySQL database (or raw SQL when preferred).JWT (JSON Web Tokens): For secure authentication and authorization.pnpm: Fast, disk space efficient package manager.nodemon: For automatic server restarts during development (--watch).FrontendReact: A JavaScript library for building user interfaces.Vite: Next-generation frontend tooling for a fast development experience.pnpm: For package management.React Router DOM: For declarative routing.CSS Modules: For scoped component-level styling.Global CSS Variables: Centralized styling defined in src/styles/abstracts/_variables.css.DatabaseMySQL: A powerful, open-source relational database management system.Project StructureThe project adopts a monorepo structure with clear separation of concerns between backend and frontend./your-project/
-├── .pnpm-workspace.yaml
-├── /backend/
-│   ├── src/
-│   │   ├── config/              # DB, JWT config
-│   │   ├── middleware/          # Auth, permissions, error handling
-│   │   ├── models/              # DB interaction (Sequelize models)
-│   │   ├── services/            # Business logic
-│   │   ├── controllers/         # HTTP request handling
-│   │   ├── routes/              # API endpoint definitions
-│   │   ├── utils/               # Utility functions
-│   │   └── server.js            # Express app entry point
-│   └── ...
-│
-├── /frontend/
-│   ├── src/
-│   │   ├── assets/              # Static assets
-│   │   ├── styles/              # Centralized CSS (base, abstracts, components, layout, utilities)
-│   │   │   └── main.css         # Main stylesheet importing others
-│   │   ├── hooks/               # Custom React Hooks
-│   │   ├── contexts/            # React Context API for global state
-│   │   ├── services/            # API clients for backend communication
-│   │   ├── utils/               # Frontend utility functions
-│   │   ├── components/          # Reusable components following Atomic Design
-│   │   │   ├── atoms/           # Basic HTML elements (Button, Input)
-│   │   │   ├── molecules/       # Groups of atoms (AppointmentCard, CalendarHeader)
-│   │   │   ├── organisms/       # Groups of molecules/atoms (AppointmentList, MonthlyCalendar)
-│   │   │   ├── templates/       # Page layouts (DashboardTemplate)
-│   │   │   └── pages/           # Application views
-│   │   ├── router/              # React Router configuration
-│   │   └── App.jsx              # Main React component
-│   └── ...
-Setup and InstallationPrerequisitesNode.js (LTS version recommended)pnpmMySQL Server1. Database SetupFirst, ensure your MySQL server is running. Then, execute the SQL schema to create the necessary tables and indices:SET FOREIGN_KEY_CHECKS = 0;
 
+# Agenda Citas – Sistema de Secretaría Médica
+
+Sistema integral para la gestión de consultorios médicos, centralizando la administración de pacientes, turnos, médicos, pagos, historial clínico y más. Pensado para secretarías que desean optimizar la organización diaria.
+
+## Tabla de Contenidos
+
+- [Características](#características)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Instalación](#instalación)
+  - [1. Base de Datos](#1-base-de-datos)
+  - [2. Backend](#2-backend)
+  - [3. Frontend](#3-frontend)
+- [Despliegue](#despliegue)
+- [Licencia](#licencia)
+
+---
+
+## Características
+
+- Registro y administración de pacientes y médicos.
+- Gestión de turnos y pagos.
+- Manejo de recetas, historial clínico y obras sociales.
+- Backend con Node.js/Express y Sequelize.
+- Frontend con React + Vite.
+- Seguridad y autenticación JWT.
+- Listo para deploy en Vercel.
+
+---
+
+## Estructura del Proyecto
+
+```
+agenda-citas/
+├── backend/
+│   └── src/
+│       ├── config/         # Configuración DB y JWT
+│       ├── middleware/     # Autenticación, permisos, errores
+│       ├── models/         # Modelos Sequelize
+│       ├── services/       # Lógica de negocio
+│       ├── controllers/    # Manejo de solicitudes HTTP
+│       ├── routes/         # Rutas API
+│       ├── utils/          # Utilidades backend
+│       └── server.js       # Entrada de la app Express
+├── frontend/
+│   └── src/
+│       ├── assets/         # Recursos estáticos
+│       ├── styles/         # CSS centralizado
+│       ├── hooks/          # React Hooks personalizados
+│       ├── contexts/       # Contextos globales
+│       ├── services/       # Clientes API
+│       ├── utils/          # Utilidades frontend
+│       ├── components/     # Componentes Atomic Design
+│       ├── router/         # Configuración React Router
+│       └── App.jsx         # Componente principal
+└── .pnpm-workspace.yaml
+```
+
+---
+
+## Instalación
+
+### Requisitos
+
+- Node.js (versión LTS recomendada)
+- pnpm
+- MySQL Server
+
+### 1. Base de Datos
+
+Asegúrate de tener MySQL en ejecución. Ejecuta el siguiente esquema SQL para crear las tablas necesarias.  
+Puedes copiar y pegar este bloque directamente en tu cliente MySQL:
+
+```sql
 -- Tabla de Pacientes
 CREATE TABLE patients (
     patient_id VARCHAR(10) PRIMARY KEY,
@@ -221,33 +261,43 @@ CREATE INDEX idx_appointments_type ON appointments (type);
 CREATE INDEX idx_appointments_status ON appointments (status);
 CREATE INDEX idx_prescriptions_date ON prescriptions (date);
 CREATE INDEX idx_medical_history_records_date ON medical_history_records (date);
-2. Backend Setup# Navigate to the backend directory
+```
+
+### 2. Backend
+
+```bash
 cd backend
-
-# Install dependencies
 pnpm install
-
-# Create a .env file from the example
 cp .env.example .env
-
-# Open .env and configure your MySQL database connection string and JWT_SECRET
-# Example: DATABASE_URL="mysql://user:password@host:port/database"
-#          JWT_SECRET="your_very_secret_jwt_key"
-
-# Start the backend in development mode
+# Edita .env para configurar tu string de conexión y JWT_SECRET
+# Ejemplo: DATABASE_URL="mysql://usuario:contraseña@localhost:3306/basededatos"
 pnpm dev
-The backend server should now be running, typically on http://localhost:3001 (or configured port).3. Frontend Setup# Navigate to the frontend directory
+```
+El backend estará disponible por defecto en http://localhost:3001
+
+### 3. Frontend
+
+```bash
 cd frontend
-
-# Install dependencies
 pnpm install
-
-# Create a .env file from the example
 cp .env.example .env
-
-# Open .env and configure your backend API URL
-# Example: VITE_API_BASE_URL="http://localhost:3001/api" (for development)
-
-# Start the frontend development server
+# Edita .env para configurar la URL de la API backend
+# Ejemplo: VITE_API_BASE_URL="http://localhost:3001/api"
 pnpm dev
-The frontend application should now be running, typically on http://localhost:5173 (or configured port).DeploymentThe project is designed for deployment on Vercel.Frontend: Deploy the React/Vite application directly to Vercel. Vercel automatically detects Vite projects.Backend: Deploy the Node.js/Express application as Vercel Functions. You'll need to configure your server.js (or a dedicated api/index.js) to export the Express app for Vercel's serverless environment.Database: The MySQL database will be hosted externally (e.g., PlanetScale, AWS RDS, Google Cloud SQL). You will configure environment variables in Vercel to allow your Vercel Functions to connect to this external database.Authentication and AuthorizationJWT (JSON Web Tokens): Used for stateless authentication.Roles: admin, secretary, doctor.Admin: Full access to all functionalities.Secretary: CRUD operations on patients, appointments, prescriptions, health insurances, and secretary activities.Doctor: Access to their own appointments, patient history, and financial summaries.Backend middleware handles JWT validation and role-based access control.Project StatusThis project is currently under active development.Contributing[Optional: Add guidelines for contributing if this is an open-source project or involves multiple developers.]License[Optional: Add license information.]
+```
+El frontend estará disponible por defecto en http://localhost:5173
+
+---
+
+## Despliegue
+
+- Preparado para ser desplegado en Vercel (frontend + backend).
+- Configura tus variables de entorno para producción según corresponda.
+
+---
+
+## Licencia
+
+Este proyecto está bajo licencia MIT.
+
+---
