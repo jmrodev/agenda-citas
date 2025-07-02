@@ -1,8 +1,9 @@
-# Registro de usuarios (solo admin)
+# 🚨🚨 PRIMER USO: REGISTRO DE USUARIOS (SOLO ADMIN) 🚨🚨
 
-**IMPORTANTE:** Solo el usuario con rol `admin` puede crear nuevos usuarios a través del endpoint:
+> 💡 **TIP:** Para pruebas rápidas del primer uso y registro de usuarios, consulta el archivo [`http/api-firstuse.rest`](http/api-firstuse.rest).
 
-```
+‼️ **IMPORTANTE:** SOLO EL USUARIO CON ROL `ADMIN` PUEDE CREAR NUEVOS USUARIOS ‼️
+
 POST /api/auth/register
 Authorization: Bearer <token_admin>
 Content-Type: application/json
@@ -13,11 +14,36 @@ Content-Type: application/json
   "role": "doctor|secretary|patient",
   "entity_id": 200001
 }
-```
 
-- Si el usuario autenticado no es admin, recibirá un error 403.
-- El campo `entity_id` debe referenciar el id correspondiente (doctor_id, secretary_id, patient_id) según el rol.
-- El admin inicial se define en la base de datos con contraseña conocida (ver sección SQL de ejemplo).
+- 🚫 Si el usuario autenticado NO es admin, recibirá un error 403.
+- ℹ️ El campo `entity_id` debe referenciar el id correspondiente (doctor_id, secretary_id, patient_id) según el rol.
+- 🔑 El admin inicial se define en la base de datos con contraseña conocida (ver sección SQL de ejemplo).
+
+---
+
+### ✅ EJEMPLO: Crear usuario (solo admin)
+POST http://localhost:3001/api/auth/register
+Authorization: Bearer {{token_admin}}
+Content-Type: application/json
+
+{
+  "email": "nuevo.doctor@mail.com",
+  "password": "123456",
+  "role": "doctor",
+  "entity_id": 200001
+}
+
+### ❌ EJEMPLO: Error al crear usuario sin ser admin
+POST http://localhost:3001/api/auth/register
+Authorization: Bearer {{token_secretary}}
+Content-Type: application/json
+
+{
+  "email": "otro@mail.com",
+  "password": "123456",
+  "role": "secretary",
+  "entity_id": 300001
+}
 
 ---
 
