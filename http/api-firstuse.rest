@@ -1,25 +1,35 @@
 ### 🚨🚨 PRIMER USO: REGISTRO DE USUARIOS (SOLO ADMIN) 🚨🚨
 
-‼️ **IMPORTANTE:** SOLO EL USUARIO CON ROL `ADMIN` PUEDE CREAR NUEVOS USUARIOS ‼️
-
-POST /api/auth/register
-Authorization: Bearer <token_admin>
+### Login admin (obtener token JWT)
+# @name login_admin
+POST http://localhost:3001/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "nuevo@mail.com",
-  "password": "123456",
-  "role": "doctor|secretary|patient",
-  "entity_id": 200001
+  "email": "admin@mail.com",
+  "password": "123456"
 }
 
-- 🚫 Si el usuario autenticado NO es admin, recibirá un error 403.
-- ℹ️ El campo `entity_id` debe referenciar el id correspondiente (doctor_id, secretary_id, patient_id) según el rol.
-- 🔑 El admin inicial se define en la base de datos con contraseña conocida (ver sección SQL de ejemplo).
 
----
+###
+@token_admin = {{login_admin.response.body.token}}
 
-### ✅ EJEMPLO: Crear usuario (solo admin)
+###‼️ **IMPORTANTE:** SOLO EL USUARIO CON ROL `ADMIN` PUEDE CREAR NUEVOS USUARIOS ‼️
+###   POST /api/auth/register
+###   Authorization: Bearer <token_admin>
+###   Content-Type: application/json
+###   {
+###     "email": "nuevo@mail.com",
+###     "password": "123456",
+###     "role": "doctor|secretary|patient",
+###     "entity_id": 200001
+###   }
+###   - 🚫 Si el usuario autenticado NO es admin, recibirá un error 403.
+###   - ℹ️ El campo `entity_id` debe referenciar el id correspondiente (doctor_id, secretary_id, patient_id) según el rol.
+###   - 🔑 El admin inicial se define en la base de datos con contraseña conocida (ver sección SQL de ejemplo).
+###   ---
+
+### ✅ Registrar usuario doctor (solo admin)
 POST http://localhost:3001/api/auth/register
 Authorization: Bearer {{token_admin}}
 Content-Type: application/json
@@ -31,9 +41,45 @@ Content-Type: application/json
   "entity_id": 200001
 }
 
-### ❌ EJEMPLO: Error al crear usuario sin ser admin
+### ✅ Registrar usuario secretaria (solo admin)
 POST http://localhost:3001/api/auth/register
-Authorization: Bearer {{token_secretary}}
+Authorization: Bearer {{token_admin}}
+Content-Type: application/json
+
+{
+  "email": "secretaria@mail.com",
+  "password": "123456",
+  "role": "secretary",
+  "entity_id": 300001
+}
+
+### Login doctor (obtener token JWT)
+# @name login_doctor
+POST http://localhost:3001/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "nuevo.doctor@mail.com",
+  "password": "123456"
+}
+###
+@token_doctor = {{login_doctor.response.body.token}}
+
+### Login secretaria (obtener token JWT)
+# @name login_secretary
+POST http://localhost:3001/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "secretaria@mail.com",
+  "password": "123456"
+}
+###
+@token_secretary = {{login_secretary.response.body.token}}
+
+### ❌ Error: crear usuario con token de doctor
+POST http://localhost:3001/api/auth/register
+Authorization: Bearer {{token_doctor}}
 Content-Type: application/json
 
 {
@@ -41,4 +87,16 @@ Content-Type: application/json
   "password": "123456",
   "role": "secretary",
   "entity_id": 300001
+}
+
+### ❌ Error: crear usuario con token de secretaria
+POST http://localhost:3001/api/auth/register
+Authorization: Bearer {{token_secretary}}
+Content-Type: application/json
+
+{
+  "email": "otro2@mail.com",
+  "password": "123456",
+  "role": "doctor",
+  "entity_id": 200002
 } 
