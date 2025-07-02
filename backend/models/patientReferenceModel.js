@@ -1,5 +1,5 @@
 const pool = require('../config/db');
-const { buildReferencePersonFilters } = require('../filters/referencePersonFilters');
+const { buildReferencePersonFilters } = require('../filters/sql/referencePersonFilters');
 const { buildPaginationAndOrder } = require('../filters/paginationUtils');
 
 async function existsReferenceByDni(patient_id, dni) {

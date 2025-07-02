@@ -4,7 +4,7 @@ const patientReferenceController = require('../controllers/patientReferenceContr
 const { authenticateToken } = require('../middleware/authMiddleware');
 const { authorizeRoles } = require('../middleware/roleMiddleware');
 const validateQuery = require('../filters/validateQuery');
-const referencePersonFiltersSchema = require('../filters/referencePersonFiltersSchema');
+const referencePersonFiltersSchema = require('../filters/joi/referencePersonFiltersSchema');
 
 // Listar referencias de un paciente
 router.get('/:patient_id', authenticateToken, authorizeRoles('admin', 'secretary', 'doctor', 'patient'), patientReferenceController.getAll);

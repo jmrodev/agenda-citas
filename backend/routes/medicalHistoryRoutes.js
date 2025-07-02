@@ -4,7 +4,7 @@ const medicalHistoryController = require('../controllers/medicalHistoryControlle
 const { authenticateToken } = require('../middleware/authMiddleware');
 const { authorizeRoles } = require('../middleware/roleMiddleware');
 const validateQuery = require('../filters/validateQuery');
-const medicalHistoryFiltersSchema = require('../filters/medicalHistoryFiltersSchema');
+const medicalHistoryFiltersSchema = require('../filters/joi/medicalHistoryFiltersSchema');
 
 router.get('/', authenticateToken, medicalHistoryController.getAll);
 router.get('/filtros', authenticateToken, validateQuery(medicalHistoryFiltersSchema), medicalHistoryController.getAllWithFilters);

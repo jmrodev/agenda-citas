@@ -1,5 +1,5 @@
 const pool = require('../config/db');
-const { buildAppointmentFilters } = require('../filters/appointmentFilters');
+const { buildAppointmentFilters } = require('../filters/sql/appointmentFilters');
 const { buildPaginationAndOrder } = require('../filters/paginationUtils');
 
 async function getAllAppointments() {

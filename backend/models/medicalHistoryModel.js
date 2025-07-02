@@ -1,5 +1,5 @@
 const pool = require('../config/db');
-const { buildMedicalHistoryFilters } = require('../filters/medicalHistoryFilters');
+const { buildMedicalHistoryFilters } = require('../filters/sql/medicalHistoryFilters');
 const { buildPaginationAndOrder } = require('../filters/paginationUtils');
 
 async function getAllMedicalHistories() {

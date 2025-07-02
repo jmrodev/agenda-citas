@@ -4,7 +4,7 @@ const healthInsuranceController = require('../controllers/healthInsuranceControl
 const { authenticateToken } = require('../middleware/authMiddleware');
 const { authorizeRoles } = require('../middleware/roleMiddleware');
 const validateQuery = require('../filters/validateQuery');
-const healthInsuranceFiltersSchema = require('../filters/healthInsuranceFiltersSchema');
+const healthInsuranceFiltersSchema = require('../filters/joi/healthInsuranceFiltersSchema');
 
 router.get('/', authenticateToken, healthInsuranceController.getAll);
 router.get('/filtros', authenticateToken, validateQuery(healthInsuranceFiltersSchema), healthInsuranceController.getAllWithFilters);

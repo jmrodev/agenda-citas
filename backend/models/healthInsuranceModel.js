@@ -1,4 +1,6 @@
 const pool = require('../config/db');
+const { buildHealthInsuranceFilters } = require('../filters/sql/healthInsuranceFilters');
+const { buildPaginationAndOrder } = require('../filters/paginationUtils');
 
 async function getAllHealthInsurances() {
   const [rows] = await pool.query('SELECT * FROM health_insurances');

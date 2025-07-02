@@ -4,7 +4,7 @@ const patientController = require('../controllers/patientController');
 const { authenticateToken } = require('../middleware/authMiddleware');
 const { authorizeRoles } = require('../middleware/roleMiddleware');
 const validateQuery = require('../filters/validateQuery');
-const patientFiltersSchema = require('../filters/patientFiltersSchema');
+const patientFiltersSchema = require('../filters/joi/patientFiltersSchema');
 
 router.get('/', authenticateToken, patientController.getAll);
 router.get('/filtros', authenticateToken, validateQuery(patientFiltersSchema), patientController.getAllWithFilters);
