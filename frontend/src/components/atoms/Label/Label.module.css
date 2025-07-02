@@ -1,0 +1,13 @@
+.label {
+  display: inline-block;
+  margin-bottom: 0.25rem;
+  color: var(--text-color, #222);
+  font-size: var(--font-size-md, 1rem);
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.dark .label {
+  color: var(--text-color, #f3f3f3);
+} 

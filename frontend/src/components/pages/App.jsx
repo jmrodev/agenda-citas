@@ -1,23 +1,63 @@
-import React, { useState } from 'react';
-import Button from '../atoms/Button/Button';
+import React, { useState, useEffect } from 'react';
+import Radio from '../atoms/Radio/Radio';
+import Label from '../atoms/Label/Label';
 
 const App = () => {
-  const [loading, setLoading] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  const [selected, setSelected] = useState('');
+  const [error, setError] = useState(false);
 
-  const handleClick = () => {
-    setLoading(true);
-    setTimeout(() => setLoading(false), 1500);
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+  }, [darkMode]);
+
+  const handleRadioChange = e => {
+    setSelected(e.target.value);
+    setError(false);
+  };
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    if (!selected) setError(true);
+    else alert('Seleccionado: ' + selected);
   };
 
   return (
     <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: 400 }}>
-      <h1>Ejemplos de Button (Átomo)</h1>
-      <Button variant='primary' size='md' onClick={handleClick} loading={loading}>
-        Primario {loading ? '' : ' (Click para loading)'}
-      </Button>
-      <Button variant='secondary' size='sm'>Secundario Pequeño</Button>
-      <Button variant='danger' size='lg' loading>Eliminando...</Button>
-      <Button variant='success' disabled>Éxito (Deshabilitado)</Button>
+      <button onClick={() => setDarkMode(dm => !dm)} style={{ alignSelf: 'flex-end' }}>
+        {darkMode ? 'Modo Claro' : 'Modo Oscuro'}
+      </button>
+      <h2>Ejemplo de Radio (Átomo)</h2>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Radio
+            id='opcion1'
+            name='opciones'
+            value='opcion1'
+            checked={selected === 'opcion1'}
+            onChange={handleRadioChange}
+            error={error && !selected}
+          />
+          <Label htmlFor='opcion1'>Opción 1</Label>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Radio
+            id='opcion2'
+            name='opciones'
+            value='opcion2'
+            checked={selected === 'opcion2'}
+            onChange={handleRadioChange}
+            error={error && !selected}
+          />
+          <Label htmlFor='opcion2'>Opción 2</Label>
+        </div>
+        {error && <span style={{ color: 'var(--danger-color)' }}>Debes seleccionar una opción</span>}
+        <button type='submit' style={{ marginTop: '1rem' }}>Enviar</button>
+      </form>
     </div>
   );
 };

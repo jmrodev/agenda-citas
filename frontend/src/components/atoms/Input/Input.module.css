@@ -1,0 +1,52 @@
+.input {
+  width: 100%;
+  padding: var(--input-padding, 0.5rem 1rem);
+  font-size: var(--input-font-size, 1rem);
+  border: 1px solid var(--input-border, #ccc);
+  border-radius: var(--input-radius, 4px);
+  background: var(--input-bg, #fff);
+  color: var(--text-color, #222);
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: var(--input-border-focus, var(--primary-color));
+  box-shadow: 0 0 0 2px rgba(0,112,243,0.1);
+}
+
+.input::placeholder {
+  color: var(--input-placeholder, #aaa);
+  opacity: 1;
+}
+
+.input:disabled {
+  background: var(--input-bg-disabled, #f3f3f3);
+  color: #aaa;
+  cursor: not-allowed;
+  opacity: var(--opacity-disabled, 0.5);
+}
+
+.error {
+  border-color: var(--input-error, var(--danger-color));
+  background: #fff0f0;
+}
+
+.dark .input {
+  background: var(--input-bg, #23272f);
+  color: var(--text-color, #f3f3f3);
+  border-color: var(--input-border, #444);
+}
+
+.dark .input:focus {
+  border-color: var(--input-border-focus, #3399ff);
+}
+
+.dark .input::placeholder {
+  color: var(--input-placeholder, #888);
+}
+
+.dark .error {
+  background: #2c2f36;
+} 
