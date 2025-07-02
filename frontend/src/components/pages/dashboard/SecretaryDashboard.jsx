@@ -1,12 +1,23 @@
-import LogoutButton from '../auth/LogoutButton.jsx';
+import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import PeopleIcon from '@mui/icons-material/People';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+
+const secretaryActions = [
+  { label: 'Agendar cita', icon: <CalendarMonthIcon fontSize='small' />, onClick: () => { window.location.href = '/appointments/new'; } },
+  { label: 'Pacientes', icon: <PeopleIcon fontSize='small' />, onClick: () => { window.location.href = '/patients'; } },
+  { label: 'Actividades', icon: <AssignmentIcon fontSize='small' />, onClick: () => { window.location.href = '/secretary/activities'; } }
+];
 
 const SecretaryDashboard = () => (
-  <div style={{ padding: '2rem' }}>
-    <h1>Dashboard Secretaria (privado)</h1>
-    <div style={{ marginTop: 24 }}>
-      <LogoutButton />
-    </div>
-  </div>
+  <DashboardLayout
+    title='Dashboard Secretaria (privado)'
+    actions={secretaryActions}
+    users={[]}
+    activities={[]}
+    stats={[]}
+    appointments={[]}
+  />
 );
 
 export default SecretaryDashboard;

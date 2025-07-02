@@ -1,23 +1,27 @@
 .action {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  background: var(--primary);
+  justify-content: center;
+  gap: var(--spacing-xs, 0.25rem);
+  background: var(--primary-color);
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 0.7rem 1.2rem;
-  font-size: 1rem;
+  border-radius: var(--border-radius-lg, 8px);
+  padding: 0.5rem 1rem;
+  font-size: var(--font-size-sm, 0.875rem);
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
+  min-width: var(--button-min-width, 100px);
+  min-height: 36px;
+  text-align: center;
 }
 .action:hover {
-  background: var(--primary-dark, #1e40af);
+  background: var(--primary-color-dark, #005bb5);
 }
 .icon {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
 }
 .label {
-  font-size: 1rem;
+  font-size: var(--font-size-sm, 0.875rem);
 } 

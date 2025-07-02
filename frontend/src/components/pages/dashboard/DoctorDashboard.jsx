@@ -1,12 +1,23 @@
-import LogoutButton from '../auth/LogoutButton.jsx';
+import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import PeopleIcon from '@mui/icons-material/People';
+import MedicationIcon from '@mui/icons-material/Medication';
+
+const doctorActions = [
+  { label: 'Mis citas', icon: <CalendarMonthIcon fontSize='small' />, onClick: () => { window.location.href = '/doctor/appointments'; } },
+  { label: 'Pacientes', icon: <PeopleIcon fontSize='small' />, onClick: () => { window.location.href = '/doctor/patients'; } },
+  { label: 'Recetas', icon: <MedicationIcon fontSize='small' />, onClick: () => { window.location.href = '/doctor/prescriptions'; } }
+];
 
 const DoctorDashboard = () => (
-  <div style={{ padding: '2rem' }}>
-    <h1>Dashboard Doctor (privado)</h1>
-    <div style={{ marginTop: 24 }}>
-      <LogoutButton />
-    </div>
-  </div>
+  <DashboardLayout
+    title='Dashboard Doctor (privado)'
+    actions={doctorActions}
+    users={[]}
+    activities={[]}
+    stats={[]}
+    appointments={[]}
+  />
 );
 
 export default DoctorDashboard;

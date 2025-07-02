@@ -5,12 +5,8 @@ import FormField from '../../molecules/FormField/FormField';
 import Button from '../../atoms/Button/Button';
 import Alert from '../../atoms/Alert/Alert';
 
-function validateEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,8 +15,7 @@ const Login = () => {
 
   const validate = () => {
     const errors = {};
-    if (!email) errors.email = 'El email es obligatorio';
-    else if (!validateEmail(email)) errors.email = 'Email no válido';
+    if (!username) errors.username = 'El nombre de usuario es obligatorio';
     if (!password) errors.password = 'La contraseña es obligatoria';
     return errors;
   };
@@ -36,7 +31,7 @@ const Login = () => {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ username, password })
       });
       if (!res.ok) {
         const data = await res.json();
@@ -45,7 +40,6 @@ const Login = () => {
         return;
       }
       const data = await res.json();
-      console.log(data);
       localStorage.setItem('token', data.token);
       localStorage.setItem('role', data.user.role);
       // Redirigir según rol
@@ -69,13 +63,12 @@ const Login = () => {
         <h2 style={{ textAlign: 'center', fontWeight: 600, fontSize: '1.1rem', margin: 0 }}>Iniciar sesión</h2>
         <FormGroup>
           <FormField
-            label='Email'
-            id='email'
-            type='email'
-            value={email}
-            onChange={e => setEmail(e.target.value)}
+            label='Nombre de usuario'
+            id='username'
+            value={username}
+            onChange={e => setUsername(e.target.value)}
             required
-            error={fieldErrors.email}
+            error={fieldErrors.username}
           />
           <FormField
             label='Contraseña'
@@ -88,7 +81,7 @@ const Login = () => {
           />
         </FormGroup>
         {error && <Alert type='error'>{error}</Alert>}
-        <Button type='submit' loading={loading} style={{ width: '100%' }} disabled={loading || Object.keys(fieldErrors).length > 0 || !email || !password}>
+        <Button type='submit' loading={loading} style={{ width: '100%' }} disabled={loading || Object.keys(fieldErrors).length > 0 || !username || !password}>
           Iniciar sesión
         </Button>
         <div style={{ textAlign: 'center', fontSize: '0.97em', marginTop: '0.5rem' }}>

@@ -1,0 +1,18 @@
+.list {
+  background: var(--surface, #fff);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  min-width: 320px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin-top: 2rem;
+}
+.title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+.empty {
+  color: var(--text-secondary, #888);
+  font-size: 1rem;
+  padding: 1rem 0;
+} 

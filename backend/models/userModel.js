@@ -5,12 +5,17 @@ async function findUserByEmail(email) {
   return rows[0];
 }
 
-async function createUser({ email, password, role, entity_id }) {
-  const [result] = await pool.query(
-    'INSERT INTO users (email, password, role, entity_id) VALUES (?, ?, ?, ?)',
-    [email, password, role, entity_id || null]
-  );
-  return { user_id: result.insertId, email, role, entity_id };
+async function findUserByUsername(username) {
+  const [rows] = await pool.query('SELECT * FROM users WHERE username = ?', [username]);
+  return rows[0];
 }
 
-module.exports = { findUserByEmail, createUser }; 
+async function createUser({ username, email, password, role, entity_id }) {
+  const [result] = await pool.query(
+    'INSERT INTO users (username, email, password, role, entity_id) VALUES (?, ?, ?, ?, ?)',
+    [username, email, password, role, entity_id || null]
+  );
+  return { user_id: result.insertId, username, email, role, entity_id };
+}
+
+module.exports = { findUserByEmail, findUserByUsername, createUser }; 

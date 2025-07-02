@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import FormGroup from '../../molecules/FormGroup/FormGroup';
 import FormField from '../../molecules/FormField/FormField';
 import Button from '../../atoms/Button/Button';
@@ -11,29 +12,40 @@ function validatePassword(password) {
   return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password);
 }
 
-const RegisterAdmin = () => {
+const roles = [
+  { value: 'admin', label: 'Administrador' },
+  { value: 'doctor', label: 'Doctor' },
+  { value: 'secretary', label: 'Secretaria' }
+];
+
+const RegisterUser = () => {
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [role, setRole] = useState('admin');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [username, setUsername] = useState('');
+  const navigate = useNavigate();
 
   const validate = () => {
     const errors = {};
     if (!nombre || nombre.trim().length < 2) errors.nombre = 'El nombre es obligatorio (mínimo 2 caracteres)';
+    if (!username || username.trim().length < 3) errors.username = 'El nombre de usuario es obligatorio (mínimo 3 caracteres)';
     if (!email) errors.email = 'El email es obligatorio';
     else if (!validateEmail(email)) errors.email = 'Email no válido';
     if (!password) errors.password = 'La contraseña es obligatoria';
     else if (!validatePassword(password)) errors.password = 'Mínimo 8 caracteres, una mayúscula, una minúscula y un número';
     if (!confirm) errors.confirm = 'Confirma la contraseña';
     else if (password !== confirm) errors.confirm = 'Las contraseñas no coinciden';
+    if (!role) errors.role = 'Selecciona un rol';
     return errors;
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setError('');
     setSuccess('');
@@ -41,10 +53,27 @@ const RegisterAdmin = () => {
     setFieldErrors(errors);
     if (Object.keys(errors).length > 0) return;
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      // Aquí deberías hacer la petición real al backend
+      // Ejemplo:
+      // const res = await fetch('/api/auth/register', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ nombre, username, email, password, role })
+      // });
+      // const data = await res.json();
+      // if (!res.ok) throw new Error(data.message || 'Error en el registro');
+      // Simulación de éxito:
+      await new Promise(res => setTimeout(res, 1200));
       setSuccess('Registro exitoso');
-    }, 1200);
+      setTimeout(() => {
+        navigate('/users'); // Redirige a la lista de usuarios (ajusta la ruta si es necesario)
+      }, 1200);
+    } catch (err) {
+      setError(err.message || 'Error en el registro');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -53,7 +82,7 @@ const RegisterAdmin = () => {
         <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
           <span style={{ fontWeight: 700, fontSize: '1.3rem', color: 'var(--primary, #2563eb)' }}>Agenda de Citas</span>
         </div>
-        <h2 style={{ textAlign: 'center', fontWeight: 600, fontSize: '1.1rem', margin: 0 }}>Registrar administrador</h2>
+        <h2 style={{ textAlign: 'center', fontWeight: 600, fontSize: '1.1rem', margin: 0 }}>Registrar usuario</h2>
         <FormGroup>
           <FormField
             label='Nombre'
@@ -62,6 +91,14 @@ const RegisterAdmin = () => {
             onChange={e => setNombre(e.target.value)}
             required
             error={fieldErrors.nombre}
+          />
+          <FormField
+            label='Nombre de usuario'
+            id='username'
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+            required
+            error={fieldErrors.username}
           />
           <FormField
             label='Email'
@@ -91,10 +128,20 @@ const RegisterAdmin = () => {
             required
             error={fieldErrors.confirm}
           />
+          <FormField
+            label='Rol'
+            id='role'
+            type='select'
+            value={role}
+            onChange={e => setRole(e.target.value)}
+            required
+            error={fieldErrors.role}
+            options={roles}
+          />
         </FormGroup>
         {error && <Alert type='error'>{error}</Alert>}
         {success && <Alert type='success'>{success}</Alert>}
-        <Button type='submit' loading={loading} style={{ width: '100%' }} disabled={loading || Object.keys(fieldErrors).length > 0 || !nombre || !email || !password || !confirm}>
+        <Button type='submit' loading={loading} style={{ width: '100%' }} disabled={loading || Object.keys(fieldErrors).length > 0 || !nombre || !email || !password || !confirm || !role}>
           Registrar
         </Button>
       </form>
@@ -102,4 +149,4 @@ const RegisterAdmin = () => {
   );
 };
 
-export default RegisterAdmin; 
+export default RegisterUser; 

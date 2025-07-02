@@ -1,0 +1,6 @@
+.bar {
+  display: flex;
+  gap: var(--grid-gap);
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-md);
+} 

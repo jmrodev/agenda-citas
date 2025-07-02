@@ -6,7 +6,7 @@
   --success-color: #21c87a;
   --warning-color: #ffb300;
 
-  --background-color: #f9f9f9;
+  --background-color: #626e5c;
   --background-dark: #222;
   --surface-color: #fff;
   --surface-dark: #333;
@@ -153,6 +153,8 @@
   --card-padding: 1rem;
   --section-spacing: 2rem;
   --grid-gap: 1rem;
+
+  --button-min-width: 100px;
 }
 
 /* Tablet (>= 768px) */
