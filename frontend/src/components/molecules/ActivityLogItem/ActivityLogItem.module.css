@@ -1,0 +1,32 @@
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  background: var(--surface, #fff);
+  margin-bottom: 0.5rem;
+}
+.time {
+  font-size: 0.95rem;
+  color: var(--text-secondary, #666);
+  min-width: 70px;
+}
+.info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.activityType {
+  font-weight: 600;
+  color: var(--primary, #2563eb);
+}
+.detail {
+  font-size: 0.95rem;
+  color: var(--text-secondary, #666);
+}
+.secretary {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--primary-dark, #1e40af);
+} 

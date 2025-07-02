@@ -1,0 +1,32 @@
+.item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  background: var(--surface, #fff);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.item:hover {
+  background: var(--primary-light, #e0e7ff);
+}
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #eee;
+}
+.info {
+  display: flex;
+  flex-direction: column;
+}
+.name {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.subtitle {
+  font-size: 0.95rem;
+  color: var(--text-secondary, #666);
+} 

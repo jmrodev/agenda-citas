@@ -332,11 +332,32 @@ El backend estará disponible por defecto en http://localhost:3001
 cd frontend
 pnpm install
 cp .env.example .env
-# Edita .env para configurar la URL de la API backend
+# Edita .env para configurar la URL de la API backend si usas variables de entorno
 # Ejemplo: VITE_API_BASE_URL="http://localhost:3001/api"
 pnpm dev
 ```
-El frontend estará disponible por defecto en http://localhost:5173
+El frontend estará disponible por defecto en http://localhost:3000
+
+#### ⚡ Configuración de proxy para desarrollo local
+
+Para evitar problemas de CORS y facilitar el desarrollo, el archivo `vite.config.js` incluye una configuración de proxy:
+
+```js
+server: {
+  port: 3000,
+  proxy: {
+    '/api': 'http://localhost:3001'
+  }
+}
+```
+
+Esto permite que cualquier petición a `/api` desde el frontend sea redirigida automáticamente al backend en `http://localhost:3001`. Así puedes usar rutas relativas como:
+
+```js
+fetch('/api/auth/login', { ... })
+```
+
+sin preocuparte por el puerto o el CORS durante el desarrollo local.
 
 ---
 

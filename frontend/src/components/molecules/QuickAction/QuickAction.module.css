@@ -1,0 +1,23 @@
+.action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.action:hover {
+  background: var(--primary-dark, #1e40af);
+}
+.icon {
+  font-size: 1.3rem;
+}
+.label {
+  font-size: 1rem;
+} 

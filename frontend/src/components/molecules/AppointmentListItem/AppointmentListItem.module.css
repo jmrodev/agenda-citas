@@ -1,0 +1,36 @@
+.item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  background: var(--surface, #fff);
+  cursor: pointer;
+  transition: background 0.2s;
+  justify-content: space-between;
+}
+.item:hover {
+  background: var(--primary-light, #e0e7ff);
+}
+.time {
+  font-weight: 600;
+  font-size: 1.1rem;
+  min-width: 60px;
+}
+.info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.patient {
+  font-weight: 600;
+}
+doctor {
+  font-size: 0.95rem;
+  color: var(--text-secondary, #666);
+}
+.status {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--primary, #2563eb);
+} 
