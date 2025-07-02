@@ -385,37 +385,37 @@ async function main() {
       process.exit(1);
     }
 
-    /*  // Iniciar servidor frontend
-     printMessage('Iniciando servidor frontend (puerto 3000)...');
-     const frontendProcess = spawn('pnpm', ['dev'], { 
-       stdio: 'inherit',
-       detached: false,
-       cwd: 'frontend'
-     });
- 
-     frontendProcess.on('exit', (code, signal) => {
-       printError(`El servidor frontend se detuvo (código: ${code}, señal: ${signal})`);
-     });
-     frontendProcess.on('error', (err) => {
-       printError(`Error en el servidor frontend: ${err.message}`);
-     });
- 
-     // Esperar a que el frontend esté listo
-     if (await waitForPort(3000)) {
-       printMessage('Servidor frontend iniciado correctamente');
-     } else {
-       printError('Error al iniciar servidor frontend');
-       frontendProcess.kill();
-       backendProcess.kill();
-       process.exit(1);
-     }
-     
-     // Esperar un poco más para que React compile completamente
-     printMessage('Esperando compilación completa...');
-     await new Promise(resolve => setTimeout(resolve, 5000));
-     
-     // Abrir navegador
-     await openBrowser('http://localhost:3000'); */
+    // Iniciar servidor frontend
+    printMessage('Iniciando servidor frontend (puerto 3000)...');
+    const frontendProcess = spawn('pnpm', ['dev'], { 
+      stdio: 'inherit',
+      detached: false,
+      cwd: 'frontend'
+    });
+
+    frontendProcess.on('exit', (code, signal) => {
+      printError(`El servidor frontend se detuvo (código: ${code}, señal: ${signal})`);
+    });
+    frontendProcess.on('error', (err) => {
+      printError(`Error en el servidor frontend: ${err.message}`);
+    });
+
+    // Esperar a que el frontend esté listo
+    if (await waitForPort(3000)) {
+      printMessage('Servidor frontend iniciado correctamente');
+    } else {
+      printError('Error al iniciar servidor frontend');
+      frontendProcess.kill();
+      backendProcess.kill();
+      process.exit(1);
+    }
+    
+    // Esperar un poco más para que React compile completamente
+    printMessage('Esperando compilación completa...');
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    
+    // Abrir navegador
+    await openBrowser('http://localhost:3000');
 
     printMessage('Aplicación iniciada correctamente!');
     // printMessage('Frontend: http://localhost:3000');
@@ -426,7 +426,7 @@ async function main() {
     // Manejar Ctrl+C
     process.on('SIGINT', async () => {
       printMessage('Limpiando procesos al salir...');
-      // frontendProcess.kill();
+      frontendProcess.kill();
       backendProcess.kill();
       await cleanupAllProcesses();
       printMessage('Limpieza completada');

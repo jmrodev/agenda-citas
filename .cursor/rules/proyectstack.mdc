@@ -3,7 +3,9 @@ description:
 globs: 
 alwaysApply: true
 ---
-Siempre priorizar JavaScript/TypeScript para Node.js (backend) y React (frontend) code examples.
+en la raiz del proyecto existe el script start-app.js que se encarga de levantar frontend y backend ,usalo. 
+El backend usa node --watch .... en ese script por tanto ese modo actualiza el servidor a cada cambio de codigo del backend.
+Siempre priorizar JavaScript para Node.js (backend) y React (frontend) code examples.
 Usar ES Modules syntax (import/export) para JavaScript.
 Preferir Node.js con Express.js para backend solutions.
 Preferir React con Vite para frontend solutions.
