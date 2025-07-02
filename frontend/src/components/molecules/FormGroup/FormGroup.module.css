@@ -1,0 +1,26 @@
+.formGroup {
+  border: 1.5px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  padding: 1.2rem 1rem 1rem 1rem;
+  margin-bottom: 1.5rem;
+  background: var(--surface, #fff);
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary, #2563eb);
+  margin-bottom: 0.7rem;
+  padding: 0 0.5rem;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dark .formGroup {
+  background: var(--surface-dark, #23272f);
+  border-color: #333;
+} 

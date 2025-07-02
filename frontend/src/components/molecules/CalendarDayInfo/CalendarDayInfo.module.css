@@ -1,0 +1,31 @@
+.calendarDayInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  width: 3.2rem;
+  min-width: 2.5rem;
+}
+
+.dayWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dot {
+  position: absolute;
+  bottom: 0.2rem;
+  right: 0.2rem;
+}
+
+.badge {
+  margin-top: 0.1rem;
+  font-size: 0.75em;
+}
+
+.chip {
+  margin-top: 0.1rem;
+  font-size: 0.75em;
+} 

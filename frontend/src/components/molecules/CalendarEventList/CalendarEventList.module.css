@@ -1,0 +1,45 @@
+.calendarEventList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  margin: 0.5rem 0;
+}
+
+.event {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 6px;
+  background: var(--surface, #f3f4f6);
+}
+
+.eventTitle {
+  font-weight: 600;
+  color: var(--text-color, #222);
+}
+
+.eventTime {
+  font-size: 0.97em;
+  color: var(--text-color-secondary, #666);
+}
+
+.empty {
+  text-align: center;
+  color: var(--text-color-secondary, #999);
+  font-size: 0.98em;
+  padding: 0.7rem 0;
+}
+
+.dark .event {
+  background: var(--surface-dark, #23272f);
+}
+
+.dark .eventTitle {
+  color: var(--text-color, #f3f3f3);
+}
+
+.dark .eventTime, .dark .empty {
+  color: var(--text-color-secondary, #bdbdbd);
+} 

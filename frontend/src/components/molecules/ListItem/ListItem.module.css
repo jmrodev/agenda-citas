@@ -1,0 +1,61 @@
+.listItem {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  background: var(--surface, #fff);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  width: 100%;
+}
+
+.icon {
+  font-size: 1.5em;
+  color: var(--primary, #2563eb);
+}
+
+.texts {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.primary {
+  font-weight: 600;
+  color: var(--text-color, #222);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.secondary {
+  font-size: 0.97em;
+  color: var(--text-color-secondary, #666);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.badge, .chip {
+  margin-left: 0.5rem;
+}
+
+.actions {
+  margin-left: 0.5rem;
+  display: flex;
+  gap: 0.3rem;
+}
+
+.dark .listItem {
+  background: var(--surface-dark, #23272f);
+}
+
+.dark .primary {
+  color: var(--text-color, #f3f3f3);
+}
+
+.dark .secondary {
+  color: var(--text-color-secondary, #bdbdbd);
+} 

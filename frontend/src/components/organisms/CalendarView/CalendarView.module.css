@@ -1,0 +1,18 @@
+.calendarView {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+  border-radius: 10px;
+  background: var(--surface, #fff);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border: 1.5px solid var(--border-color, #e5e7eb);
+}
+
+.dark .calendarView {
+  background: var(--surface-dark, #23272f);
+  border-color: #333;
+} 

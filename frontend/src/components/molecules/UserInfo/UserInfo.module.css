@@ -1,0 +1,42 @@
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.infoText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.name {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--text-color, #222);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.subtitle {
+  font-size: 0.98rem;
+  color: var(--text-color-secondary, #666);
+  font-weight: 400;
+  margin: 0;
+}
+
+.badge {
+  margin-top: 0.15rem;
+  align-self: flex-start;
+}
+
+.dark .name {
+  color: var(--text-color, #f3f3f3);
+}
+
+.dark .subtitle {
+  color: var(--text-color-secondary, #bdbdbd);
+} 

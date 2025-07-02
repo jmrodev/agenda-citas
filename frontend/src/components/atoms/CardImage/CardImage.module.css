@@ -1,0 +1,9 @@
+.cardImage {
+  width: 100%;
+  display: block;
+  border-top-left-radius: var(--card-radius, 8px);
+  border-top-right-radius: var(--card-radius, 8px);
+  object-fit: cover;
+  height: auto;
+  max-height: 180px;
+} 

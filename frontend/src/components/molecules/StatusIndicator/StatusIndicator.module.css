@@ -1,0 +1,31 @@
+.statusIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: max-content;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: var(--surface, #f3f4f6);
+}
+
+.icon {
+  font-size: 1.2em;
+  color: var(--primary, #2563eb);
+}
+
+.chip {
+  font-size: 0.95em;
+}
+
+.status {
+  font-weight: 600;
+  color: var(--text-color, #222);
+}
+
+.dark .statusIndicator {
+  background: var(--surface-dark, #23272f);
+}
+
+.dark .status {
+  color: var(--text-color, #f3f3f3);
+} 

@@ -1,0 +1,43 @@
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.label {
+  margin-bottom: 0.25rem;
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.errorIcon {
+  color: var(--danger, #dc2626);
+  font-size: 1.1em;
+  margin-left: 0.25rem;
+}
+
+.helperText {
+  color: var(--text-color-secondary, #666);
+  font-size: 0.95em;
+  margin-top: 0.1rem;
+}
+
+.errorText {
+  color: var(--danger, #dc2626);
+  font-size: 0.95em;
+  margin-top: 0.1rem;
+}
+
+.dark .helperText {
+  color: var(--text-color-secondary, #bdbdbd);
+}
+
+.dark .errorText {
+  color: var(--danger, #f87171);
+} 
