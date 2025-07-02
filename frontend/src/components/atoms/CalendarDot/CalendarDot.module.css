@@ -1,0 +1,17 @@
+.calendarDot {
+  display: inline-block;
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  background: var(--primary-color, #0070f3);
+  margin: 0 auto;
+}
+
+.primary { background: var(--primary-color, #0070f3); }
+.success { background: var(--success-color, #21c87a); }
+.danger { background: var(--danger-color, #e00); }
+.warning { background: var(--warning-color, #ffb300); }
+
+.dark .calendarDot {
+  background: var(--primary-color, #3399ff);
+} 

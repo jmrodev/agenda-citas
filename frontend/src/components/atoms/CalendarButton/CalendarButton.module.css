@@ -1,0 +1,38 @@
+.calendarButton {
+  width: 2.2em;
+  height: 2.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--surface-color, #fff);
+  color: var(--primary-color, #0070f3);
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.calendarButton:hover,
+.calendarButton:focus {
+  background: var(--primary-color, #0070f3);
+  color: #fff;
+}
+
+.calendarButton:disabled {
+  background: var(--input-bg-disabled, #f3f3f3);
+  color: #aaa;
+  cursor: not-allowed;
+  opacity: var(--opacity-disabled, 0.5);
+}
+
+.dark .calendarButton {
+  background: var(--surface-dark, #23272f);
+  color: var(--primary-color, #3399ff);
+}
+.dark .calendarButton:hover,
+.dark .calendarButton:focus {
+  background: var(--primary-color, #3399ff);
+  color: #fff;
+} 

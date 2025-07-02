@@ -1,0 +1,10 @@
+.cardContent {
+  font-size: var(--font-size-base, 0.98rem);
+  color: var(--text-color, #222);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.dark .cardContent {
+  color: var(--text-color, #eaeaea);
+} 

@@ -1,0 +1,55 @@
+.fileInputLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  font-size: var(--font-size-md, 1rem);
+  color: var(--text-color, #222);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.fileInput {
+  display: none;
+}
+
+.customFile {
+  display: inline-block;
+  padding: 0.5em 1.2em;
+  background: var(--secondary-color, #e2e2e2);
+  color: var(--primary-color, #0070f3);
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.customFile:hover,
+.customFile:focus {
+  background: var(--primary-color, #0070f3);
+  color: #fff;
+}
+
+.error {
+  color: var(--danger-color, #e00);
+}
+
+.fileInputLabel:disabled,
+.fileInputLabel[aria-disabled='true'] {
+  color: #aaa;
+  cursor: not-allowed;
+  opacity: var(--opacity-disabled, 0.5);
+}
+
+.dark .fileInputLabel {
+  color: var(--text-color, #f3f3f3);
+}
+.dark .customFile {
+  background: var(--surface-dark, #23272f);
+  color: var(--primary-color, #3399ff);
+}
+.dark .customFile:hover,
+.dark .customFile:focus {
+  background: var(--primary-color, #3399ff);
+  color: #fff;
+} 

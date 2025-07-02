@@ -1,0 +1,54 @@
+.calendarDay {
+  width: 2.5em;
+  height: 2.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--surface-color, #fff);
+  color: var(--text-color, #222);
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.selected {
+  background: var(--primary-color, #0070f3);
+  color: #fff;
+}
+.today {
+  border: 2px solid var(--primary-color, #0070f3);
+}
+.disabled {
+  background: var(--input-bg-disabled, #f3f3f3);
+  color: #aaa;
+  cursor: not-allowed;
+  opacity: var(--opacity-disabled, 0.5);
+}
+
+.calendar-dot {
+  position: absolute;
+  bottom: 0.4em;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  background: var(--primary-color, #0070f3);
+}
+
+.dark .calendarDay {
+  background: var(--surface-dark, #23272f);
+  color: var(--text-color, #f3f3f3);
+}
+.dark .selected {
+  background: var(--primary-color, #3399ff);
+  color: #fff;
+}
+.dark .today {
+  border-color: var(--primary-color, #3399ff);
+} 

@@ -1,0 +1,16 @@
+.calendarWeekday {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--text-color-secondary, #666);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  height: 2em;
+  user-select: none;
+}
+
+.dark .calendarWeekday {
+  color: var(--text-color-secondary, #bdbdbd);
+} 

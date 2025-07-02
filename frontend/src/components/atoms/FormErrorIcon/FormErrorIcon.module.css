@@ -1,0 +1,12 @@
+.formErrorIcon {
+  color: var(--danger-color, #e00);
+  font-size: 1.1em;
+  vertical-align: middle;
+  margin-right: 0.3em;
+  display: inline-flex;
+  align-items: center;
+}
+
+.dark .formErrorIcon {
+  color: var(--danger-color, #ff5a5f);
+} 
