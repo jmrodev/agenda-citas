@@ -1,0 +1,197 @@
+:root {
+  --primary-color: #0070f3;
+  --primary-color-dark: #005bb5;
+  --secondary-color: #e2e2e2;
+  --danger-color: #e00;
+  --success-color: #21c87a;
+  --warning-color: #ffb300;
+
+  --background-color: #f9f9f9;
+  --background-dark: #222;
+  --surface-color: #fff;
+  --surface-dark: #333;
+
+  --text-color: #222;
+  --text-color-light: #fff;
+  --text-color-secondary: #666;
+  --text-color-danger: #e00;
+  --text-color-success: #21c87a;
+
+  --border-color: #e5e7eb;
+  --border-radius: 4px;
+  --border-radius-lg: 8px;
+
+  --font-family-base: 'Inter', Arial, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+
+  --spacing-xxs: 0.125rem;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-xxl: 3rem;
+
+  --box-shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --box-shadow-md: 0 4px 12px rgba(0,0,0,0.10);
+  --box-shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+
+  --opacity-disabled: 0.5;
+  --opacity-hover: 0.85;
+
+  --transition-fast: 0.15s cubic-bezier(0.4,0,0.2,1);
+  --transition-base: 0.3s cubic-bezier(0.4,0,0.2,1);
+
+  /* Breakpoints para mobile first */
+  --breakpoint-xs: 320px;
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+
+  /* Overlays y backdrop */
+  --overlay-bg: rgba(0,0,0,0.5);
+  --backdrop-blur: blur(4px);
+
+  /* Scrollbar */
+  --scrollbar-bg: #e5e7eb;
+  --scrollbar-thumb: #bdbdbd;
+  --scrollbar-thumb-hover: #888;
+
+  /* Inputs y formularios */
+  --input-bg: #fff;
+  --input-bg-disabled: #f3f3f3;
+  --input-border: #ccc;
+  --input-border-focus: var(--primary-color);
+  --input-placeholder: #aaa;
+  --input-error: var(--danger-color);
+  --input-radius: 4px;
+  --input-padding: 0.5rem 1rem;
+
+  /* Cards y superficies elevadas */
+  --card-bg: #fff;
+  --card-radius: 8px;
+  --card-shadow: var(--box-shadow-md);
+  --card-padding: 1.5rem;
+
+  /* Tooltips y popovers */
+  --tooltip-bg: #222;
+  --tooltip-color: #fff;
+  --tooltip-radius: 4px;
+  --tooltip-padding: 0.5rem 1rem;
+  --tooltip-shadow: var(--box-shadow-sm);
+
+  /* Alerts y mensajes */
+  --alert-info-bg: #e3f2fd;
+  --alert-info-color: #1976d2;
+  --alert-success-bg: #e6f9f0;
+  --alert-success-color: #21c87a;
+  --alert-warning-bg: #fff8e1;
+  --alert-warning-color: #ffb300;
+  --alert-danger-bg: #ffebee;
+  --alert-danger-color: #e00;
+
+  /* Helpers de layout */
+  --max-width: 1200px;
+  --min-width: 320px;
+  --section-spacing: 3rem;
+
+  /* Badges */
+  --badge-bg: var(--primary-color);
+  --badge-color: #fff;
+  --badge-radius: 12px;
+  --badge-padding: 0.25em 0.75em;
+  --badge-font-size: 0.75rem;
+
+  /* Loaders y spinners */
+  --loader-size: 2rem;
+  --loader-color: var(--primary-color);
+  --loader-bg: var(--secondary-color);
+  --loader-speed: 0.8s;
+
+  /* Navegación */
+  --nav-bg: #fff;
+  --nav-bg-active: var(--primary-color);
+  --nav-color: #222;
+  --nav-color-active: #fff;
+  --nav-height: 56px;
+  --nav-shadow: var(--box-shadow-sm);
+
+  /* Tablas */
+  --table-header-bg: #f3f3f3;
+  --table-row-hover: #f5faff;
+  --table-border: #e5e7eb;
+  --table-padding: 0.75rem 1rem;
+
+  /* Listas */
+  --list-bg: #fff;
+  --list-item-hover: #f5faff;
+  --list-border: #e5e7eb;
+  --list-radius: 6px;
+
+  /* Animaciones adicionales */
+  --animation-bounce: bounce 1s infinite;
+  --animation-spin: spin 1s linear infinite;
+
+  /* Variables base (mobile first) */
+  --container-padding: 1rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --nav-height: 48px;
+  --sidebar-width: 0;
+  --card-padding: 1rem;
+  --section-spacing: 2rem;
+  --grid-gap: 1rem;
+}
+
+/* Tablet (>= 768px) */
+@media (min-width: 768px) {
+  :root {
+    --container-padding: 2rem;
+    --font-size-md: 1.125rem;
+    --font-size-lg: 1.5rem;
+    --nav-height: 56px;
+    --sidebar-width: 180px;
+    --card-padding: 1.5rem;
+    --section-spacing: 3rem;
+    --grid-gap: 1.5rem;
+  }
+}
+
+/* Desktop (>= 1024px) */
+@media (min-width: 1024px) {
+  :root {
+    --container-padding: 3rem;
+    --font-size-md: 1.25rem;
+    --font-size-lg: 1.75rem;
+    --nav-height: 64px;
+    --sidebar-width: 240px;
+    --card-padding: 2rem;
+    --section-spacing: 4rem;
+    --grid-gap: 2rem;
+  }
+}
+
+/* Pantallas grandes (>= 1440px) */
+@media (min-width: 1440px) {
+  :root {
+    --container-padding: 4rem;
+    --font-size-md: 1.5rem;
+    --font-size-lg: 2rem;
+    --sidebar-width: 320px;
+    --card-padding: 2.5rem;
+    --section-spacing: 5rem;
+    --grid-gap: 2.5rem;
+  }
+}
