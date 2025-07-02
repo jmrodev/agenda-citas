@@ -1,23 +1,2 @@
-### Registro de usuario (cualquier rol)
-# @name register
-POST http://localhost:3001/api/auth/register
-Content-Type: application/json
-
-{
-  "email": "usuario@mail.com",
-  "password": "123456",
-  "role": "doctor" // Cambia a 'admin', 'doctor' o 'secretary' según el caso
-}
-
-### Login (cualquier usuario)
-# @name login
-POST http://localhost:3001/api/auth/login
-Content-Type: application/json
-
-{
-  "email": "usuario@mail.com",
-  "password": "123456"
-}
-
 ### Health check (público)
 GET http://localhost:3001/api/health 
