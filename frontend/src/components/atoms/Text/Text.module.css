@@ -1,0 +1,38 @@
+.text {
+  color: var(--text-color, #222);
+  font-size: var(--font-size-md, 1rem);
+  font-family: var(--font-family-base, 'Inter', Arial, sans-serif);
+  line-height: var(--line-height-base, 1.5);
+  margin: 0;
+  transition: color 0.2s;
+}
+
+.secondary {
+  color: var(--text-color-secondary, #666);
+}
+.error {
+  color: var(--danger-color, #e00);
+}
+.success {
+  color: var(--success-color, #21c87a);
+}
+.warning {
+  color: var(--warning-color, #ffb300);
+}
+
+.sm {
+  font-size: var(--font-size-sm, 0.875rem);
+}
+.md {
+  font-size: var(--font-size-md, 1rem);
+}
+.lg {
+  font-size: var(--font-size-lg, 1.25rem);
+}
+
+.dark .text {
+  color: var(--text-color, #f3f3f3);
+}
+.dark .secondary {
+  color: var(--text-color-secondary, #bdbdbd);
+} 

@@ -1,0 +1,21 @@
+.helperText {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--text-color-secondary, #666);
+  transition: color 0.2s;
+}
+
+.error {
+  color: var(--danger-color, #e00);
+}
+.success {
+  color: var(--success-color, #21c87a);
+}
+.warning {
+  color: var(--warning-color, #ffb300);
+}
+
+.dark .helperText {
+  color: var(--text-color-secondary, #bdbdbd);
+} 

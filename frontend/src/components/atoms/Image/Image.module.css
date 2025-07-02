@@ -1,0 +1,33 @@
+.image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-color, #e5e7eb);
+  background: var(--surface-color, #fff);
+  object-fit: cover;
+  transition: border 0.2s, background 0.2s;
+}
+
+.fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-color, #fff);
+  color: var(--text-color-secondary, #666);
+  border-radius: 8px;
+  border: 1.5px solid var(--border-color, #e5e7eb);
+  font-size: 1rem;
+  font-weight: 500;
+  min-height: 2.5em;
+  min-width: 2.5em;
+  text-align: center;
+  padding: 0.5em;
+}
+
+.dark .image,
+.dark .fallback {
+  background: var(--surface-dark, #23272f);
+  border-color: var(--border-color, #333);
+  color: var(--text-color-secondary, #bdbdbd);
+} 

@@ -1,0 +1,30 @@
+.link {
+  color: var(--primary-color, #0070f3);
+  font-weight: 500;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.2s, text-decoration 0.2s;
+}
+
+.link:hover,
+.link:focus {
+  color: var(--primary-color-dark, #005bb5);
+  text-decoration: underline;
+}
+
+.primary { color: var(--primary-color, #0070f3); }
+.secondary { color: var(--secondary-color, #e2e2e2); }
+.danger { color: var(--danger-color, #e00); }
+.success { color: var(--success-color, #21c87a); }
+.warning { color: var(--warning-color, #ffb300); }
+
+.underline { text-decoration: underline; }
+.noUnderline { text-decoration: none; }
+
+.dark .link {
+  color: var(--primary-color, #3399ff);
+}
+.dark .link:hover,
+.dark .link:focus {
+  color: var(--primary-color-dark, #1976d2);
+} 

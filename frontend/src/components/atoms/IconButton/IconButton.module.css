@@ -1,0 +1,28 @@
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  padding: 0.3em;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.iconButton:hover,
+.iconButton:focus {
+  background: var(--secondary-color, #e2e2e2);
+  box-shadow: 0 0 0 2px var(--primary-color, #0070f3, 0.2);
+}
+
+.iconButton:disabled {
+  opacity: var(--opacity-disabled, 0.5);
+  cursor: not-allowed;
+}
+
+.dark .iconButton:hover,
+.dark .iconButton:focus {
+  background: var(--surface-dark, #23272f);
+} 
