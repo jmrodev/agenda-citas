@@ -84,4 +84,25 @@ async function removePrescribedMed(req, res) {
   }
 }
 
-module.exports = { getAll, getAllWithFilters, create, update, remove, getMyMedicalHistory, updatePrescribedMed, removePrescribedMed }; 
+async function getPrescribedMeds(req, res) {
+  try {
+    const { record_id } = req.params;
+    const meds = await medicalRecordPrescribedMedModel.getPrescribedMedsByRecordId(record_id);
+    res.json(meds);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function createPrescribedMed(req, res) {
+  try {
+    const { record_id } = req.params;
+    const { medication_name, dose, instructions } = req.body;
+    const med = await medicalRecordPrescribedMedModel.createPrescribedMed({ record_id, medication_name, dose, instructions });
+    res.status(201).json(med);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+module.exports = { getAll, getAllWithFilters, create, update, remove, getMyMedicalHistory, updatePrescribedMed, removePrescribedMed, getPrescribedMeds, createPrescribedMed }; 

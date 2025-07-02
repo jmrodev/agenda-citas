@@ -4,8 +4,17 @@ const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecreto';
 
+/**
+ * Registro de usuarios (solo admin puede crear usuarios nuevos)
+ * Requiere: Authorization: Bearer <token_admin>
+ * Body: { email, password, role, entity_id }
+ */
 async function register(req, res) {
   try {
+    // Solo admin puede crear usuarios (la protección está en la ruta, pero se documenta aquí)
+    if (!req.user || req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Solo el administrador puede crear usuarios nuevos.' });
+    }
     const { email, password, role, entity_id } = req.body;
     if (!email || !password || !role) {
       return res.status(400).json({ error: 'Faltan campos obligatorios' });

@@ -14,5 +14,7 @@ router.delete('/:id', authenticateToken, authorizeRoles('admin'), medicalHistory
 router.get('/my', authenticateToken, authorizeRoles('patient'), medicalHistoryController.getMyMedicalHistory);
 router.put('/:record_id/prescribed-meds/:med_id', authenticateToken, authorizeRoles('doctor', 'admin'), medicalHistoryController.updatePrescribedMed);
 router.delete('/:record_id/prescribed-meds/:med_id', authenticateToken, authorizeRoles('doctor', 'admin'), medicalHistoryController.removePrescribedMed);
+router.get('/:record_id/prescribed-meds', authenticateToken, authorizeRoles('admin', 'doctor', 'secretary'), medicalHistoryController.getPrescribedMeds);
+router.post('/:record_id/prescribed-meds', authenticateToken, authorizeRoles('doctor', 'secretary'), medicalHistoryController.createPrescribedMed);
 
 module.exports = router; 
