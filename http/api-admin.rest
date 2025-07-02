@@ -173,4 +173,28 @@ Authorization: Bearer {{token_admin}}
 
 ### Eliminar medicamento de historial médico
 DELETE http://localhost:3001/api/medical-history/700001/prescribed-meds/930001
-Authorization: Bearer {{token_admin}} 
+Authorization: Bearer {{token_admin}}
+
+### Crear usuario (solo admin)
+POST http://localhost:3001/api/auth/register
+Authorization: Bearer {{token_admin}}
+Content-Type: application/json
+
+{
+  "email": "nuevo.doctor@mail.com",
+  "password": "123456",
+  "role": "doctor",
+  "entity_id": 200001
+}
+
+### Error: crear usuario sin ser admin
+POST http://localhost:3001/api/auth/register
+Authorization: Bearer {{token_secretary}}
+Content-Type: application/json
+
+{
+  "email": "otro@mail.com",
+  "password": "123456",
+  "role": "secretary",
+  "entity_id": 300001
+} 

@@ -263,3 +263,7 @@ INSERT INTO doctor_health_insurances (doctor_insurance_id, doctor_id, insurance_
   (940001, 200001, 900001, TRUE),
   (940002, 200002, 900002, TRUE),
   (940003, 200003, 900001, FALSE);
+
+-- Usuario admin inicial para autenticación (password: 123456)
+INSERT INTO users (email, password, role, entity_id) VALUES
+  ('admin@mail.com', '$2b$10$P0fuuxjEC1JTx1uoEIQ9beMcgz3YCXyszRw13QmNvsDoq/ko6TIlC', 'admin', NULL);
