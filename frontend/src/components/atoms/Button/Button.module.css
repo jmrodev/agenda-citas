@@ -1,23 +1,87 @@
 .button {
-  padding: 0.5rem 1.2rem;
+  padding: var(--button-padding, 0.5rem 1.2rem);
   border: none;
-  border-radius: 4px;
-  background: var(--primary-color, #0070f3);
-  color: #fff;
-  font-size: 1rem;
+  border-radius: var(--button-radius, 4px);
+  font-size: var(--button-font-size, 1rem);
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
   outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  box-shadow: none;
+}
+
+.primary {
+  background: var(--primary-color);
+  color: #fff;
+}
+.primary:hover,
+.primary:focus {
+  background: var(--primary-color-dark);
+}
+
+.secondary {
+  background: var(--secondary-color);
+  color: var(--primary-color);
+}
+.secondary:hover,
+.secondary:focus {
+  background: #d1d5db;
+}
+
+.danger {
+  background: var(--danger-color);
+  color: #fff;
+}
+.danger:hover,
+.danger:focus {
+  background: #b71c1c;
+}
+
+.success {
+  background: var(--success-color);
+  color: #fff;
+}
+.success:hover,
+.success:focus {
+  background: #159c5b;
+}
+
+.sm {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+}
+.md {
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+}
+.lg {
+  padding: 0.75rem 2rem;
+  font-size: 1.25rem;
+}
+
+.button:disabled,
+.button[aria-busy='true'] {
+  background: #ccc;
+  color: #888;
+  cursor: not-allowed;
+  opacity: var(--opacity-disabled, 0.5);
+}
+
+.loader {
+  width: 1.2em;
+  height: 1.2em;
+  border: 2px solid #fff;
+  border-top: 2px solid var(--primary-color-dark);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
   display: inline-block;
 }
 
-.button:hover,
-.button:focus {
-  background: var(--primary-color-dark, #005bb5);
-}
-
-.button:disabled {
-  background: #ccc;
-  cursor: not-allowed;
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 } 
