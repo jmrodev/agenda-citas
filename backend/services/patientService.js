@@ -22,7 +22,21 @@ function mapReferencePerson(row) {
   };
 }
 
-async function listPatients(query) {
+async function listPatients(query, user) {
+  if (user && user.role === 'doctor') {
+    // Solo pacientes asociados a este doctor
+    const rows = await patientModel.getAllPatients();
+    const patients = [];
+    for (const row of rows) {
+      const doctorIds = await patientModel.getDoctorsByPatientId(row.patient_id);
+      if (doctorIds.includes(user.entity_id)) {
+        const references = await patientReferenceModel.getReferencesByPatientId(row.patient_id);
+        patients.push({ ...row, reference_persons: references });
+      }
+    }
+    return patients;
+  }
+  // Secretaria/admin: todos los pacientes
   const rows = await patientModel.getAllPatients();
   const patients = await Promise.all(rows.map(async (row) => {
     const references = await patientReferenceModel.getReferencesByPatientId(row.patient_id);
@@ -69,4 +83,26 @@ async function getPatientWithReferences(id) {
   return { ...patient, reference_persons: references };
 }
 
-module.exports = { listPatients, listPatientsWithFilters, createPatient, updatePatient, deletePatient, getPatientById, getPatientWithReferences }; 
+async function createPatientWithDoctors(data) {
+  // Crear paciente
+  const patient = await patientModel.createPatient(data);
+  // Asociar doctores
+  if (Array.isArray(data.doctor_ids) && data.doctor_ids.length > 0) {
+    await patientModel.addDoctorsToPatient(patient.patient_id, data.doctor_ids);
+  }
+  const fullPatient = await patientModel.getPatientById(patient.patient_id);
+  return mapReferencePerson(fullPatient);
+}
+
+async function updatePatientDoctors(patient_id, doctor_ids) {
+  await patientModel.removeAllDoctorsFromPatient(patient_id);
+  if (Array.isArray(doctor_ids) && doctor_ids.length > 0) {
+    await patientModel.addDoctorsToPatient(patient_id, doctor_ids);
+  }
+}
+
+async function removeDoctorFromPatient(patient_id, doctor_id) {
+  await patientModel.removeDoctorFromPatient(patient_id, doctor_id);
+}
+
+module.exports = { listPatients, listPatientsWithFilters, createPatient, updatePatient, deletePatient, getPatientById, getPatientWithReferences, createPatientWithDoctors, updatePatientDoctors, removeDoctorFromPatient }; 

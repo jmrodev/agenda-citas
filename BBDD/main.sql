@@ -14,11 +14,14 @@ CREATE TABLE patients (
     email VARCHAR(100) UNIQUE,
     preferred_payment_methods VARCHAR(255),
     health_insurance_id INT(6) UNSIGNED,
+    doctor_id INT(6) UNSIGNED,
     reference_name VARCHAR(100),
     reference_last_name VARCHAR(100),
     reference_address VARCHAR(255),
     reference_phone VARCHAR(20),
-    reference_relationship VARCHAR(50)
+    reference_relationship VARCHAR(50),
+    FOREIGN KEY (health_insurance_id) REFERENCES health_insurances(insurance_id),
+    FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE doctors (
@@ -181,6 +184,14 @@ CREATE TABLE patient_references (
   UNIQUE (patient_id, dni)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE patient_doctors (
+  patient_id INT(6) UNSIGNED NOT NULL,
+  doctor_id INT(6) UNSIGNED NOT NULL,
+  PRIMARY KEY (patient_id, doctor_id),
+  FOREIGN KEY (patient_id) REFERENCES patients(patient_id) ON DELETE CASCADE,
+  FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE INDEX idx_patients_health_insurance_id ON patients (health_insurance_id);
@@ -214,3 +225,4 @@ CREATE INDEX idx_medical_history_records_date ON medical_history_records (date);
 -- Usuario admin inicial para autenticación (password: 123456)
 INSERT INTO users (username, email, password, role, entity_id) VALUES
   ('admin', 'admin@mail.com', '$2b$10$P0fuuxjEC1JTx1uoEIQ9beMcgz3YCXyszRw13QmNvsDoq/ko6TIlC', 'admin', NULL);
+

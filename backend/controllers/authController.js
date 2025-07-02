@@ -4,6 +4,19 @@ const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecreto';
 
+function validateUsername(username) {
+  return /^[a-zA-Z0-9_]{3,20}$/.test(username);
+}
+function validateName(nombre) {
+  return nombre && nombre.trim().length >= 2 && nombre.trim().length <= 50;
+}
+function validateEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+function validatePassword(password) {
+  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password);
+}
+
 /**
  * Registro de usuarios (solo admin puede crear usuarios nuevos)
  * Requiere: Authorization: Bearer <token_admin>
@@ -15,9 +28,30 @@ async function register(req, res) {
     if (!req.user || req.user.role !== 'admin') {
       return res.status(403).json({ error: 'Solo el administrador puede crear usuarios nuevos.' });
     }
-    const { username, email, password, role, entity_id } = req.body;
-    if (!username || !email || !password || !role) {
-      return res.status(400).json({ error: 'Faltan campos obligatorios' });
+    const { username, email, password, role, entity_id, nombre } = req.body;
+    if (!validateName(nombre)) {
+      return res.status(400).json({ error: 'El nombre es obligatorio (2-50 caracteres)' });
+    }
+    if (!username) {
+      return res.status(400).json({ error: 'El nombre de usuario es obligatorio' });
+    }
+    if (!validateUsername(username)) {
+      return res.status(400).json({ error: 'Solo letras, números y guion bajo (3-20 caracteres, sin espacios)' });
+    }
+    if (!email) {
+      return res.status(400).json({ error: 'El email es obligatorio' });
+    }
+    if (!validateEmail(email)) {
+      return res.status(400).json({ error: 'Email no válido' });
+    }
+    if (!password) {
+      return res.status(400).json({ error: 'La contraseña es obligatoria' });
+    }
+    if (!validatePassword(password)) {
+      return res.status(400).json({ error: 'Mínimo 8 caracteres, una mayúscula, una minúscula y un número' });
+    }
+    if (!role) {
+      return res.status(400).json({ error: 'Selecciona un rol' });
     }
     const existingUser = await userService.getUserByUsername(username);
     if (existingUser) {

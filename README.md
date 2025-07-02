@@ -614,3 +614,29 @@ Authorization: Bearer <token>
 ```
 
 Esto permite obtener resultados paginados y ordenados en todos los endpoints de búsqueda avanzada.
+
+## Endpoints de gestión de relaciones paciente-doctor
+
+### Reasignar todos los doctores de un paciente
+- **PUT** `/patients/:id/doctors`
+- **Body:**
+  ```json
+  {
+    "doctor_ids": [1, 2, 3]
+  }
+  ```
+- **Acceso:** Solo admin y secretaria (requiere autenticación y rol adecuado)
+- **Descripción:** Reemplaza todas las relaciones doctor-paciente para el paciente indicado.
+- **Respuesta exitosa:**
+  ```json
+  { "message": "Doctores reasignados correctamente" }
+  ```
+
+### Eliminar una relación específica paciente-doctor
+- **DELETE** `/patients/:id/doctors/:doctor_id`
+- **Acceso:** Solo admin y secretaria (requiere autenticación y rol adecuado)
+- **Descripción:** Elimina la relación entre el paciente y el doctor especificado.
+- **Respuesta exitosa:**
+  ```json
+  { "message": "Relación paciente-doctor eliminada" }
+  ```

@@ -26,8 +26,13 @@ function buildAppointmentFilters(query) {
     params.push(query.obra_social_id);
   }
   if (query.estado) {
-    sql += ' AND estado = ?';
-    params.push(query.estado);
+    if (Array.isArray(query.estado)) {
+      sql += ` AND estado IN (${query.estado.map(() => '?').join(',')})`;
+      params.push(...query.estado);
+    } else {
+      sql += ' AND estado = ?';
+      params.push(query.estado);
+    }
   }
   return { sql, params };
 }

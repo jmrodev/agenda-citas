@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 
 async function getAll(req, res) {
   try {
-    const patients = await patientService.listPatients();
+    const patients = await patientService.listPatients(req.query, req.user);
     res.json(patients);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -22,7 +22,18 @@ async function getAllWithFilters(req, res) {
 
 async function create(req, res) {
   try {
-    const patient = await patientService.createPatient(req.body);
+    let patientData = { ...req.body };
+    // Permitir múltiples doctores: doctor_ids debe ser un array
+    if (req.user.role === 'doctor') {
+      patientData.doctor_ids = [req.user.entity_id];
+    }
+    if (req.user.role === 'secretary') {
+      if (!Array.isArray(patientData.doctor_ids) || patientData.doctor_ids.length === 0) {
+        return res.status(400).json({ error: 'Debe asignar al menos un doctor al paciente' });
+      }
+    }
+    // Guardar la relación paciente-doctor en una tabla intermedia (debe implementarse en el modelo/servicio)
+    const patient = await patientService.createPatientWithDoctors(patientData);
     res.status(201).json(patient);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -35,6 +46,10 @@ async function update(req, res) {
     const current = await patientService.getPatientById(id);
     if (!current) {
       return res.status(404).json({ error: 'Paciente no encontrado' });
+    }
+    // Restricción para doctor
+    if (req.user.role === 'doctor' && current.doctor_id !== req.user.entity_id) {
+      return res.status(403).json({ error: 'No autorizado para editar este paciente' });
     }
     // Merge datos existentes con los nuevos
     const merged = { ...current, ...req.body };
@@ -120,10 +135,41 @@ async function getById(req, res) {
     if (!patient) {
       return res.status(404).json({ error: 'Paciente no encontrado' });
     }
+    // Restricción para doctor
+    if (req.user.role === 'doctor' && patient.doctor_id !== req.user.entity_id) {
+      return res.status(403).json({ error: 'No autorizado para ver este paciente' });
+    }
     res.json(patient);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 }
 
-module.exports = { getAll, getAllWithFilters, create, update, remove, registerPatientWithUser, getMe, updateMe, getById }; 
+// PUT /patients/:id/doctors - reasignar todos los doctores de un paciente
+async function updatePatientDoctors(req, res) {
+  try {
+    const patientId = req.params.id;
+    const { doctor_ids } = req.body;
+    if (!Array.isArray(doctor_ids) || doctor_ids.length === 0) {
+      return res.status(400).json({ error: 'Debe asignar al menos un doctor al paciente' });
+    }
+    await patientService.updatePatientDoctors(patientId, doctor_ids);
+    res.json({ message: 'Doctores reasignados correctamente' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+// DELETE /patients/:id/doctors/:doctor_id - eliminar relación específica
+async function removeDoctorFromPatient(req, res) {
+  try {
+    const patientId = req.params.id;
+    const doctorId = req.params.doctor_id;
+    await patientService.removeDoctorFromPatient(patientId, doctorId);
+    res.json({ message: 'Relación paciente-doctor eliminada' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+module.exports = { getAll, getAllWithFilters, create, update, remove, registerPatientWithUser, getMe, updateMe, getById, updatePatientDoctors, removeDoctorFromPatient }; 

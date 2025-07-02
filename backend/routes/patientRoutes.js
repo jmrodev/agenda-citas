@@ -16,4 +16,19 @@ router.get('/me', authenticateToken, authorizeRoles('patient'), patientControlle
 router.put('/me', authenticateToken, authorizeRoles('patient'), patientController.updateMe);
 router.get('/:id', authenticateToken, authorizeRoles('admin', 'secretary', 'doctor'), patientController.getById);
 
+/**
+ * PUT /patients/:id/doctors
+ * Reasigna todos los doctores de un paciente.
+ * Body: { doctor_ids: [doctor_id1, doctor_id2, ...] }
+ * Solo accesible para admin y secretaria.
+ */
+router.put('/:id/doctors', authenticateToken, authorizeRoles('admin', 'secretary'), patientController.updatePatientDoctors);
+
+/**
+ * DELETE /patients/:id/doctors/:doctor_id
+ * Elimina la relación específica entre un paciente y un doctor.
+ * Solo accesible para admin y secretaria.
+ */
+router.delete('/:id/doctors/:doctor_id', authenticateToken, authorizeRoles('admin', 'secretary'), patientController.removeDoctorFromPatient);
+
 module.exports = router; 

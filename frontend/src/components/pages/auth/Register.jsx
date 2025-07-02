@@ -11,6 +11,12 @@ function validateEmail(email) {
 function validatePassword(password) {
   return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password);
 }
+function validateUsername(username) {
+  return /^[a-zA-Z0-9_]{3,20}$/.test(username);
+}
+function validateName(nombre) {
+  return nombre && nombre.trim().length >= 2 && nombre.trim().length <= 50;
+}
 
 const roles = [
   { value: 'admin', label: 'Administrador' },
@@ -33,8 +39,9 @@ const RegisterUser = () => {
 
   const validate = () => {
     const errors = {};
-    if (!nombre || nombre.trim().length < 2) errors.nombre = 'El nombre es obligatorio (mínimo 2 caracteres)';
-    if (!username || username.trim().length < 3) errors.username = 'El nombre de usuario es obligatorio (mínimo 3 caracteres)';
+    if (!validateName(nombre)) errors.nombre = 'El nombre es obligatorio (2-50 caracteres)';
+    if (!username) errors.username = 'El nombre de usuario es obligatorio';
+    else if (!validateUsername(username)) errors.username = 'Solo letras, números y guion bajo (3-20 caracteres, sin espacios)';
     if (!email) errors.email = 'El email es obligatorio';
     else if (!validateEmail(email)) errors.email = 'Email no válido';
     if (!password) errors.password = 'La contraseña es obligatoria';

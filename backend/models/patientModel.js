@@ -60,4 +60,24 @@ async function getPatientById(id) {
   return rows[0];
 }
 
-module.exports = { getAllPatients, findPatientsWithFilters, createPatient, updatePatient, deletePatient, getPatientById }; 
+async function addDoctorsToPatient(patient_id, doctor_ids) {
+  if (!Array.isArray(doctor_ids)) return;
+  for (const doctor_id of doctor_ids) {
+    await pool.query('INSERT INTO patient_doctors (patient_id, doctor_id) VALUES (?, ?)', [patient_id, doctor_id]);
+  }
+}
+
+async function getDoctorsByPatientId(patient_id) {
+  const [rows] = await pool.query('SELECT doctor_id FROM patient_doctors WHERE patient_id = ?', [patient_id]);
+  return rows.map(r => r.doctor_id);
+}
+
+async function removeAllDoctorsFromPatient(patient_id) {
+  await pool.query('DELETE FROM patient_doctors WHERE patient_id = ?', [patient_id]);
+}
+
+async function removeDoctorFromPatient(patient_id, doctor_id) {
+  await pool.query('DELETE FROM patient_doctors WHERE patient_id = ? AND doctor_id = ?', [patient_id, doctor_id]);
+}
+
+module.exports = { getAllPatients, findPatientsWithFilters, createPatient, updatePatient, deletePatient, getPatientById, addDoctorsToPatient, getDoctorsByPatientId, removeAllDoctorsFromPatient, removeDoctorFromPatient }; 
