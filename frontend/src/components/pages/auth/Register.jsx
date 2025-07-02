@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FormGroup from '../../molecules/FormGroup/FormGroup';
 import FormField from '../../molecules/FormField/FormField';
 import Button from '../../atoms/Button/Button';
 import Alert from '../../atoms/Alert/Alert';
+import SuccessScreen from '../../organisms/SuccessScreen/SuccessScreen';
 
 function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -26,6 +27,7 @@ const roles = [
 
 const RegisterUser = () => {
   const [nombre, setNombre] = useState('');
+  const [apellido, setApellido] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -37,9 +39,37 @@ const RegisterUser = () => {
   const [username, setUsername] = useState('');
   const navigate = useNavigate();
 
+  // Campos extra para doctor
+  const [specialty, setSpecialty] = useState('');
+  const [licenseNumber, setLicenseNumber] = useState('');
+  const [doctorPhone, setDoctorPhone] = useState('');
+  const [consultationFee, setConsultationFee] = useState('');
+  const [prescriptionFee, setPrescriptionFee] = useState('');
+  const [lastEarningsCollectionDate, setLastEarningsCollectionDate] = useState('');
+
+  // Campos extra para secretaria
+  const [shift, setShift] = useState('');
+  const [entryTime, setEntryTime] = useState('');
+  const [exitTime, setExitTime] = useState('');
+
+  // Redirección automática si ya hay sesión
+  useEffect(() => {
+    if (success) return; // Si hay éxito, no redirigir automáticamente
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+    // Solo redirigir si el usuario autenticado NO es admin
+    if (token && role && role !== 'admin') {
+      if (role === 'doctor') navigate('/doctor', { replace: true });
+      else if (role === 'secretary') navigate('/secretary', { replace: true });
+      else if (role === 'patient') navigate('/patient', { replace: true });
+      else navigate('/', { replace: true });
+    }
+  }, [navigate, success]);
+
   const validate = () => {
     const errors = {};
     if (!validateName(nombre)) errors.nombre = 'El nombre es obligatorio (2-50 caracteres)';
+    if ((role === 'doctor' || role === 'secretary') && !validateName(apellido)) errors.apellido = 'El apellido es obligatorio (2-50 caracteres)';
     if (!username) errors.username = 'El nombre de usuario es obligatorio';
     else if (!validateUsername(username)) errors.username = 'Solo letras, números y guion bajo (3-20 caracteres, sin espacios)';
     if (!email) errors.email = 'El email es obligatorio';
@@ -49,6 +79,19 @@ const RegisterUser = () => {
     if (!confirm) errors.confirm = 'Confirma la contraseña';
     else if (password !== confirm) errors.confirm = 'Las contraseñas no coinciden';
     if (!role) errors.role = 'Selecciona un rol';
+    // Validaciones extra
+    if (role === 'doctor') {
+      if (!specialty) errors.specialty = 'La especialidad es obligatoria';
+      if (!licenseNumber) errors.licenseNumber = 'El número de licencia es obligatorio';
+      if (!doctorPhone) errors.doctorPhone = 'El teléfono es obligatorio';
+      if (!consultationFee) errors.consultationFee = 'El honorario de consulta es obligatorio';
+      if (!prescriptionFee) errors.prescriptionFee = 'El honorario de receta es obligatorio';
+    }
+    if (role === 'secretary') {
+      if (!shift) errors.shift = 'El turno es obligatorio';
+      if (!entryTime) errors.entryTime = 'La hora de entrada es obligatoria';
+      if (!exitTime) errors.exitTime = 'La hora de salida es obligatoria';
+    }
     return errors;
   };
 
@@ -61,20 +104,52 @@ const RegisterUser = () => {
     if (Object.keys(errors).length > 0) return;
     setLoading(true);
     try {
-      // Aquí deberías hacer la petición real al backend
-      // Ejemplo:
-      // const res = await fetch('/api/auth/register', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ nombre, username, email, password, role })
-      // });
-      // const data = await res.json();
-      // if (!res.ok) throw new Error(data.message || 'Error en el registro');
-      // Simulación de éxito:
-      await new Promise(res => setTimeout(res, 1200));
-      setSuccess('Registro exitoso');
+      const token = localStorage.getItem('token');
+      let endpoint = '/api/auth/register';
+      let body = { nombre, username, email, password, role };
+      if (role === 'doctor') {
+        endpoint = '/api/auth/register-doctor';
+        body = {
+          doctor: {
+            first_name: nombre,
+            last_name: apellido,
+            specialty,
+            license_number: licenseNumber,
+            phone: doctorPhone,
+            email,
+            consultation_fee: consultationFee,
+            prescription_fee: prescriptionFee,
+            last_earnings_collection_date: lastEarningsCollectionDate
+          },
+          user: { username, email, password }
+        };
+      } else if (role === 'secretary') {
+        endpoint = '/api/auth/register-secretary';
+        body = {
+          secretary: {
+            first_name: nombre,
+            last_name: apellido,
+            shift,
+            entry_time: entryTime,
+            exit_time: exitTime,
+            email
+          },
+          user: { username, email, password }
+        };
+      }
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || data.message || 'Error en el registro');
+      setSuccess('Usuario creado correctamente');
       setTimeout(() => {
-        navigate('/users'); // Redirige a la lista de usuarios (ajusta la ruta si es necesario)
+        navigate('/users');
       }, 1200);
     } catch (err) {
       setError(err.message || 'Error en el registro');
@@ -83,75 +158,158 @@ const RegisterUser = () => {
     }
   };
 
+  // Handlers con validación en tiempo real
+  const handleNombreChange = e => {
+    setNombre(e.target.value);
+    setFieldErrors(prev => ({
+      ...prev,
+      nombre: !validateName(e.target.value) ? 'El nombre es obligatorio (2-50 caracteres)' : ''
+    }));
+  };
+  const handleApellidoChange = e => {
+    setApellido(e.target.value);
+    if (role === 'doctor' || role === 'secretary') {
+      setFieldErrors(prev => ({
+        ...prev,
+        apellido: !validateName(e.target.value) ? 'El apellido es obligatorio (2-50 caracteres)' : ''
+      }));
+    }
+  };
+  const handleUsernameChange = e => {
+    setUsername(e.target.value);
+    setFieldErrors(prev => ({
+      ...prev,
+      username: !validateUsername(e.target.value) ? 'Solo letras, números y guion bajo (3-20 caracteres, sin espacios)' : ''
+    }));
+  };
+  const handleEmailChange = e => {
+    setEmail(e.target.value);
+    setFieldErrors(prev => ({
+      ...prev,
+      email: !validateEmail(e.target.value) ? 'Email no válido' : ''
+    }));
+  };
+  const handlePasswordChange = e => {
+    setPassword(e.target.value);
+    setFieldErrors(prev => ({
+      ...prev,
+      password: !validatePassword(e.target.value) ? 'Mínimo 8 caracteres, una mayúscula, una minúscula y un número' : ''
+    }));
+  };
+  const handleConfirmChange = e => {
+    setConfirm(e.target.value);
+    setFieldErrors(prev => ({
+      ...prev,
+      confirm: e.target.value !== password ? 'Las contraseñas no coinciden' : ''
+    }));
+  };
+  const handleRoleChange = e => {
+    setRole(e.target.value);
+    setFieldErrors(prev => ({
+      ...prev,
+      role: !e.target.value ? 'Selecciona un rol' : ''
+    }));
+  };
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--app-bg, #f9fafb)' }}>
-      <form onSubmit={handleSubmit} style={{ minWidth: 320, maxWidth: 360, width: '100%', background: 'var(--surface, #fff)', borderRadius: 10, boxShadow: '0 2px 8px rgba(0,0,0,0.04)', padding: '2.5rem 2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }} noValidate>
-        <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
-          <span style={{ fontWeight: 700, fontSize: '1.3rem', color: 'var(--primary, #2563eb)' }}>Agenda de Citas</span>
-        </div>
-        <h2 style={{ textAlign: 'center', fontWeight: 600, fontSize: '1.1rem', margin: 0 }}>Registrar usuario</h2>
-        <FormGroup>
-          <FormField
-            label='Nombre'
-            id='nombre'
-            value={nombre}
-            onChange={e => setNombre(e.target.value)}
-            required
-            error={fieldErrors.nombre}
-          />
-          <FormField
-            label='Nombre de usuario'
-            id='username'
-            value={username}
-            onChange={e => setUsername(e.target.value)}
-            required
-            error={fieldErrors.username}
-          />
-          <FormField
-            label='Email'
-            id='email'
-            type='email'
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-            error={fieldErrors.email}
-          />
-          <FormField
-            label='Contraseña'
-            id='password'
-            type='password'
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-            error={fieldErrors.password}
-            helperText='Mínimo 8 caracteres, una mayúscula, una minúscula y un número.'
-          />
-          <FormField
-            label='Confirmar contraseña'
-            id='confirm'
-            type='password'
-            value={confirm}
-            onChange={e => setConfirm(e.target.value)}
-            required
-            error={fieldErrors.confirm}
-          />
-          <FormField
-            label='Rol'
-            id='role'
-            type='select'
-            value={role}
-            onChange={e => setRole(e.target.value)}
-            required
-            error={fieldErrors.role}
-            options={roles}
-          />
-        </FormGroup>
-        {error && <Alert type='error'>{error}</Alert>}
-        {success && <Alert type='success'>{success}</Alert>}
-        <Button type='submit' loading={loading} style={{ width: '100%' }} disabled={loading || Object.keys(fieldErrors).length > 0 || !nombre || !email || !password || !confirm || !role}>
-          Registrar
-        </Button>
-      </form>
+      {success ? (
+        <SuccessScreen message={success} redirectTo='/users' linkText='Ir a la lista de usuarios' delay={3000} />
+      ) : (
+        <form onSubmit={handleSubmit} style={{ minWidth: 320, maxWidth: 400, width: '100%', background: 'var(--surface, #fff)', borderRadius: 10, boxShadow: '0 2px 8px rgba(0,0,0,0.04)', padding: '2.5rem 2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }} noValidate>
+          <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
+            <span style={{ fontWeight: 700, fontSize: '1.3rem', color: 'var(--primary, #2563eb)' }}>Agenda de Citas</span>
+          </div>
+          <h2 style={{ textAlign: 'center', fontWeight: 600, fontSize: '1.1rem', margin: 0 }}>Registrar usuario</h2>
+          <FormGroup>
+            <FormField
+              label='Nombre'
+              id='nombre'
+              value={nombre}
+              onChange={handleNombreChange}
+              required
+              error={fieldErrors.nombre}
+            />
+            {(role === 'doctor' || role === 'secretary') && (
+              <FormField
+                label='Apellido'
+                id='apellido'
+                value={apellido}
+                onChange={handleApellidoChange}
+                required
+                error={fieldErrors.apellido}
+              />
+            )}
+            <FormField
+              label='Nombre de usuario'
+              id='username'
+              value={username}
+              onChange={handleUsernameChange}
+              required
+              error={fieldErrors.username}
+            />
+            <FormField
+              label='Email'
+              id='email'
+              type='email'
+              value={email}
+              onChange={handleEmailChange}
+              required
+              error={fieldErrors.email}
+            />
+            <FormField
+              label='Contraseña'
+              id='password'
+              type='password'
+              value={password}
+              onChange={handlePasswordChange}
+              required
+              error={fieldErrors.password}
+              helperText='Mínimo 8 caracteres, una mayúscula, una minúscula y un número.'
+            />
+            <FormField
+              label='Confirmar contraseña'
+              id='confirm'
+              type='password'
+              value={confirm}
+              onChange={handleConfirmChange}
+              required
+              error={fieldErrors.confirm}
+            />
+            <FormField
+              label='Rol'
+              id='role'
+              type='select'
+              value={role}
+              onChange={handleRoleChange}
+              required
+              error={fieldErrors.role}
+              options={roles}
+            />
+            {role === 'doctor' && (
+              <>
+                <FormField label='Especialidad' id='specialty' value={specialty} onChange={e => setSpecialty(e.target.value)} required error={fieldErrors.specialty} />
+                <FormField label='N° de licencia' id='licenseNumber' value={licenseNumber} onChange={e => setLicenseNumber(e.target.value)} required error={fieldErrors.licenseNumber} />
+                <FormField label='Teléfono' id='doctorPhone' value={doctorPhone} onChange={e => setDoctorPhone(e.target.value)} required error={fieldErrors.doctorPhone} />
+                <FormField label='Honorario consulta' id='consultationFee' value={consultationFee} onChange={e => setConsultationFee(e.target.value)} type='number' required error={fieldErrors.consultationFee} />
+                <FormField label='Honorario receta' id='prescriptionFee' value={prescriptionFee} onChange={e => setPrescriptionFee(e.target.value)} type='number' required error={fieldErrors.prescriptionFee} />
+                <FormField label='Fecha última liquidación' id='lastEarningsCollectionDate' value={lastEarningsCollectionDate} onChange={e => setLastEarningsCollectionDate(e.target.value)} type='date' />
+              </>
+            )}
+            {role === 'secretary' && (
+              <>
+                <FormField label='Turno' id='shift' value={shift} onChange={e => setShift(e.target.value)} required error={fieldErrors.shift} />
+                <FormField label='Hora entrada' id='entryTime' value={entryTime} onChange={e => setEntryTime(e.target.value)} type='time' required error={fieldErrors.entryTime} />
+                <FormField label='Hora salida' id='exitTime' value={exitTime} onChange={e => setExitTime(e.target.value)} type='time' required error={fieldErrors.exitTime} />
+              </>
+            )}
+          </FormGroup>
+          {error && <Alert type='error'>{error}</Alert>}
+          <Button type='submit' loading={loading} style={{ width: '100%' }} disabled={loading || Object.values(fieldErrors).some(Boolean) || !nombre || !email || !password || !confirm || !role}>
+            Registrar
+          </Button>
+        </form>
+      )}
     </div>
   );
 };

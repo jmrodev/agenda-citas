@@ -224,5 +224,4 @@ CREATE INDEX idx_medical_history_records_date ON medical_history_records (date);
 
 -- Usuario admin inicial para autenticación (password: 123456)
 INSERT INTO users (username, email, password, role, entity_id) VALUES
-  ('admin', 'admin@mail.com', '$2b$10$P0fuuxjEC1JTx1uoEIQ9beMcgz3YCXyszRw13QmNvsDoq/ko6TIlC', 'admin', NULL);
-
+  ('admin', 'admin@mail.com', '$2b$10$4SK82qr1w/lcuE/hibBGdOZuV2td0KKrmCXMLsGs/RKSJGPSB3VoK', 'admin', NULL);

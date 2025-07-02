@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FormGroup from '../../molecules/FormGroup/FormGroup';
 import FormField from '../../molecules/FormField/FormField';
@@ -12,6 +12,19 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const navigate = useNavigate();
+
+  // Redirección automática si ya hay sesión
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+    if (token && role) {
+      if (role === 'admin') navigate('/', { replace: true });
+      else if (role === 'doctor') navigate('/doctor', { replace: true });
+      else if (role === 'secretary') navigate('/secretary', { replace: true });
+      else if (role === 'patient') navigate('/patient', { replace: true });
+      else navigate('/', { replace: true });
+    }
+  }, [navigate]);
 
   const validate = () => {
     const errors = {};
@@ -43,9 +56,10 @@ const Login = () => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('role', data.user.role);
       // Redirigir según rol
-      if (data.role === 'admin') navigate('/admin');
-      else if (data.role === 'doctor') navigate('/doctor');
-      else if (data.role === 'secretary') navigate('/secretary');
+      if (data.user.role === 'admin') navigate('/');
+      else if (data.user.role === 'doctor') navigate('/doctor');
+      else if (data.user.role === 'secretary') navigate('/secretary');
+      else if (data.user.role === 'patient') navigate('/patient');
       else navigate('/');
     } catch (err) {
       setError('Error de red o servidor.');

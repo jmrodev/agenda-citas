@@ -1,0 +1,48 @@
+.successScreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: var(--surface, #fff);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  max-width: 340px;
+  margin: 0 auto;
+}
+
+.icon {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.message {
+  color: var(--success-color, #22c55e);
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.linkWrap {
+  margin-top: 0.5rem;
+}
+
+.link {
+  color: var(--primary, #2563eb);
+  text-decoration: underline;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+@media (max-width: 480px) {
+  .successScreen {
+    padding: 1.2rem 0.5rem;
+    max-width: 98vw;
+  }
+  .message {
+    font-size: 1rem;
+  }
+} 

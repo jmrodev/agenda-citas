@@ -90,4 +90,110 @@ async function login(req, res) {
   }
 }
 
-module.exports = { register, login }; 
+/**
+ * Registro combinado de doctor y usuario (solo admin)
+ * Body: { doctor: {first_name, last_name, ...}, user: {username, email, password} }
+ */
+async function registerDoctorWithUser(req, res) {
+  try {
+    if (!req.user || req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Solo el administrador puede crear doctores.' });
+    }
+    const { doctor, user } = req.body;
+    if (!doctor || !user) {
+      return res.status(400).json({ error: 'Faltan datos de doctor o usuario.' });
+    }
+    // Validaciones básicas de usuario
+    if (!validateName(doctor.first_name) || !validateName(doctor.last_name)) {
+      return res.status(400).json({ error: 'Nombre y apellido del doctor requeridos (2-50 caracteres).' });
+    }
+    if (!user.username || !validateUsername(user.username)) {
+      return res.status(400).json({ error: 'Nombre de usuario inválido.' });
+    }
+    if (!user.email || !validateEmail(user.email)) {
+      return res.status(400).json({ error: 'Email inválido.' });
+    }
+    if (!user.password || !validatePassword(user.password)) {
+      return res.status(400).json({ error: 'Contraseña insegura.' });
+    }
+    // Unicidad usuario/email
+    const existingUser = await userService.getUserByUsername(user.username);
+    if (existingUser) {
+      return res.status(409).json({ error: 'El nombre de usuario ya está registrado' });
+    }
+    const existingEmail = await userService.getUserByEmail(user.email);
+    if (existingEmail) {
+      return res.status(409).json({ error: 'El email ya está registrado' });
+    }
+    // Crear doctor
+    const doctorService = require('../services/doctorService');
+    const newDoctor = await doctorService.createDoctor(doctor);
+    // Crear usuario
+    const hashed = await bcrypt.hash(user.password, 10);
+    const newUser = await userService.registerUser({
+      username: user.username,
+      email: user.email,
+      password: hashed,
+      role: 'doctor',
+      entity_id: newDoctor.doctor_id
+    });
+    res.status(201).json({ doctor: newDoctor, user: newUser });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+/**
+ * Registro combinado de secretaria y usuario (solo admin)
+ * Body: { secretary: {first_name, last_name, ...}, user: {username, email, password} }
+ */
+async function registerSecretaryWithUser(req, res) {
+  try {
+    if (!req.user || req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Solo el administrador puede crear secretarias.' });
+    }
+    const { secretary, user } = req.body;
+    if (!secretary || !user) {
+      return res.status(400).json({ error: 'Faltan datos de secretaria o usuario.' });
+    }
+    // Validaciones básicas de usuario
+    if (!validateName(secretary.first_name) || !validateName(secretary.last_name)) {
+      return res.status(400).json({ error: 'Nombre y apellido de la secretaria requeridos (2-50 caracteres).' });
+    }
+    if (!user.username || !validateUsername(user.username)) {
+      return res.status(400).json({ error: 'Nombre de usuario inválido.' });
+    }
+    if (!user.email || !validateEmail(user.email)) {
+      return res.status(400).json({ error: 'Email inválido.' });
+    }
+    if (!user.password || !validatePassword(user.password)) {
+      return res.status(400).json({ error: 'Contraseña insegura.' });
+    }
+    // Unicidad usuario/email
+    const existingUser = await userService.getUserByUsername(user.username);
+    if (existingUser) {
+      return res.status(409).json({ error: 'El nombre de usuario ya está registrado' });
+    }
+    const existingEmail = await userService.getUserByEmail(user.email);
+    if (existingEmail) {
+      return res.status(409).json({ error: 'El email ya está registrado' });
+    }
+    // Crear secretaria
+    const secretaryService = require('../services/secretaryService');
+    const newSecretary = await secretaryService.createSecretary(secretary);
+    // Crear usuario
+    const hashed = await bcrypt.hash(user.password, 10);
+    const newUser = await userService.registerUser({
+      username: user.username,
+      email: user.email,
+      password: hashed,
+      role: 'secretary',
+      entity_id: newSecretary.secretary_id
+    });
+    res.status(201).json({ secretary: newSecretary, user: newUser });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+module.exports = { register, login, registerDoctorWithUser, registerSecretaryWithUser }; 
