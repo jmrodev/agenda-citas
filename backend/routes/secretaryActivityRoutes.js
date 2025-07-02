@@ -8,9 +8,9 @@ const secretaryActivityFiltersSchema = require('../filters/joi/secretaryActivity
 
 // GET /api/secretary-activities
 // Filtros disponibles por query: secretary_id, date, date_from, date_to, activity_type, activity_types, activity_id, detail, time_from, time_to
-router.get('/', authMiddleware, authorizeRoles('admin', 'secretary'), validateQuery(secretaryActivityFiltersSchema), secretaryActivityController.getAll);
+router.get('/', authMiddleware.authenticateToken, authorizeRoles('admin', 'secretary'), validateQuery(secretaryActivityFiltersSchema), secretaryActivityController.getAll);
 
 // POST /api/secretary-activities
-router.post('/', authMiddleware, authorizeRoles('admin', 'secretary'), secretaryActivityController.create);
+router.post('/', authMiddleware.authenticateToken, authorizeRoles('admin', 'secretary'), secretaryActivityController.create);
 
 module.exports = router; 
