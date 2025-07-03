@@ -1,0 +1,10 @@
+.doctorSelector {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md, 1rem);
+  margin-bottom: var(--spacing-lg, 2rem);
+}
+.label {
+  font-weight: 500;
+  color: var(--text-color-secondary);
+} 

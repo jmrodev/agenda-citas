@@ -1,0 +1,6 @@
+.filters {
+  display: flex;
+  gap: var(--spacing-md, 1rem);
+  align-items: center;
+  margin-bottom: var(--spacing-lg, 2rem);
+} 

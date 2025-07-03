@@ -19,6 +19,7 @@ const CalendarView = ({
   events = {}, // { '2024-06-10': [{title, time}], ... }
   className = '',
   style = {},
+  onDayClick
 }) => {
   const [month, setMonth] = useState(initialMonth);
   const [year, setYear] = useState(initialYear);
@@ -48,7 +49,14 @@ const CalendarView = ({
       isSelected: selectedDay === i,
       hasEvent: !!events[dateKey],
       badge: events[dateKey] ? 'Evento' : '',
-      onClick: () => setSelectedDay(i),
+      onClick: () => {
+        setSelectedDay(i);
+        if (onDayClick && !days[days.length - nextDays]?.isDisabled) {
+          onDayClick(dateKey);
+        }
+      },
+      dateKey,
+      isDisabled: false
     });
   }
   // Días del siguiente mes para rellenar
