@@ -5,7 +5,7 @@ import styles from './StatsGrid.module.css';
 const StatsGrid = ({ stats }) => (
   <div className={styles.grid}>
     {stats.map((stat, idx) => (
-      <StatCard key={idx} {...stat} />
+      <StatCard key={idx} {...stat} color={stat.color || 'var(--primary-color)'} />
     ))}
   </div>
 );
