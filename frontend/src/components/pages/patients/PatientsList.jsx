@@ -3,12 +3,13 @@ import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx
 import Button from '../../atoms/Button/Button';
 import Input from '../../atoms/Input/Input';
 import Alert from '../../atoms/Alert/Alert';
-import PeopleIcon from '@mui/icons-material/People';
+import PeopleIcon from '@mui/icons-material/People'; // Mantener por ahora, posible refactor a IconAtom más adelante
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PatientFormModal from '../../organisms/PatientFormModal/PatientFormModal';
+import styles from './PatientsList.module.css'; // Importar CSS Module
 
 const PatientsList = () => {
   const [patients, setPatients] = useState([]);
@@ -75,39 +76,26 @@ const PatientsList = () => {
   return (
     <DashboardLayout title="Gestión de Pacientes">
       {/* Header con búsqueda y botón agregar */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        marginBottom: '2rem',
-        flexWrap: 'wrap',
-        gap: '1rem'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <PeopleIcon style={{ color: 'var(--primary-color)' }} />
-          <h2 style={{ margin: 0 }}>Pacientes ({filteredPatients.length})</h2>
+      <div className={styles.pageHeader}>
+        <div className={styles.titleGroup}>
+          <PeopleIcon className={styles.titleIcon} />
+          <h2 className={styles.title}>Pacientes ({filteredPatients.length})</h2>
         </div>
         
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <div style={{ position: 'relative' }}>
-            <SearchIcon style={{ 
-              position: 'absolute', 
-              left: '12px', 
-              top: '50%', 
-              transform: 'translateY(-50%)',
-              color: '#666'
-            }} />
+        <div className={styles.actionsGroup}>
+          <div className={styles.searchInputContainer}>
+            <SearchIcon className={styles.searchIcon} />
             <Input
               type="text"
               placeholder="Buscar pacientes..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ paddingLeft: '40px' }}
+              className={styles.searchInput}
             />
           </div>
           <Button 
             onClick={() => setShowForm(true)}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+            className={styles.addButton}
           >
             <AddIcon />
             Nuevo Paciente
@@ -115,24 +103,11 @@ const PatientsList = () => {
         </div>
       </div>
 
-      {error && <Alert type="error">{error}</Alert>}
+      {error && <Alert type="error" style={{ marginBottom: '1rem' }}>{error}</Alert>}
 
       {/* Lista de pacientes */}
-      <div style={{ 
-        background: 'var(--surface)', 
-        borderRadius: '8px', 
-        overflow: 'hidden',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
-      }}>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: '1fr 1fr 1fr 1fr auto',
-          gap: '1rem',
-          padding: '1rem',
-          background: 'var(--surface-secondary)',
-          fontWeight: 'bold',
-          borderBottom: '1px solid var(--border-color)'
-        }}>
+      <div className={styles.listContainer}>
+        <div className={`${styles.listGrid} ${styles.listHeader}`}>
           <div>Nombre</div>
           <div>Email</div>
           <div>Teléfono</div>
@@ -141,41 +116,32 @@ const PatientsList = () => {
         </div>
 
         {filteredPatients.length === 0 ? (
-          <div style={{ padding: '2rem', textAlign: 'center', color: '#666' }}>
-            {searchTerm ? 'No se encontraron pacientes con esa búsqueda' : 'No hay pacientes registrados'}
+          <div className={styles.noPatientsMessage}>
+            {searchTerm ? 'No se encontraron pacientes con esa búsqueda.' : 'No hay pacientes registrados.'}
           </div>
         ) : (
           filteredPatients.map(patient => (
-            <div key={patient.patient_id} style={{ 
-              display: 'grid', 
-              gridTemplateColumns: '1fr 1fr 1fr 1fr auto',
-              gap: '1rem',
-              padding: '1rem',
-              borderBottom: '1px solid var(--border-color)',
-              alignItems: 'center'
-            }}>
+            <div key={patient.patient_id} className={`${styles.listGrid} ${styles.listRow}`}>
               <div>
                 <strong>{patient.first_name} {patient.last_name}</strong>
               </div>
               <div>{patient.email || '-'}</div>
               <div>{patient.phone || '-'}</div>
               <div>{patient.date_of_birth ? new Date(patient.date_of_birth).toLocaleDateString('es-AR') : '-'}</div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div className={styles.actionsCell}>
                 <Button 
-                  size="small"
+                  size="sm" // Asumiendo que 'sm' es el tamaño pequeño en Button atom
                   onClick={() => {
                     setEditingPatient(patient);
                     setShowForm(true);
                   }}
-                  style={{ padding: '0.25rem 0.5rem' }}
                 >
                   <EditIcon fontSize="small" />
                 </Button>
                 <Button 
-                  size="small"
+                  size="sm" // Asumiendo que 'sm' es el tamaño pequeño en Button atom
                   variant="danger"
                   onClick={() => handleDelete(patient.patient_id)}
-                  style={{ padding: '0.25rem 0.5rem' }}
                 >
                   <DeleteIcon fontSize="small" />
                 </Button>

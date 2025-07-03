@@ -1,0 +1,129 @@
+/* Styles for PatientsList page */
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.titleIcon {
+  color: var(--primary-color);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.75rem; /* Ajustar según diseño */
+}
+
+.actionsGroup {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap; /* Para que se adapte en pantallas pequeñas */
+}
+
+.searchInputContainer {
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-color-secondary); /* Usar variable */
+  pointer-events: none; /* Para que no interfiera con el click en el input */
+}
+
+.searchInput {
+  padding-left: 40px !important; /* !important para sobreescribir el padding del átomo Input si es necesario, o ajustar el átomo */
+}
+
+.addButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Patient List Table Styles */
+.listContainer {
+  background: var(--surface-color);
+  border-radius: 8px;
+  overflow: hidden; /* o overflow-x: auto; si la tabla es muy ancha */
+  box-shadow: var(--box-shadow-md);
+}
+
+.listGrid {
+  display: grid;
+  /* Columnas base, se pueden ajustar para diferentes vistas si es necesario */
+  /* Considerar usar minmax para columnas flexibles: grid-template-columns: minmax(150px, 2fr) minmax(150px, 2fr) 1fr 1fr auto; */
+  grid-template-columns: 2fr 2fr 1fr 1.5fr auto;
+  gap: 1rem;
+  padding: 1rem;
+  align-items: center;
+}
+
+.listHeader {
+  background: var(--surface-secondary, var(--secondary-color)); /* surface-secondary no está definida, usar secondary-color como fallback */
+  font-weight: bold;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.listRow {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.listRow:last-child {
+  border-bottom: none;
+}
+
+.patientName {
+  font-weight: 600;
+}
+
+.actionsCell {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Heredar el padding de Button small, no se necesita padding inline */
+/* .actionButton { } */
+
+.noPatientsMessage {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-color-secondary);
+}
+
+/* Responsive adjustments for the grid if needed */
+@media (max-width: 768px) {
+  .listGrid {
+    /* Forzar scroll horizontal en pantallas pequeñas o cambiar a layout de tarjeta */
+    grid-template-columns: repeat(5, minmax(120px, 1fr)); /* Ejemplo para mantener columnas pero permitir scroll */
+    overflow-x: auto;
+  }
+  .listContainer {
+    overflow-x: auto;
+  }
+
+  .pageHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .actionsGroup {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .searchInputContainer {
+    flex-grow: 1;
+  }
+}
