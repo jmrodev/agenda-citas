@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx';
-import StatCard from '../../molecules/StatCard/StatCard';
+import StatsGrid from '../../organisms/StatsGrid/StatsGrid.jsx'; // Importar StatsGrid
+// Los iconos sí se necesitan para definir los datos de statCards.
 import PeopleIcon from '@mui/icons-material/People';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
@@ -8,53 +9,69 @@ import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 
 const DashboardAdmin = () => {
   const [stats, setStats] = useState({ pacientes: 0, citas: 0, doctores: 0, secretarias: 0 });
+
   useEffect(() => {
     const fetchStats = async () => {
       const token = localStorage.getItem('token');
-      const [pacRes, citaRes, docRes, secRes] = await Promise.all([
-        fetch('/api/patients/dashboard-stats', { headers: { 'Authorization': `Bearer ${token}` } }),
-        fetch('/api/appointments/dashboard-stats', { headers: { 'Authorization': `Bearer ${token}` } }),
-        fetch('/api/doctors/dashboard-stats', { headers: { 'Authorization': `Bearer ${token}` } }),
-        fetch('/api/secretaries/dashboard-stats', { headers: { 'Authorization': `Bearer ${token}` } })
-      ]);
-      const pacientes = (await pacRes.json()).totalPacientes || 0;
-      const citas = (await citaRes.json()).citasHoy || 0;
-      const doctores = (await docRes.json()).totalDoctores || 0;
-      const secretarias = (await secRes.json()).totalSecretarias || 0;
-      setStats({ pacientes, citas, doctores, secretarias });
+      try {
+        const [pacRes, citaRes, docRes, secRes] = await Promise.all([
+          fetch('/api/patients/dashboard-stats', { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch('/api/appointments/dashboard-stats', { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch('/api/doctors/dashboard-stats', { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch('/api/secretaries/dashboard-stats', { headers: { 'Authorization': `Bearer ${token}` } })
+        ]);
+
+        // Helper para parsear JSON y obtener el valor o 0
+        const getJSONValue = async (response, key, defaultValue = 0) => {
+          if (!response.ok) return defaultValue;
+          const data = await response.json();
+          return data[key] || defaultValue;
+        };
+
+        const pacientes = await getJSONValue(pacRes, 'totalPacientes');
+        const citas = await getJSONValue(citaRes, 'citasHoy');
+        const doctores = await getJSONValue(docRes, 'totalDoctores');
+        const secretarias = await getJSONValue(secRes, 'totalSecretarias');
+
+        setStats({ pacientes, citas, doctores, secretarias });
+      } catch (error) {
+        console.error("Error fetching dashboard stats:", error);
+        // Podrías establecer un estado de error aquí para mostrarlo en la UI
+      }
     };
     fetchStats();
   }, []);
-  const statCards = [
+
+  const statCardsData = [
     {
       title: 'Pacientes activos',
       value: stats.pacientes,
-      icon: <PeopleIcon fontSize='inherit' />, color: '#1976d2'
+      icon: <PeopleIcon fontSize='inherit' />,
+      color: '#1976d2'
     },
     {
       title: 'Citas hoy',
       value: stats.citas,
-      icon: <CalendarMonthIcon fontSize='inherit' />, color: '#43a047'
+      icon: <CalendarMonthIcon fontSize='inherit' />,
+      color: '#43a047'
     },
     {
       title: 'Doctores',
       value: stats.doctores,
-      icon: <LocalHospitalIcon fontSize='inherit' />, color: '#d32f2f'
+      icon: <LocalHospitalIcon fontSize='inherit' />,
+      color: '#d32f2f'
     },
     {
       title: 'Secretarias',
       value: stats.secretarias,
-      icon: <SupervisorAccountIcon fontSize='inherit' />, color: '#fbc02d'
+      icon: <SupervisorAccountIcon fontSize='inherit' />,
+      color: '#fbc02d'
     }
   ];
+
   return (
-    <DashboardLayout>
-      <h1>Bienvenido, Administrador</h1>
-      <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
-        {statCards.map(stat => (
-          <StatCard key={stat.title} title={stat.title} value={stat.value} icon={stat.icon} color={stat.color} />
-        ))}
-      </div>
+    <DashboardLayout title="Bienvenido, Administrador">
+      <StatsGrid stats={statCardsData} />
     </DashboardLayout>
   );
 };

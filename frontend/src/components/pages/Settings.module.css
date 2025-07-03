@@ -1,0 +1,14 @@
+.settingsContainer {
+  max-width: 500px; /* Aumentado un poco para FormField */
+  margin: 0 auto; /* Centrado por DashboardLayout, pero mantenemos por si acaso */
+  background: var(--surface-color, #fff);
+  border-radius: 10px;
+  box-shadow: var(--box-shadow-md, 0 4px 12px rgba(0,0,0,0.10));
+  padding: 2rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}

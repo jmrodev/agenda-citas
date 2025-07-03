@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './SearchBar.module.css';
 import Input from '../../atoms/Input/Input';
 import IconButton from '../../atoms/IconButton/IconButton';
+import Icon from '../../atoms/Icon/Icon';
 
 const SearchBar = ({
   value,
@@ -22,11 +23,11 @@ const SearchBar = ({
         className={styles.input}
       />
       <IconButton aria-label='Buscar' className={styles.iconBtn}>
-        <span role='img' aria-label='lupa'>🔍</span>
+        <Icon name="search" size={18} />
       </IconButton>
       {value && onClear && (
         <IconButton aria-label='Limpiar' onClick={onClear} className={styles.clearBtn}>
-          <span role='img' aria-label='limpiar'>✖️</span>
+          <Icon name="close" size={18} />
         </IconButton>
       )}
     </div>

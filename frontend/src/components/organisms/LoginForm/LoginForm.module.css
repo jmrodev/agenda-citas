@@ -1,0 +1,35 @@
+/* Styles for LoginForm organism */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Matches the gap from Login.jsx's form style */
+}
+
+.titleContainer {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--primary-color, #2563eb); /* Corregido */
+}
+
+.subtitle {
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.forgotPassword {
+  text-align: center;
+  font-size: 0.97em;
+  margin-top: 0.5rem;
+}
+
+.forgotPasswordLink {
+  color: var(--primary-color, #2563eb); /* Corregido */
+  text-decoration: underline;
+}

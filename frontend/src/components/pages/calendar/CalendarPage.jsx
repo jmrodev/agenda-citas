@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import CalendarFilters from '../../molecules/CalendarFilters/CalendarFilters';
 import CalendarView from '../../organisms/CalendarView/CalendarView';
 import Alert from '../../atoms/Alert/Alert';
+import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout'; // Importar DashboardLayout
 
 const initialFilters = {
   cita: true,
@@ -49,13 +50,12 @@ const CalendarPage = () => {
   }, {});
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: '2rem' }}>
-      <h1>Calendario</h1>
+    <DashboardLayout title="Calendario">
       <CalendarFilters filters={filters} onChange={setFilters} />
       {error && <Alert type='error'>{error}</Alert>}
       <CalendarView events={eventsByDate} />
-      {loading && <div>Cargando eventos...</div>}
-    </div>
+      {loading && <Alert type="info">Cargando eventos...</Alert>}
+    </DashboardLayout>
   );
 };
 

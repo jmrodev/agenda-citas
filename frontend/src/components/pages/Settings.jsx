@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Button from '../atoms/Button/Button';
-import Header from '../organisms/Header/Header.jsx';
+import DashboardLayout from '../templates/DashboardLayout/DashboardLayout'; // Importar DashboardLayout
+import FormField from '../molecules/FormField/FormField'; // Importar FormField
+import Alert from '../atoms/Alert/Alert'; // Importar Alert
+import styles from './Settings.module.css'; // Importar CSS Module
 
 const Settings = () => {
   const [timeout, setTimeoutValue] = useState(15);
@@ -51,29 +54,26 @@ const Settings = () => {
   };
 
   return (
-    <>
-      <Header />
-      <div style={{ maxWidth: 400, margin: '2rem auto', background: 'var(--surface, #fff)', borderRadius: 10, boxShadow: '0 2px 8px rgba(0,0,0,0.04)', padding: '2rem' }}>
-        <h2>Configuración</h2>
-        <form onSubmit={handleSave}>
-          <div style={{ marginBottom: 16 }}>
-            <label htmlFor='timeout'>Tiempo de cierre de sesión por inactividad (minutos):</label>
-            <input
-              id='timeout'
-              type='number'
-              min={1}
-              value={timeout}
-              onChange={e => setTimeoutValue(Number(e.target.value))}
-              style={{ width: '100%', padding: 8, marginTop: 4 }}
-              required
-            />
-          </div>
-          <Button type='submit' disabled={loading}>Guardar</Button>
-          {success && <div style={{ color: 'green', marginTop: 8 }}>Guardado correctamente</div>}
-          {error && <div style={{ color: 'red', marginTop: 8 }}>{error}</div>}
+    <DashboardLayout title="Configuración">
+      <div className={styles.settingsContainer}>
+        {/* El título h2 ya no es necesario aquí si DashboardLayout lo provee o si el título de la página es suficiente */}
+        <form onSubmit={handleSave} className={styles.form}>
+          <FormField
+            label="Tiempo de cierre de sesión por inactividad (minutos):"
+            id="timeout"
+            type="number"
+            min={1}
+            value={timeout}
+            onChange={e => setTimeoutValue(Number(e.target.value))}
+            required
+            // El estilo del input ahora debería ser manejado por el átomo Input y FormField
+          />
+          <Button type='submit' loading={loading} disabled={loading}>Guardar</Button> {/* Removido disabled duplicado */}
+          {success && <Alert type="success">Guardado correctamente</Alert>}
+          {error && <Alert type="error">{error}</Alert>}
         </form>
       </div>
-    </>
+    </DashboardLayout>
   );
 };
 

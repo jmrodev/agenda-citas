@@ -1,10 +1,10 @@
 import React from 'react';
-import CalendarView from '../organisms/CalendarView/CalendarView';
+import CalendarView from '../../organisms/CalendarView/CalendarView';
 
-const App = () => {
-  console.log('App render');
+const CalendarDemoPage = () => { // Renombrar el componente también
+  console.log('CalendarDemoPage render');
   return (
-    <div className='App' style={{ padding: '2rem', background: 'var(--app-bg, #f9fafb)' }}>
+    <div className='CalendarDemoPage' style={{ padding: '2rem', background: 'var(--app-bg, #f9fafb)' }}>
       <CalendarView
         events={{
           '2024-06-04': [
@@ -23,4 +23,4 @@ const App = () => {
   );
 };
 
-export default App; 
+export default CalendarDemoPage;

@@ -4,7 +4,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 2rem;
-  background: var(--surface, #fff);
+  background: var(--surface-color, #fff); /* Corregido */
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   min-height: 56px;
   position: relative;
@@ -18,7 +18,7 @@
 .logo {
   font-weight: 700;
   font-size: 1.2rem;
-  color: var(--primary, #2563eb);
+  color: var(--primary-color, #2563eb); /* Corregido */
   text-decoration: none;
   letter-spacing: 0.5px;
 }
@@ -30,5 +30,5 @@
 .userName {
   font-weight: 500;
   margin-right: 0.5rem;
-  color: var(--text, #222);
+  color: var(--text-color, #222); /* Corregido */
 } 
