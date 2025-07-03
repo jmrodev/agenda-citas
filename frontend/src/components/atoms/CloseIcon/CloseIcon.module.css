@@ -1,0 +1,17 @@
+.closeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: 50%;
+  transition: background var(--transition-fast);
+  color: var(--text-color-secondary);
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  z-index: var(--z-index-modal);
+}
+.closeButton:hover {
+  background: var(--secondary-color);
+  color: var(--danger-color);
+} 

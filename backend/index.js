@@ -41,6 +41,9 @@ app.use('/api/secretaries', secretaryRoutes);
 const facilityPaymentRoutes = require('./routes/facilityPaymentRoutes');
 app.use('/api/facility-payments', facilityPaymentRoutes);
 
+const calendarRoutes = require('./routes/calendarRoutes');
+app.use('/api/calendar', calendarRoutes);
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });

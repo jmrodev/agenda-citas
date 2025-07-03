@@ -8,6 +8,7 @@ import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PatientFormModal from '../../organisms/PatientFormModal/PatientFormModal';
 
 const PatientsList = () => {
   const [patients, setPatients] = useState([]);
@@ -185,20 +186,19 @@ const PatientsList = () => {
       </div>
 
       {/* Modal de formulario */}
-      {showForm && (
-        <PatientForm 
-          patient={editingPatient}
-          onClose={() => {
-            setShowForm(false);
-            setEditingPatient(null);
-          }}
-          onSave={() => {
-            fetchPatients();
-            setShowForm(false);
-            setEditingPatient(null);
-          }}
-        />
-      )}
+      <PatientFormModal
+        open={showForm}
+        patient={editingPatient}
+        onClose={() => {
+          setShowForm(false);
+          setEditingPatient(null);
+        }}
+        onSave={() => {
+          fetchPatients();
+          setShowForm(false);
+          setEditingPatient(null);
+        }}
+      />
     </DashboardLayout>
   );
 };

@@ -1,0 +1,12 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+  position: relative;
+}
+.title {
+  font-size: var(--font-size-lg);
+  color: var(--text-color);
+  margin: 0;
+} 

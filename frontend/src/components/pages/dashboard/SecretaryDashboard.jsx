@@ -5,7 +5,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import SettingsIcon from '@mui/icons-material/Settings';
 import StatCard from '../../molecules/StatCard/StatCard';
-import { debugDashboard, debugPatients, debugCalendar } from '../../utils/debug';
+import { debugDashboard, debugPatients, debugCalendar } from '../../../utils/debug.js';
 
 const secretaryActions = [
   { label: 'Agendar cita', icon: <CalendarMonthIcon fontSize='small' />, onClick: () => { window.location.href = '/appointments/new'; } },

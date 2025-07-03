@@ -61,7 +61,7 @@
   --breakpoint-xl: 1280px;
 
   /* Overlays y backdrop */
-  --overlay-bg: rgba(0,0,0,0.5);
+  --overlay-bg: rgba(0,0,0,0.8);
   --backdrop-blur: blur(4px);
 
   /* Scrollbar */
@@ -155,6 +155,8 @@
   --grid-gap: 1rem;
 
   --button-min-width: 100px;
+
+  --modal-bg: #fff;
 }
 
 /* Tablet (>= 768px) */
@@ -234,4 +236,5 @@
   --alert-warning-color: #ffd166;
   --alert-danger-bg: #2c2f36;
   --alert-danger-color: #ff5a5f;
+  --modal-bg: #23272f;
 }

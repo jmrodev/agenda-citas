@@ -4,6 +4,7 @@ import styles from './Sidebar.module.css';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 const Sidebar = () => {
   console.log('📱 [Sidebar] Componente iniciado');
@@ -41,6 +42,7 @@ const Sidebar = () => {
             <>
               <li><Link to='/patients'>Pacientes</Link></li>
               <li><Link to='/doctors'>Doctores</Link></li>
+              <li><Link to='/calendar'>Calendario</Link></li>
               <li><Link to='/reports'>Reportes</Link></li>
               <li><Link to='/register'>Agregar usuario</Link></li>
             </>
@@ -57,6 +59,12 @@ const Sidebar = () => {
                 <Link to="/patients" className={location.pathname === '/patients' ? 'active' : ''}>
                   <PeopleIcon />
                   <span>Pacientes</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/calendar" className={location.pathname === '/calendar' ? 'active' : ''}>
+                  <CalendarMonthIcon />
+                  <span>Calendario</span>
                 </Link>
               </li>
               <li>

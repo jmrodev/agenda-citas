@@ -47,10 +47,13 @@ cleanup_all_processes() {
   kill_port 3001
 }
 
+# Namespace de debug para backend (por parámetro o por defecto)
+DEBUG_NAMESPACE=${1:-backend:*}
+
 # Lanzar backend y frontend en terminales separadas usando xfce4-terminal
 launch_backend_and_frontend() {
   print_message "Abriendo backend en nueva terminal..."
-  xfce4-terminal --title="Backend" --hold --command="bash -c 'cd backend && pnpm dev'"
+  xfce4-terminal --title="Backend" --hold --command="bash -c 'cd backend && DEBUG=$DEBUG_NAMESPACE pnpm dev'"
   print_message "Abriendo frontend en nueva terminal..."
   xfce4-terminal --title="Frontend" --hold --command="bash -c 'cd frontend && pnpm dev'"
 }
@@ -63,8 +66,32 @@ show_monitoring_instructions() {
   echo -e "${BLUE}--------------------------------${NC}"
 }
 
+# Verificar e iniciar servicios necesarios
+check_and_start_service() {
+  local service=$1
+  print_message "Verificando estado de $service..."
+  if systemctl is-active --quiet $service; then
+    print_message "$service ya está activo."
+  else
+    print_warning "$service está inactivo. Intentando iniciar..."
+    sudo systemctl start $service
+    sleep 1
+    if systemctl is-active --quiet $service; then
+      print_message "$service iniciado correctamente."
+    else
+      print_error "No se pudo iniciar $service."
+    fi
+  fi
+  print_message "Estado final de $service: $(systemctl is-active $service)"
+}
+
 # MAIN
 print_header
+
+# Verificar servicios antes de limpiar y lanzar apps
+check_and_start_service mariadb
+check_and_start_service httpd
+
 cleanup_all_processes
 launch_backend_and_frontend
 show_monitoring_instructions 
