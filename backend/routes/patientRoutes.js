@@ -31,4 +31,6 @@ router.put('/:id/doctors', authenticateToken, authorizeRoles('admin', 'secretary
  */
 router.delete('/:id/doctors/:doctor_id', authenticateToken, authorizeRoles('admin', 'secretary'), patientController.removeDoctorFromPatient);
 
+router.get('/dashboard-stats', authenticateToken, authorizeRoles('admin', 'secretary'), patientController.getDashboardStats);
+
 module.exports = router; 

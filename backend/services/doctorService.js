@@ -16,4 +16,9 @@ async function deleteDoctor(id) {
   return await doctorModel.deleteDoctor(id);
 }
 
-module.exports = { listDoctors, createDoctor, updateDoctor, deleteDoctor }; 
+async function getDashboardStats() {
+  const rows = await doctorModel.getAllDoctors();
+  return { totalDoctores: rows.length };
+}
+
+module.exports = { listDoctors, createDoctor, updateDoctor, deleteDoctor, getDashboardStats }; 

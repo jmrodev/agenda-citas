@@ -18,11 +18,8 @@ const Login = () => {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
     if (token && role) {
-      if (role === 'admin') navigate('/', { replace: true });
-      else if (role === 'doctor') navigate('/doctor', { replace: true });
-      else if (role === 'secretary') navigate('/secretary', { replace: true });
-      else if (role === 'patient') navigate('/patient', { replace: true });
-      else navigate('/', { replace: true });
+      // Usar solo la ruta raíz, HomePage se encargará de la redirección
+      navigate('/', { replace: true });
     }
   }, [navigate]);
 
@@ -57,9 +54,9 @@ const Login = () => {
       localStorage.setItem('role', data.user.role);
       // Redirigir según rol
       if (data.user.role === 'admin') navigate('/');
-      else if (data.user.role === 'doctor') navigate('/doctor');
-      else if (data.user.role === 'secretary') navigate('/secretary');
-      else if (data.user.role === 'patient') navigate('/patient');
+      else if (data.user.role === 'doctor') navigate('/');
+      else if (data.user.role === 'secretary') navigate('/');
+      else if (data.user.role === 'patient') navigate('/');
       else navigate('/');
     } catch (err) {
       setError('Error de red o servidor.');

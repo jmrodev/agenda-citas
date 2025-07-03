@@ -1,6 +1,7 @@
 const pool = require('../config/db');
 const { buildPersonFilters } = require('../filters/sql/personFilters');
 const { buildPaginationAndOrder } = require('../filters/paginationUtils');
+const { debugPatients } = require('../utils/debug');
 
 async function getAllPatients() {
   const [rows] = await pool.query('SELECT * FROM patients');
@@ -80,4 +81,19 @@ async function removeDoctorFromPatient(patient_id, doctor_id) {
   await pool.query('DELETE FROM patient_doctors WHERE patient_id = ? AND doctor_id = ?', [patient_id, doctor_id]);
 }
 
-module.exports = { getAllPatients, findPatientsWithFilters, createPatient, updatePatient, deletePatient, getPatientById, addDoctorsToPatient, getDoctorsByPatientId, removeAllDoctorsFromPatient, removeDoctorFromPatient }; 
+async function countPatients() {
+  debugPatients('countPatients llamado');
+  try {
+    debugPatients('Ejecutando query: SELECT COUNT(*) as total FROM patients');
+    const [rows] = await pool.query('SELECT COUNT(*) as total FROM patients');
+    debugPatients('Resultado de la query:', rows);
+    const result = rows[0].total;
+    debugPatients('Total pacientes:', result);
+    return result;
+  } catch (error) {
+    debugPatients('Error en countPatients:', error);
+    throw error;
+  }
+}
+
+module.exports = { getAllPatients, findPatientsWithFilters, createPatient, updatePatient, deletePatient, getPatientById, addDoctorsToPatient, getDoctorsByPatientId, removeAllDoctorsFromPatient, removeDoctorFromPatient, countPatients }; 

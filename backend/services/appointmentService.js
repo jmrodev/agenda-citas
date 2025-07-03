@@ -61,4 +61,11 @@ async function deleteAppointment(id) {
   return await appointmentModel.deleteAppointment(id);
 }
 
-module.exports = { listAppointments, listAppointmentsWithFilters, createAppointment, updateAppointment, deleteAppointment }; 
+async function getDashboardStats() {
+  const today = new Date().toISOString().slice(0, 10);
+  const rows = await appointmentModel.getAllAppointments();
+  const citasHoy = rows.filter(cita => cita.date && cita.date.toISOString().slice(0, 10) === today);
+  return { citasHoy: citasHoy.length };
+}
+
+module.exports = { listAppointments, listAppointmentsWithFilters, createAppointment, updateAppointment, deleteAppointment, getDashboardStats }; 

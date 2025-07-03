@@ -25,7 +25,7 @@ CREATE TABLE patients (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE doctors (
-    doctor_id INT(6) UNSIGNED PRIMARY KEY,
+    doctor_id INT(6) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     specialty VARCHAR(100),
@@ -38,7 +38,7 @@ CREATE TABLE doctors (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE secretaries (
-    secretary_id INT(6) UNSIGNED PRIMARY KEY,
+    secretary_id INT(6) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     shift VARCHAR(20),
@@ -192,6 +192,13 @@ CREATE TABLE patient_doctors (
   FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE user_config (
+  config_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT(6) UNSIGNED NOT NULL,
+  session_timeout_minutes INT DEFAULT 15,
+  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE INDEX idx_patients_health_insurance_id ON patients (health_insurance_id);
@@ -220,8 +227,7 @@ CREATE INDEX idx_appointments_status ON appointments (status);
 CREATE INDEX idx_prescriptions_date ON prescriptions (date);
 CREATE INDEX idx_medical_history_records_date ON medical_history_records (date);
 
-
-
 -- Usuario admin inicial para autenticación (password: 123456)
 INSERT INTO users (username, email, password, role, entity_id) VALUES
   ('admin', 'admin@mail.com', '$2b$10$4SK82qr1w/lcuE/hibBGdOZuV2td0KKrmCXMLsGs/RKSJGPSB3VoK', 'admin', NULL);
+

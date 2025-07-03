@@ -55,4 +55,13 @@ async function getMyAppointments(req, res) {
   }
 }
 
-module.exports = { getAll, getAllWithFilters, create, update, remove, getMyAppointments }; 
+async function getDashboardStats(req, res) {
+  try {
+    const stats = await appointmentService.getDashboardStats();
+    res.json(stats);
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener estadísticas de citas' });
+  }
+}
+
+module.exports = { getAll, getAllWithFilters, create, update, remove, getMyAppointments, getDashboardStats }; 

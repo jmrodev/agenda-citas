@@ -1,5 +1,6 @@
 const patientModel = require('../models/patientModel');
 const patientReferenceModel = require('../models/patientReferenceModel');
+const { debugPatients } = require('../utils/debug');
 
 function mapReferencePerson(row) {
   const {
@@ -105,4 +106,19 @@ async function removeDoctorFromPatient(patient_id, doctor_id) {
   await patientModel.removeDoctorFromPatient(patient_id, doctor_id);
 }
 
-module.exports = { listPatients, listPatientsWithFilters, createPatient, updatePatient, deletePatient, getPatientById, getPatientWithReferences, createPatientWithDoctors, updatePatientDoctors, removeDoctorFromPatient }; 
+async function getDashboardStats() {
+  debugPatients('getDashboardStats llamado');
+  try {
+    debugPatients('Llamando a patientModel.countPatients()');
+    const totalPacientes = await patientModel.countPatients();
+    debugPatients('Total pacientes obtenido:', totalPacientes);
+    const result = { totalPacientes };
+    debugPatients('Resultado final:', result);
+    return result;
+  } catch (error) {
+    debugPatients('Error en getDashboardStats:', error);
+    throw error;
+  }
+}
+
+module.exports = { listPatients, listPatientsWithFilters, createPatient, updatePatient, deletePatient, getPatientById, getPatientWithReferences, createPatientWithDoctors, updatePatientDoctors, removeDoctorFromPatient, getDashboardStats }; 

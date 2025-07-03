@@ -9,4 +9,9 @@ async function createSecretary(data) {
   return { secretary_id: result.insertId, ...data };
 }
 
-module.exports = { createSecretary }; 
+async function getAllSecretaries() {
+  const [rows] = await pool.query('SELECT * FROM secretaries');
+  return rows;
+}
+
+module.exports = { createSecretary, getAllSecretaries }; 

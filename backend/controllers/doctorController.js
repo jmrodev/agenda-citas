@@ -36,4 +36,13 @@ async function remove(req, res) {
   }
 }
 
-module.exports = { getAll, create, update, remove }; 
+async function getDashboardStats(req, res) {
+  try {
+    const stats = await doctorService.getDashboardStats();
+    res.json(stats);
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener estadísticas de doctores' });
+  }
+}
+
+module.exports = { getAll, create, update, remove, getDashboardStats }; 

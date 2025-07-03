@@ -1,29 +1,32 @@
 .card {
-  border: 2px solid var(--primary);
-  border-radius: 12px;
-  padding: 1.2rem 1.5rem;
-  background: var(--surface, #fff);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  background: var(--card-bg, #fff);
+  padding: 0.8rem 1rem;
+  border-radius: var(--card-radius, 10px);
   min-width: 120px;
-  min-height: 100px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  transition: box-shadow 0.2s;
+  box-shadow: var(--card-shadow, 0 2px 8px rgba(0,0,0,0.04));
+  text-align: center;
+  border: 2px solid var(--primary-color);
+  transition: box-shadow 0.2s, border-color 0.2s;
 }
-.card:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-}
-.icon {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
+.title {
+  margin: 0;
+  font-size: 1.1rem;
 }
 .value {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: 700;
-  margin-bottom: 0.2rem;
+}
+.icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .label {
   font-size: 1rem;
   color: var(--text-secondary, #666);
+}
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
 } 

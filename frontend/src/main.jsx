@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import './styles/abstracts/_variables.css';
@@ -10,6 +10,7 @@ const handleLogout = () => {
   window.location.href = '/login';
 };
 
+const INACTIVITY_LIMIT_MS = 15 * 60 * 1000; // 15 minutos
 
 function RequireAuth({ children, allowedRoles }) {
   const location = useLocation();
@@ -24,10 +25,48 @@ function RequireAuth({ children, allowedRoles }) {
   return children;
 }
 
+function InactivityHandler({ children }) {
+  const timerRef = useRef();
+  const [timeout, setTimeoutValue] = useState(15 * 60 * 1000); // valor por defecto
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('/api/auth/user/config', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        setTimeoutValue((data.session_timeout_minutes || 15) * 60 * 1000);
+      } catch {}
+    };
+    fetchConfig();
+  }, []);
+
+  useEffect(() => {
+    const resetTimer = () => {
+      clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => {
+        handleLogout();
+      }, timeout);
+    };
+    const events = ['mousemove', 'keydown', 'mousedown', 'scroll', 'touchstart'];
+    events.forEach(event => window.addEventListener(event, resetTimer));
+    resetTimer();
+    return () => {
+      clearTimeout(timerRef.current);
+      events.forEach(event => window.removeEventListener(event, resetTimer));
+    };
+  }, [timeout]);
+  return children;
+}
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <AppRouter />
+      <InactivityHandler>
+        <AppRouter />
+      </InactivityHandler>
     </BrowserRouter>
   </React.StrictMode>
 );

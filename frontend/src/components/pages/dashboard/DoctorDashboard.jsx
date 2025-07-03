@@ -1,23 +1,65 @@
+import React, { useEffect, useState } from 'react';
 import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import PeopleIcon from '@mui/icons-material/People';
 import MedicationIcon from '@mui/icons-material/Medication';
+import SettingsIcon from '@mui/icons-material/Settings';
+import StatCard from '../../molecules/StatCard/StatCard';
 
 const doctorActions = [
   { label: 'Mis citas', icon: <CalendarMonthIcon fontSize='small' />, onClick: () => { window.location.href = '/doctor/appointments'; } },
   { label: 'Pacientes', icon: <PeopleIcon fontSize='small' />, onClick: () => { window.location.href = '/doctor/patients'; } },
-  { label: 'Recetas', icon: <MedicationIcon fontSize='small' />, onClick: () => { window.location.href = '/doctor/prescriptions'; } }
+  { label: 'Recetas', icon: <MedicationIcon fontSize='small' />, onClick: () => { window.location.href = '/doctor/prescriptions'; } },
+  { label: 'Configuración', icon: <SettingsIcon fontSize='small' />, onClick: () => { window.location.href = '/settings'; } }
 ];
 
-const DoctorDashboard = () => (
-  <DashboardLayout
-    title='Dashboard Doctor (privado)'
-    actions={doctorActions}
-    users={[]}
-    activities={[]}
-    stats={[]}
-    appointments={[]}
-  />
-);
+const DoctorDashboard = () => {
+  const [stats, setStats] = useState({ citas: 0, pacientes: 0, consultas: 0 });
+  useEffect(() => {
+    const fetchStats = async () => {
+      const token = localStorage.getItem('token');
+      // Citas de hoy
+      const citaRes = await fetch('/api/appointments/dashboard-stats', { headers: { 'Authorization': `Bearer ${token}` } });
+      const citas = (await citaRes.json()).citasHoy || 0;
+      // Pacientes asignados y consultas este mes: datos de ejemplo (reemplazar por endpoints reales si existen)
+      setStats({ citas, pacientes: 32, consultas: 45 });
+    };
+    fetchStats();
+  }, []);
+  const statCards = [
+    {
+      title: 'Citas hoy',
+      value: stats.citas,
+      icon: <CalendarMonthIcon fontSize='inherit' />, color: '#43a047'
+    },
+    {
+      title: 'Pacientes asignados',
+      value: stats.pacientes,
+      icon: <PeopleIcon fontSize='inherit' />, color: '#1976d2'
+    },
+    {
+      title: 'Consultas este mes',
+      value: stats.consultas,
+      icon: <MedicationIcon fontSize='inherit' />, color: '#d32f2f'
+    }
+  ];
+  return (
+    <DashboardLayout title='Dashboard Doctor (privado)'>
+      <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
+        {statCards.map(stat => (
+          <StatCard key={stat.title} title={stat.title} value={stat.value} icon={stat.icon} color={stat.color} />
+        ))}
+      </div>
+      <DashboardLayout
+        title='Dashboard Doctor (privado)'
+        actions={doctorActions}
+        users={[]}
+        activities={[]}
+        stats={[]}
+        appointments={[]}
+      />
+    </DashboardLayout>
+  );
+};
 
 export default DoctorDashboard;

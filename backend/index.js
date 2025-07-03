@@ -35,6 +35,12 @@ app.use('/api/doctor-consultation-hours', doctorConsultationHourRoutes);
 const patientReferenceRoutes = require('./routes/patientReferenceRoutes');
 app.use('/api/patient-references', patientReferenceRoutes);
 
+const secretaryRoutes = require('./routes/secretaryRoutes');
+app.use('/api/secretaries', secretaryRoutes);
+
+const facilityPaymentRoutes = require('./routes/facilityPaymentRoutes');
+app.use('/api/facility-payments', facilityPaymentRoutes);
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });

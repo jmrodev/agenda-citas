@@ -1,0 +1,79 @@
+import React from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import styles from './Sidebar.module.css';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import PeopleIcon from '@mui/icons-material/People';
+
+const Sidebar = () => {
+  console.log('📱 [Sidebar] Componente iniciado');
+  
+  const navigate = useNavigate();
+  const location = useLocation();
+  const token = localStorage.getItem('token');
+  const role = localStorage.getItem('role');
+  
+  console.log('📱 [Sidebar] Token:', token ? 'existe' : 'no existe');
+  console.log('📱 [Sidebar] Role:', role);
+  console.log('📱 [Sidebar] Location:', location.pathname);
+  
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const userRole = user.role || role || 'admin';
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
+
+  return (
+    <aside className={styles.aside}>
+      <nav>
+        <ul>
+          <li>
+            <Link to='/'>Dashboard</Link>
+          </li>
+          <li>
+            <Link to='/settings'>Configuración</Link>
+          </li>
+          {/* Accesos adicionales según rol */}
+          {userRole === 'admin' && (
+            <>
+              <li><Link to='/patients'>Pacientes</Link></li>
+              <li><Link to='/doctors'>Doctores</Link></li>
+              <li><Link to='/reports'>Reportes</Link></li>
+              <li><Link to='/register'>Agregar usuario</Link></li>
+            </>
+          )}
+          {userRole === 'secretary' && (
+            <>
+              <li>
+                <Link to="/secretary" className={location.pathname === '/secretary' ? 'active' : ''}>
+                  <DashboardIcon />
+                  <span>Dashboard</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/patients" className={location.pathname === '/patients' ? 'active' : ''}>
+                  <PeopleIcon />
+                  <span>Pacientes</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/secretary/payment-stats" className={location.pathname === '/secretary/payment-stats' ? 'active' : ''}>
+                  <AttachMoneyIcon />
+                  <span>Estadísticas de Caja</span>
+                </Link>
+              </li>
+            </>
+          )}
+          <li>
+            <button onClick={handleLogout} className={styles.logoutBtn}>Cerrar sesión</button>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+  );
+};
+
+export default Sidebar; 

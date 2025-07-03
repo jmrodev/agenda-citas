@@ -5,6 +5,7 @@ import FormField from '../../molecules/FormField/FormField';
 import Button from '../../atoms/Button/Button';
 import Alert from '../../atoms/Alert/Alert';
 import SuccessScreen from '../../organisms/SuccessScreen/SuccessScreen';
+import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx';
 
 function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -25,7 +26,7 @@ const roles = [
   { value: 'secretary', label: 'Secretaria' }
 ];
 
-const RegisterUser = () => {
+function RegisterForm() {
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
   const [email, setEmail] = useState('');
@@ -69,7 +70,7 @@ const RegisterUser = () => {
   const validate = () => {
     const errors = {};
     if (!validateName(nombre)) errors.nombre = 'El nombre es obligatorio (2-50 caracteres)';
-    if ((role === 'doctor' || role === 'secretary') && !validateName(apellido)) errors.apellido = 'El apellido es obligatorio (2-50 caracteres)';
+    if (!validateName(apellido)) errors.apellido = 'El apellido es obligatorio (2-50 caracteres)';
     if (!username) errors.username = 'El nombre de usuario es obligatorio';
     else if (!validateUsername(username)) errors.username = 'Solo letras, números y guion bajo (3-20 caracteres, sin espacios)';
     if (!email) errors.email = 'El email es obligatorio';
@@ -106,7 +107,7 @@ const RegisterUser = () => {
     try {
       const token = localStorage.getItem('token');
       let endpoint = '/api/auth/register';
-      let body = { nombre, username, email, password, role };
+      let body = { nombre, apellido, username, email, password, role };
       if (role === 'doctor') {
         endpoint = '/api/auth/register-doctor';
         body = {
@@ -168,12 +169,10 @@ const RegisterUser = () => {
   };
   const handleApellidoChange = e => {
     setApellido(e.target.value);
-    if (role === 'doctor' || role === 'secretary') {
-      setFieldErrors(prev => ({
-        ...prev,
-        apellido: !validateName(e.target.value) ? 'El apellido es obligatorio (2-50 caracteres)' : ''
-      }));
-    }
+    setFieldErrors(prev => ({
+      ...prev,
+      apellido: !validateName(e.target.value) ? 'El apellido es obligatorio (2-50 caracteres)' : ''
+    }));
   };
   const handleUsernameChange = e => {
     setUsername(e.target.value);
@@ -212,11 +211,11 @@ const RegisterUser = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--app-bg, #f9fafb)' }}>
+    <div style={{ background: 'var(--app-bg, #f9fafb)' }}>
       {success ? (
         <SuccessScreen message={success} redirectTo='/users' linkText='Ir a la lista de usuarios' delay={3000} />
       ) : (
-        <form onSubmit={handleSubmit} style={{ minWidth: 320, maxWidth: 400, width: '100%', background: 'var(--surface, #fff)', borderRadius: 10, boxShadow: '0 2px 8px rgba(0,0,0,0.04)', padding: '2.5rem 2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }} noValidate>
+        <form onSubmit={handleSubmit} style={{ minWidth: 320, maxWidth: 400, width: '100%', background: 'var(--surface, #fff)', borderRadius: 10, boxShadow: '0 2px 8px rgba(0,0,0,0.04)', padding: '2.5rem 2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', margin: '2rem auto' }} noValidate>
           <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
             <span style={{ fontWeight: 700, fontSize: '1.3rem', color: 'var(--primary, #2563eb)' }}>Agenda de Citas</span>
           </div>
@@ -230,16 +229,14 @@ const RegisterUser = () => {
               required
               error={fieldErrors.nombre}
             />
-            {(role === 'doctor' || role === 'secretary') && (
-              <FormField
-                label='Apellido'
-                id='apellido'
-                value={apellido}
-                onChange={handleApellidoChange}
-                required
-                error={fieldErrors.apellido}
-              />
-            )}
+            <FormField
+              label='Apellido'
+              id='apellido'
+              value={apellido}
+              onChange={handleApellidoChange}
+              required
+              error={fieldErrors.apellido}
+            />
             <FormField
               label='Nombre de usuario'
               id='username'
@@ -312,6 +309,12 @@ const RegisterUser = () => {
       )}
     </div>
   );
-};
+}
 
-export default RegisterUser; 
+export default function RegisterUserWithLayout() {
+  return (
+    <DashboardLayout>
+      <RegisterForm />
+    </DashboardLayout>
+  );
+} 

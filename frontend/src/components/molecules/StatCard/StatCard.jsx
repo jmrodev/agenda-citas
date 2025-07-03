@@ -1,11 +1,11 @@
 import React from 'react';
 import styles from './StatCard.module.css';
 
-const StatCard = ({ icon, label, value, color = 'var(--primary)' }) => (
+const StatCard = ({ title, value, icon, color = 'var(--primary-color)' }) => (
   <div className={styles.card} style={{ borderColor: color }}>
-    <div className={styles.icon} style={{ color }}>{icon}</div>
-    <div className={styles.value}>{value}</div>
-    <div className={styles.label}>{label}</div>
+    {icon && <div className={styles.icon} style={{ color }}>{icon}</div>}
+    <h2 className={styles.title}>{title}</h2>
+    <p className={styles.value}>{value}</p>
   </div>
 );
 

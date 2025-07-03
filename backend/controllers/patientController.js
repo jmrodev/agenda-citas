@@ -1,6 +1,7 @@
 const patientService = require('../services/patientService');
 const userService = require('../services/userService');
 const bcrypt = require('bcryptjs');
+const { debugPatients } = require('../utils/debug');
 
 async function getAll(req, res) {
   try {
@@ -172,4 +173,19 @@ async function removeDoctorFromPatient(req, res) {
   }
 }
 
-module.exports = { getAll, getAllWithFilters, create, update, remove, registerPatientWithUser, getMe, updateMe, getById, updatePatientDoctors, removeDoctorFromPatient }; 
+async function getDashboardStats(req, res) {
+  debugPatients('getDashboardStats llamado');
+  debugPatients('Headers:', req.headers);
+  debugPatients('User:', req.user);
+  try {
+    debugPatients('Llamando a patientService.getDashboardStats()');
+    const stats = await patientService.getDashboardStats();
+    debugPatients('Stats obtenidas:', stats);
+    res.json(stats);
+  } catch (err) {
+    debugPatients('Error en getDashboardStats:', err);
+    res.status(500).json({ error: 'Error al obtener estadísticas de pacientes' });
+  }
+}
+
+module.exports = { getAll, getAllWithFilters, create, update, remove, registerPatientWithUser, getMe, updateMe, getById, updatePatientDoctors, removeDoctorFromPatient, getDashboardStats }; 

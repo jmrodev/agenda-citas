@@ -18,6 +18,14 @@ const icons = {
       <circle cx='12' cy='8' r='4' />
       <path d='M4 20c0-4 8-4 8-4s8 0 8 4' />
     </svg>
+  ),
+  danger: (
+    <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2'>
+      <polygon points='12,2 22,20 2,20' fill='currentColor' opacity='0.15'/>
+      <polygon points='12,2 22,20 2,20' stroke='currentColor' fill='none'/>
+      <line x1='12' y1='8' x2='12' y2='14' stroke='currentColor' strokeWidth='2'/>
+      <circle cx='12' cy='17' r='1.2' fill='currentColor'/>
+    </svg>
   )
 };
 
