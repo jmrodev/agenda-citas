@@ -1,5 +1,5 @@
 import React from 'react';
-import { useViewMode } from '../../context/ViewModeContext';
+import { useViewMode } from '../../../hooks/useViewMode';
 
 const ViewModeSelect = () => {
   const { viewMode, setViewMode } = useViewMode();

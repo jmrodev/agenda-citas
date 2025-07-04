@@ -6,7 +6,7 @@ import MedicationIcon from '@mui/icons-material/Medication';
 import SettingsIcon from '@mui/icons-material/Settings';
 import StatsGrid from '../../organisms/StatsGrid/StatsGrid.jsx';
 import QuickActionsBar from '../../organisms/QuickActionsBar/QuickActionsBar.jsx';
-import { useDoctor } from '../../context/DoctorContext';
+import { useDoctor } from '../../../hooks/useDoctor';
 import styles from './DoctorDashboard.module.css';
 
 const mockDoctors = [

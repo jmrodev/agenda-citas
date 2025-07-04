@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useState } from 'react';
 
-const ViewModeContext = createContext();
-export const useViewMode = () => useContext(ViewModeContext);
+export const ViewModeContext = createContext();
 
 export const ViewModeProvider = ({ children }) => {
   const [viewMode, setViewMode] = useState('tabla');

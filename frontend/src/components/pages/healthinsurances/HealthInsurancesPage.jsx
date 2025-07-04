@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useDoctor } from '../../context/DoctorContext';
+import { useDoctor } from '../../../hooks/useDoctor';
 import HealthInsuranceForm from '../../molecules/HealthInsuranceForm/HealthInsuranceForm';
 import Button from '../../atoms/Button/Button';
 import { authFetch } from '../../../auth/authFetch';

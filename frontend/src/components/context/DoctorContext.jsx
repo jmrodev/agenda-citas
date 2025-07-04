@@ -1,11 +1,9 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useState } from 'react';
 import { authFetch } from '../../auth/authFetch';
 
-const DoctorContext = createContext();
+export const DoctorContext = createContext();
 
 const defaultDoctor = { id: 1, name: 'Dr. Juan Pérez' };
-
-export const useDoctor = () => useContext(DoctorContext);
 
 export const DoctorProvider = ({ children }) => {
   const [doctor, setDoctor] = useState(null);

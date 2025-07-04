@@ -3,7 +3,7 @@ import ModalContainer from '../../molecules/ModalContainer/ModalContainer';
 import ModalHeader from '../../molecules/ModalHeader/ModalHeader';
 import ModalFooter from '../../molecules/ModalFooter/ModalFooter';
 import Button from '../../atoms/Button/Button';
-import { useViewMode } from '../../context/ViewModeContext';
+import { useViewMode } from '../../../hooks/useViewMode';
 
 const formatKey = key => key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 

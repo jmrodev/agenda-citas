@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useDoctor } from '../../context/DoctorContext';
+import { useDoctor } from '../../../hooks/useDoctor';
 import { authFetch } from '../../auth/authFetch';
 import DoctorSelector from '../../molecules/DoctorSelector/DoctorSelector';
 
