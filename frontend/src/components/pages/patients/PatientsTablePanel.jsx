@@ -10,6 +10,7 @@ import PatientFormModal from '../../organisms/PatientFormModal/PatientFormModal'
 import PatientDetailsModal from './PatientDetailsModal';
 import styles from './PatientsList.module.css';
 import { authFetch } from '../../../auth/authFetch';
+import { createLogger } from '../../../utils/debug.js';
 
 const PatientsTablePanel = ({ doctor, crudMode }) => {
   const [patients, setPatients] = useState([]);
@@ -19,6 +20,7 @@ const PatientsTablePanel = ({ doctor, crudMode }) => {
   const [showForm, setShowForm] = useState(false);
   const [editingPatient, setEditingPatient] = useState(null);
   const [detailsPatient, setDetailsPatient] = useState(null);
+  const logger = createLogger('PatientsTablePanel');
 
   const fetchPatients = async () => {
     setLoading(true);
@@ -27,7 +29,7 @@ const PatientsTablePanel = ({ doctor, crudMode }) => {
       if (!response || !response.ok) throw new Error('Error al cargar pacientes');
       const data = await response.json();
       setPatients(data);
-      console.log('Pacientes recibidos (PatientsTablePanel):', data);
+      logger.log('Pacientes recibidos:', data);
     } catch (err) {
       setError(err.message);
     } finally {

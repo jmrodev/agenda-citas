@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './DoctorSelector.module.css';
 
-const DoctorSelector = ({ doctors, selectedDoctor, onSelect, onClose, variant = 'modal', style = {}, ...rest }) => {
+const DoctorSelector = ({ doctors, selectedDoctor, onSelect, onClose, variant = 'modal', style = {} }) => {
   const content = (
     <div className={styles.selector} style={style} onClick={e => e.stopPropagation()}>
       <h3 className={styles.title}>Selecciona un doctor</h3>

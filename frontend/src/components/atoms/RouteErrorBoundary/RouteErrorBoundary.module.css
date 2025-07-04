@@ -1,0 +1,110 @@
+.routeErrorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background: var(--background-color, #f9fafb);
+}
+
+.routeErrorContent {
+  max-width: 500px;
+  text-align: center;
+  background: var(--surface-color, #fff);
+  border-radius: var(--border-radius-lg, 8px);
+  padding: 3rem 2rem;
+  box-shadow: var(--box-shadow-md, 0 4px 12px rgba(0,0,0,0.10));
+}
+
+.routeErrorIcon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.routeErrorTitle {
+  font-size: var(--font-size-xl, 1.5rem);
+  font-weight: 600;
+  color: var(--text-color, #222);
+  margin-bottom: 1rem;
+}
+
+.routeErrorMessage {
+  font-size: var(--font-size-md, 1rem);
+  color: var(--text-color-secondary, #666);
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.routeErrorDetails {
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.routeErrorDetails summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--text-color, #222);
+  margin-bottom: 0.5rem;
+}
+
+.routeErrorStack {
+  background: var(--background-color, #f9fafb);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: var(--border-radius, 4px);
+  padding: 1rem;
+  font-size: 0.875rem;
+  color: var(--text-color, #222);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.routeErrorActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.retryButton {
+  min-width: 140px;
+}
+
+.backButton {
+  min-width: 120px;
+}
+
+.homeButton {
+  min-width: 120px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .routeErrorContainer {
+    padding: 1rem;
+  }
+  
+  .routeErrorContent {
+    padding: 2rem 1.5rem;
+  }
+  
+  .routeErrorIcon {
+    font-size: 3rem;
+  }
+  
+  .routeErrorTitle {
+    font-size: var(--font-size-lg, 1.25rem);
+  }
+  
+  .routeErrorActions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .retryButton,
+  .backButton,
+  .homeButton {
+    width: 100%;
+    max-width: 200px;
+  }
+} 

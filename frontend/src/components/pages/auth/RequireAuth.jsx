@@ -1,5 +1,6 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+import { createLogger } from '../../../utils/debug.js';
 
 /**
  * Componente para proteger rutas privadas.
@@ -10,9 +11,10 @@ const RequireAuth = ({ children, role, allowedRoles }) => {
   const token = localStorage.getItem('token');
   const userRole = localStorage.getItem('role');
   const location = useLocation();
+  const logger = createLogger('RequireAuth');
 
   // Debug logs
-  console.log('RequireAuth Debug:', {
+  logger.log('Debug:', {
     token: token ? 'exists' : 'missing',
     userRole,
     role,
@@ -23,7 +25,7 @@ const RequireAuth = ({ children, role, allowedRoles }) => {
   if (!token) {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
-    console.log('RequireAuth: No token, redirecting to login');
+    logger.log('No token, redirecting to login');
     // No autenticado, redirige a login
     return <Navigate to='/login' state={{ from: location }} replace />;
   }
@@ -32,7 +34,7 @@ const RequireAuth = ({ children, role, allowedRoles }) => {
   if (role && userRole !== role) {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
-    console.log('RequireAuth: Role mismatch, redirecting to login');
+    logger.log('Role mismatch, redirecting to login');
     // Autenticado pero sin el rol requerido - redirigir a login para evitar ciclos
     return <Navigate to='/login' state={{ from: location }} replace />;
   }
@@ -40,12 +42,12 @@ const RequireAuth = ({ children, role, allowedRoles }) => {
   if (allowedRoles && !allowedRoles.includes(userRole)) {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
-    console.log('RequireAuth: Allowed roles mismatch, redirecting to login');
+    logger.log('Allowed roles mismatch, redirecting to login');
     // Autenticado pero sin uno de los roles permitidos - redirigir a login para evitar ciclos
     return <Navigate to='/login' state={{ from: location }} replace />;
   }
 
-  console.log('RequireAuth: Access granted');
+  logger.log('Access granted');
   // Autenticado y (si aplica) con el rol correcto
   return children;
 };

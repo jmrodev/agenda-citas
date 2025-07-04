@@ -3,19 +3,21 @@ import { useDoctor } from '../../context/DoctorContext';
 import HealthInsuranceForm from '../../molecules/HealthInsuranceForm/HealthInsuranceForm';
 import Button from '../../atoms/Button/Button';
 import { authFetch } from '../../../auth/authFetch';
+import { createLogger } from '../../../utils/debug.js';
 
 const HealthInsurancesPage = () => {
   const [insurances, setInsurances] = useState([]);
   const [selected, setSelected] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const { doctor } = useDoctor();
+  const logger = createLogger('HealthInsurancesPage');
 
   const fetchInsurances = async () => {
     const res = await authFetch('/api/health-insurances');
     if (!res) return;
     const data = await res.json();
     setInsurances(data);
-    console.log('Obras sociales recibidas (HealthInsurancesPage):', data);
+          logger.log('Obras sociales recibidas:', data);
   };
 
   const handleSave = async (data) => {

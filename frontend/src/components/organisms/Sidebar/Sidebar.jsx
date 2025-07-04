@@ -5,18 +5,20 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import { createLogger } from '../../../utils/debug.js';
 
 const Sidebar = () => {
-  console.log('📱 [Sidebar] Componente iniciado');
+  const logger = createLogger('Sidebar');
+  logger.log('Componente iniciado');
   
   const navigate = useNavigate();
   const location = useLocation();
   const token = localStorage.getItem('token');
   const role = localStorage.getItem('role');
   
-  console.log('📱 [Sidebar] Token:', token ? 'existe' : 'no existe');
-  console.log('📱 [Sidebar] Role:', role);
-  console.log('📱 [Sidebar] Location:', location.pathname);
+  logger.log('Token:', token ? 'existe' : 'no existe');
+  logger.log('Role:', role);
+  logger.log('Location:', location.pathname);
   
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const userRole = user.role || role || 'admin';

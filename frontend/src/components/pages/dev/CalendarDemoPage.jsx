@@ -1,8 +1,10 @@
 import React from 'react';
 import CalendarView from '../../organisms/CalendarView/CalendarView';
+import { createLogger } from '../../../utils/debug.js';
 
 const CalendarDemoPage = () => { // Renombrar el componente también
-  console.log('CalendarDemoPage render');
+  const logger = createLogger('CalendarDemoPage');
+  logger.log('render');
   return (
     <div className='CalendarDemoPage' style={{ padding: '2rem', background: 'var(--app-bg, #f9fafb)' }}>
       <CalendarView

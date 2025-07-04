@@ -1,4 +1,4 @@
-import { setSession, clearSession, getToken, getRole, isTokenValid, getRefreshToken, setRefreshToken, clearRefreshToken } from './session.js';
+import { setSession, clearSession, getRefreshToken, setRefreshToken, clearRefreshToken } from './session.js';
 
 export async function login({ email, password }) {
   const res = await fetch('/api/auth/login', {

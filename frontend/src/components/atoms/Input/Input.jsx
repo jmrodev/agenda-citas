@@ -1,16 +1,15 @@
 import React from 'react';
 import styles from './Input.module.css';
 
-const Input = ({
+const Input = React.memo(({
   type = 'text',
-  value,
+  value = '',
   onChange,
   placeholder = '',
-  disabled = false,
-  error = false,
   className = '',
+  disabled = false,
+  required = false,
   'aria-label': ariaLabel,
-  'aria-describedby': ariaDescribedby,
   ...rest
 }) => {
   return (
@@ -19,18 +18,15 @@ const Input = ({
       value={value}
       onChange={onChange}
       placeholder={placeholder}
+      className={[styles.input, className].join(' ').trim()}
       disabled={disabled}
+      required={required}
       aria-label={ariaLabel}
-      aria-describedby={ariaDescribedby}
-      aria-invalid={error}
-      className={[
-        styles.input,
-        error ? styles.error : '',
-        className
-      ].join(' ').trim()}
       {...rest}
     />
   );
-};
+});
+
+Input.displayName = 'Input';
 
 export default Input; 

@@ -3,7 +3,7 @@
  * En producción, todas las funciones son no-ops
  */
 
-const isDevelopment = process.env.NODE_ENV === 'development';
+const isDevelopment = typeof process !== 'undefined' && process.env.NODE_ENV === 'development';
 
 export const debug = {
   log: (...args) => {
@@ -78,9 +78,10 @@ export const logIf = (condition, ...args) => {
   }
 };
 
-export const debugApp = debug('frontend:app');
-export const debugPatients = debug('frontend:patients');
-export const debugAuth = debug('frontend:auth');
-export const debugCalendar = debug('frontend:calendar');
-export const debugDashboard = debug('frontend:dashboard');
-export const debugPayments = debug('frontend:payments'); 
+// Loggers predefinidos para diferentes módulos
+export const debugApp = createLogger('frontend:app');
+export const debugPatients = createLogger('frontend:patients');
+export const debugAuth = createLogger('frontend:auth');
+export const debugCalendar = createLogger('frontend:calendar');
+export const debugDashboard = createLogger('frontend:dashboard');
+export const debugPayments = createLogger('frontend:payments'); 

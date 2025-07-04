@@ -1,8 +1,9 @@
 import React from 'react';
-import styles from './ErrorBoundary.module.css';
+import { useNavigate } from 'react-router-dom';
+import styles from './RouteErrorBoundary.module.css';
 import Button from '../Button/Button';
 
-class ErrorBoundary extends React.Component {
+class RouteErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
     this.state = { 
@@ -13,23 +14,19 @@ class ErrorBoundary extends React.Component {
   }
 
   static getDerivedStateFromError() {
-    // Actualizar el estado para que el siguiente render muestre el fallback UI
     return { hasError: true };
   }
 
   componentDidCatch(error, errorInfo) {
     // Log del error para debugging (solo en desarrollo)
     if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') {
-      console.error('ErrorBoundary capturó un error:', error, errorInfo);
+      console.error('RouteErrorBoundary capturó un error:', error, errorInfo);
     }
 
     this.setState({
       error: error,
       errorInfo: errorInfo
     });
-
-    // Aquí podrías enviar el error a un servicio de monitoreo
-    // reportErrorToService(error, errorInfo);
   }
 
   handleRetry = () => {
@@ -40,38 +37,57 @@ class ErrorBoundary extends React.Component {
     });
   };
 
+  handleGoBack = () => {
+    if (this.props.navigate) {
+      this.props.navigate(-1);
+    } else {
+      window.history.back();
+    }
+  };
+
   handleGoHome = () => {
-    window.location.href = '/';
+    if (this.props.navigate) {
+      this.props.navigate('/');
+    } else {
+      window.location.href = '/';
+    }
   };
 
   render() {
     if (this.state.hasError) {
       return (
-        <div className={styles.errorContainer}>
-          <div className={styles.errorContent}>
-            <div className={styles.errorIcon}>⚠️</div>
-            <h2 className={styles.errorTitle}>Algo salió mal</h2>
-            <p className={styles.errorMessage}>
-              Ha ocurrido un error inesperado. Por favor, intenta de nuevo.
+        <div className={styles.routeErrorContainer}>
+          <div className={styles.routeErrorContent}>
+            <div className={styles.routeErrorIcon}>🚧</div>
+            <h2 className={styles.routeErrorTitle}>Error en la página</h2>
+            <p className={styles.routeErrorMessage}>
+              Ha ocurrido un error al cargar esta página. Esto puede ser temporal.
             </p>
             
             {typeof process !== 'undefined' && process.env.NODE_ENV === 'development' && this.state.error && (
-              <details className={styles.errorDetails}>
+              <details className={styles.routeErrorDetails}>
                 <summary>Detalles del error (solo desarrollo)</summary>
-                <pre className={styles.errorStack}>
+                <pre className={styles.routeErrorStack}>
                   {this.state.error.toString()}
                   {this.state.errorInfo.componentStack}
                 </pre>
               </details>
             )}
 
-            <div className={styles.errorActions}>
+            <div className={styles.routeErrorActions}>
               <Button 
                 onClick={this.handleRetry} 
                 variant="primary"
                 className={styles.retryButton}
               >
                 Intentar de nuevo
+              </Button>
+              <Button 
+                onClick={this.handleGoBack} 
+                variant="secondary"
+                className={styles.backButton}
+              >
+                Volver
               </Button>
               <Button 
                 onClick={this.handleGoHome} 
@@ -90,4 +106,15 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-export default ErrorBoundary; 
+// Wrapper para usar con hooks de React Router
+const RouteErrorBoundaryWrapper = ({ children }) => {
+  const navigate = useNavigate();
+  
+  return (
+    <RouteErrorBoundary navigate={navigate}>
+      {children}
+    </RouteErrorBoundary>
+  );
+};
+
+export default RouteErrorBoundaryWrapper; 

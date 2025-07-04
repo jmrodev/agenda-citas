@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { authFetch } from '../../auth/authFetch';
 
 const DoctorContext = createContext();
@@ -16,7 +16,7 @@ export const DoctorProvider = ({ children }) => {
       if (!res || !res.ok) throw new Error('No se pudo obtener el doctor');
       const data = await res.json();
       setDoctor(data);
-    } catch (err) {
+    } catch {
       setDoctor(defaultDoctor);
     }
   };

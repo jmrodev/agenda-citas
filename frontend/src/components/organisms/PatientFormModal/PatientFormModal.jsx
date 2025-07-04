@@ -9,6 +9,7 @@ import Select from '../../atoms/Select/Select';
 import { parseAndValidateDate } from '../../../utils/date';
 import styles from './PatientFormModal.module.css';
 import { authFetch } from '../../../auth/authFetch';
+import { createLogger } from '../../../utils/debug.js';
 
 const PatientFormModal = ({ open, onClose, onSave, patient }) => {
   const [formData, setFormData] = useState({
@@ -35,6 +36,7 @@ const PatientFormModal = ({ open, onClose, onSave, patient }) => {
   const [fieldErrors, setFieldErrors] = useState({});
   const [birthDate, setBirthDate] = useState({ day: '', month: '', year: '' });
   const firstInputRef = useRef(null);
+  const logger = createLogger('PatientFormModal');
 
   // Obtener lista de doctores al abrir el modal
   useEffect(() => {
@@ -43,7 +45,7 @@ const PatientFormModal = ({ open, onClose, onSave, patient }) => {
         try {
           const res = await authFetch('/api/doctors');
           const data = await res.json();
-          console.log('Doctores recibidos (PatientFormModal):', data);
+          logger.log('Doctores recibidos:', data);
           setDoctors(data);
         } catch (err) {
           setDoctors([]);

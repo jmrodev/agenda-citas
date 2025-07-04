@@ -9,7 +9,7 @@ const defaultIcons = {
   danger: 'close'
 };
 
-const Alert = ({
+const Alert = React.memo(({
   children,
   type = 'info',
   icon,
@@ -30,6 +30,8 @@ const Alert = ({
       )}
     </div>
   );
-};
+});
+
+Alert.displayName = 'Alert';
 
 export default Alert; 

@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx';
 import Button from '../../atoms/Button/Button';
 import Input from '../../atoms/Input/Input';
 import Alert from '../../atoms/Alert/Alert';
-import PeopleIcon from '@mui/icons-material/People'; // Mantener por ahora, posible refactor a IconAtom más adelante
+import PeopleIcon from '@mui/icons-material/People';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import PatientFormModal from '../../organisms/PatientFormModal/PatientFormModal';
-import styles from './PatientsList.module.css'; // Importar CSS Module
+import PatientFormModal from '../PatientFormModal/PatientFormModal';
+import styles from './PatientsList.module.css';
 import { parseAndValidateDate } from '../../../utils/date';
 import { authFetch } from '../../../auth/authFetch';
 import { createLogger } from '../../../utils/debug.js';
 
-const PatientsList = () => {
+const PatientsList = React.memo(() => {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -23,7 +23,17 @@ const PatientsList = () => {
   const [editingPatient, setEditingPatient] = useState(null);
   const logger = createLogger('PatientsList');
 
-  const fetchPatients = async () => {
+  // Memoizar pacientes filtrados
+  const filteredPatients = useMemo(() => {
+    return patients.filter(patient =>
+      patient.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      patient.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      patient.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [patients, searchTerm]);
+
+  // Callbacks para handlers
+  const fetchPatients = useCallback(async () => {
     try {
       const response = await authFetch('/api/patients');
       if (!response || !response.ok) throw new Error('Error al cargar pacientes');
@@ -35,26 +45,44 @@ const PatientsList = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [logger]);
 
-  const handleDelete = async (patientId) => {
+  const handleDelete = useCallback(async (patientId) => {
     if (!confirm('¿Estás seguro de que quieres eliminar este paciente?')) return;
     try {
       const response = await authFetch(`/api/patients/${patientId}`, {
         method: 'DELETE'
       });
       if (!response || !response.ok) throw new Error('Error al eliminar paciente');
-      setPatients(patients.filter(p => p.patient_id !== patientId));
+      setPatients(prev => prev.filter(p => p.patient_id !== patientId));
     } catch (err) {
       setError(err.message);
     }
-  };
+  }, []);
 
-  const filteredPatients = patients.filter(patient =>
-    patient.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    patient.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    patient.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleSearchChange = useCallback((e) => {
+    setSearchTerm(e.target.value);
+  }, []);
+
+  const handleAddPatient = useCallback(() => {
+    setShowForm(true);
+  }, []);
+
+  const handleEditPatient = useCallback((patient) => {
+    setEditingPatient(patient);
+    setShowForm(true);
+  }, []);
+
+  const handleCloseForm = useCallback(() => {
+    setShowForm(false);
+    setEditingPatient(null);
+  }, []);
+
+  const handleSavePatient = useCallback(() => {
+    fetchPatients();
+    setShowForm(false);
+    setEditingPatient(null);
+  }, [fetchPatients]);
 
   if (loading) {
     return (
@@ -80,12 +108,12 @@ const PatientsList = () => {
               type="text"
               placeholder="Buscar pacientes..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={handleSearchChange}
               className={styles.searchInput}
             />
           </div>
           <Button 
-            onClick={() => setShowForm(true)}
+            onClick={handleAddPatient}
             className={styles.addButton}
           >
             <AddIcon />
@@ -121,16 +149,13 @@ const PatientsList = () => {
               <div>{patient.date_of_birth ? new Date(patient.date_of_birth).toLocaleDateString('es-AR') : '-'}</div>
               <div className={styles.actionsCell}>
                 <Button 
-                  size="sm" // Asumiendo que 'sm' es el tamaño pequeño en Button atom
-                  onClick={() => {
-                    setEditingPatient(patient);
-                    setShowForm(true);
-                  }}
+                  size="sm"
+                  onClick={() => handleEditPatient(patient)}
                 >
                   <EditIcon fontSize="small" />
                 </Button>
                 <Button 
-                  size="sm" // Asumiendo que 'sm' es el tamaño pequeño en Button atom
+                  size="sm"
                   variant="danger"
                   onClick={() => handleDelete(patient.patient_id)}
                 >
@@ -146,18 +171,13 @@ const PatientsList = () => {
       <PatientFormModal
         open={showForm}
         patient={editingPatient}
-        onClose={() => {
-          setShowForm(false);
-          setEditingPatient(null);
-        }}
-        onSave={() => {
-          fetchPatients();
-          setShowForm(false);
-          setEditingPatient(null);
-        }}
+        onClose={handleCloseForm}
+        onSave={handleSavePatient}
       />
     </DashboardLayout>
   );
-};
+});
+
+PatientsList.displayName = 'PatientsList';
 
 export default PatientsList; 

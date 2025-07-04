@@ -1,13 +1,15 @@
+import React from 'react';
 import styles from './DashboardLayout.module.css';
 import Header from '../../organisms/Header/Header.jsx';
 import Sidebar from '../../organisms/Sidebar/Sidebar.jsx';
+import { createLogger } from '../../../utils/debug.js';
 
 const DashboardLayout = ({ children, title }) => {
-  console.log('🏗️ [DashboardLayout] Componente iniciado con title:', title);
+  const logger = createLogger('DashboardLayout');
+  logger.log('Componente iniciado con title:', title);
   
   return (
     <div className={styles.dashboardContainer}>
-      {console.log('🏗️ [DashboardLayout] Renderizando layout')}
       <div className={styles.header}>
         <Header />
       </div>

@@ -14,7 +14,7 @@ const sizeClass = {
   lg: styles.lg
 };
 
-const Button = ({
+const Button = React.memo(({
   children,
   onClick,
   type = 'button',
@@ -44,6 +44,8 @@ const Button = ({
       {loading ? <span className={styles.loader} aria-hidden="true" /> : children}
     </button>
   );
-};
+});
+
+Button.displayName = 'Button';
 
 export default Button; 
