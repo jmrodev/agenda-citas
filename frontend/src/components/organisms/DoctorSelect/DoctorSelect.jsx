@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDoctor } from '../../context/DoctorContext';
+import { authFetch } from '../../utils/authFetch';
 
 const DoctorSelect = () => {
   const { doctor, setDoctor } = useDoctor();
@@ -7,8 +8,7 @@ const DoctorSelect = () => {
 
   useEffect(() => {
     const fetchDoctors = async () => {
-      const token = localStorage.getItem('token');
-      const res = await fetch('/api/doctors', { headers: { 'Authorization': `Bearer ${token}` } });
+      const res = await authFetch('/api/doctors');
       const data = await res.json();
       setDoctors(data);
       if (!doctor && data.length > 0) setDoctor(data[0]);

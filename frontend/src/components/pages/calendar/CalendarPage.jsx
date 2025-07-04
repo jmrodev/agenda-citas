@@ -10,6 +10,7 @@ import ModalFooter from '../../molecules/ModalFooter/ModalFooter';
 import Button from '../../atoms/Button/Button';
 import Input from '../../atoms/Input/Input';
 import { parseAndValidateDate } from '../../../utils/date';
+import { authFetch } from '../../../utils/authFetch';
 
 const initialFilters = {
   cita: true,
@@ -41,11 +42,8 @@ const CalendarPage = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const res = await fetch('/api/doctors', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (!res.ok) throw new Error('Error al obtener doctores');
+        const res = await authFetch('/api/doctors');
+        if (!res || !res.ok) throw new Error('Error al obtener doctores');
         const data = await res.json();
         setDoctors(data);
         if (data.length > 0) setSelectedDoctorId(data[0].doctor_id.toString());
@@ -61,11 +59,8 @@ const CalendarPage = () => {
       setLoading(true);
       setError('');
       try {
-        const token = localStorage.getItem('token');
-        const res = await fetch('/api/calendar/events', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (!res.ok) throw new Error('Error al obtener eventos');
+        const res = await authFetch('/api/calendar/events');
+        if (!res || !res.ok) throw new Error('Error al obtener eventos');
         const data = await res.json();
         setEvents(data);
       } catch (err) {

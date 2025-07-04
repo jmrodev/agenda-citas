@@ -92,7 +92,11 @@ export default function AppRouter() {
                         <PaymentStats />
                     </RequireAuth>
                 } />
-                <Route path='/settings' element={<Settings />} />
+                <Route path='/settings' element={
+                  <RequireAuth allowedRoles={['admin', 'secretary']}>
+                    <Settings />
+                  </RequireAuth>
+                } />
                 <Route path='/patients' element={
                   <RequireAuth allowedRoles={['admin', 'secretary']}>
                     <PatientsList />

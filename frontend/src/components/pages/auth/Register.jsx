@@ -7,6 +7,7 @@ import Alert from '../../atoms/Alert/Alert';
 import SuccessScreen from '../../organisms/SuccessScreen/SuccessScreen';
 import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx';
 import { parseAndValidateDate } from '../../../utils/date';
+import { authFetch } from '../../../utils/authFetch';
 
 function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -156,11 +157,10 @@ function RegisterForm({ defaultRole }) {
           user: { username, email, password }
         };
       }
-      const res = await fetch(endpoint, {
+      const res = await authFetch(endpoint, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(body)
       });

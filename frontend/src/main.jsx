@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import './styles/abstracts/_variables.css';
 import AppRouter from './components/pages/AppRouter.jsx';
+import { authFetch } from './utils/authFetch';
 
 const handleLogout = () => {
   localStorage.removeItem('token');
@@ -32,10 +33,8 @@ function InactivityHandler({ children }) {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const res = await fetch('/api/auth/user/config', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const res = await authFetch('/api/auth/user/config');
+        if (!res) return;
         const data = await res.json();
         setTimeoutValue((data.session_timeout_minutes || 15) * 60 * 1000);
       } catch {}

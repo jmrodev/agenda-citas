@@ -6,33 +6,30 @@ import PeopleIcon from '@mui/icons-material/People';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import { authFetch } from '../../../utils/authFetch';
 
 const DashboardAdmin = () => {
   const [stats, setStats] = useState({ pacientes: 0, citas: 0, doctores: 0, secretarias: 0 });
 
   useEffect(() => {
     const fetchStats = async () => {
-      const token = localStorage.getItem('token');
       try {
         const [pacRes, citaRes, docRes, secRes] = await Promise.all([
-          fetch('/api/patients/dashboard-stats', { headers: { 'Authorization': `Bearer ${token}` } }),
-          fetch('/api/appointments/dashboard-stats', { headers: { 'Authorization': `Bearer ${token}` } }),
-          fetch('/api/doctors/dashboard-stats', { headers: { 'Authorization': `Bearer ${token}` } }),
-          fetch('/api/secretaries/dashboard-stats', { headers: { 'Authorization': `Bearer ${token}` } })
+          authFetch('/api/patients/dashboard-stats'),
+          authFetch('/api/appointments/dashboard-stats'),
+          authFetch('/api/doctors/dashboard-stats'),
+          authFetch('/api/secretaries/dashboard-stats')
         ]);
-
         // Helper para parsear JSON y obtener el valor o 0
         const getJSONValue = async (response, key, defaultValue = 0) => {
-          if (!response.ok) return defaultValue;
+          if (!response || !response.ok) return defaultValue;
           const data = await response.json();
           return data[key] || defaultValue;
         };
-
         const pacientes = await getJSONValue(pacRes, 'totalPacientes');
         const citas = await getJSONValue(citaRes, 'citasHoy');
         const doctores = await getJSONValue(docRes, 'totalDoctores');
         const secretarias = await getJSONValue(secRes, 'totalSecretarias');
-
         setStats({ pacientes, citas, doctores, secretarias });
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);

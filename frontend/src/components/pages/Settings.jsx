@@ -4,6 +4,7 @@ import DashboardLayout from '../templates/DashboardLayout/DashboardLayout'; // I
 import FormField from '../molecules/FormField/FormField'; // Importar FormField
 import Alert from '../atoms/Alert/Alert'; // Importar Alert
 import styles from './Settings.module.css'; // Importar CSS Module
+import { authFetch } from '../../utils/authFetch';
 
 const Settings = () => {
   const [timeout, setTimeoutValue] = useState(15);
@@ -14,10 +15,8 @@ const Settings = () => {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const res = await fetch('/api/auth/user/config', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const res = await authFetch('/api/auth/user/config');
+        if (!res) return;
         const data = await res.json();
         setTimeoutValue(data.session_timeout_minutes || 15);
       } catch (err) {
@@ -35,16 +34,14 @@ const Settings = () => {
     setError('');
     setSuccess(false);
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch('/api/auth/user/config', {
+      const res = await authFetch('/api/auth/user/config', {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ session_timeout_minutes: timeout })
       });
-      if (!res.ok) throw new Error('Error al guardar');
+      if (!res || !res.ok) throw new Error('Error al guardar');
       setSuccess(true);
     } catch (err) {
       setError('Error al guardar configuración');

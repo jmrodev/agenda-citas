@@ -11,6 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PatientFormModal from '../../organisms/PatientFormModal/PatientFormModal';
 import styles from './PatientsList.module.css'; // Importar CSS Module
 import { parseAndValidateDate } from '../../../utils/date';
+import { authFetch } from '../../../utils/authFetch';
 
 const PatientsList = () => {
   const [patients, setPatients] = useState([]);
@@ -26,13 +27,8 @@ const PatientsList = () => {
 
   const fetchPatients = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/patients', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      
-      if (!response.ok) throw new Error('Error al cargar pacientes');
-      
+      const response = await authFetch('/api/patients');
+      if (!response || !response.ok) throw new Error('Error al cargar pacientes');
       const data = await response.json();
       setPatients(data);
     } catch (err) {
@@ -44,16 +40,11 @@ const PatientsList = () => {
 
   const handleDelete = async (patientId) => {
     if (!confirm('¿Estás seguro de que quieres eliminar este paciente?')) return;
-    
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/patients/${patientId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
+      const response = await authFetch(`/api/patients/${patientId}`, {
+        method: 'DELETE'
       });
-      
-      if (!response.ok) throw new Error('Error al eliminar paciente');
-      
+      if (!response || !response.ok) throw new Error('Error al eliminar paciente');
       setPatients(patients.filter(p => p.patient_id !== patientId));
     } catch (err) {
       setError(err.message);

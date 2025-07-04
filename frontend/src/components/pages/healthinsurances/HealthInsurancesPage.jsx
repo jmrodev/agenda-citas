@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDoctor } from '../../context/DoctorContext';
 import HealthInsuranceForm from '../../molecules/HealthInsuranceForm/HealthInsuranceForm';
 import Button from '../../atoms/Button/Button';
+import { authFetch } from '../../../utils/authFetch';
 
 const HealthInsurancesPage = () => {
   const [insurances, setInsurances] = useState([]);
@@ -10,22 +11,19 @@ const HealthInsurancesPage = () => {
   const { doctor } = useDoctor();
 
   const fetchInsurances = async () => {
-    const token = localStorage.getItem('token');
-    const res = await fetch('/api/health-insurances', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const res = await authFetch('/api/health-insurances');
+    if (!res) return;
     setInsurances(await res.json());
   };
 
   useEffect(() => { fetchInsurances(); }, []);
 
   const handleSave = async (data) => {
-    const token = localStorage.getItem('token');
     const method = selected ? 'PUT' : 'POST';
     const url = selected ? `/api/health-insurances/${selected.insurance_id}` : '/api/health-insurances';
-    await fetch(url, {
+    await authFetch(url, {
       method,
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
     setShowForm(false);
@@ -35,10 +33,8 @@ const HealthInsurancesPage = () => {
 
   const handleDelete = async (id) => {
     if (!window.confirm('¿Eliminar obra social?')) return;
-    const token = localStorage.getItem('token');
-    await fetch(`/api/health-insurances/${id}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` }
+    await authFetch(`/api/health-insurances/${id}`, {
+      method: 'DELETE'
     });
     fetchInsurances();
   };

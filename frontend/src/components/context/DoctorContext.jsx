@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { authFetch } from '../../utils/authFetch';
 
 const DoctorContext = createContext();
 
@@ -11,11 +12,8 @@ export const DoctorProvider = ({ children }) => {
 
   const setDoctorById = async (id) => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`/api/doctors/${id}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (!res.ok) throw new Error('No se pudo obtener el doctor');
+      const res = await authFetch(`/api/doctors/${id}`);
+      if (!res || !res.ok) throw new Error('No se pudo obtener el doctor');
       const data = await res.json();
       setDoctor(data);
     } catch (err) {
@@ -26,10 +24,7 @@ export const DoctorProvider = ({ children }) => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const res = await fetch('/api/doctors', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const res = await authFetch('/api/doctors');
         const data = await res.json();
         if (data && data.length > 0) {
           const firstDoctor = data[0];

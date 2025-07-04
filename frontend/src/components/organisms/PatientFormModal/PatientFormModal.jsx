@@ -8,6 +8,7 @@ import Alert from '../../atoms/Alert/Alert';
 import Select from '../../atoms/Select/Select';
 import { parseAndValidateDate } from '../../../utils/date';
 import styles from './PatientFormModal.module.css';
+import { authFetch } from '../../../utils/authFetch';
 
 const PatientFormModal = ({ open, onClose, onSave, patient }) => {
   const [formData, setFormData] = useState({
@@ -40,10 +41,7 @@ const PatientFormModal = ({ open, onClose, onSave, patient }) => {
     if (open) {
       const fetchDoctors = async () => {
         try {
-          const token = localStorage.getItem('token');
-          const res = await fetch('/api/doctors', {
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
+          const res = await authFetch('/api/doctors');
           const data = await res.json();
           setDoctors(data);
         } catch (err) {
@@ -167,7 +165,6 @@ const PatientFormModal = ({ open, onClose, onSave, patient }) => {
     }
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
       const url = patient ? `/api/patients/${patient.patient_id}` : '/api/patients';
       const method = patient ? 'PUT' : 'POST';
       const body = JSON.stringify({
@@ -179,15 +176,14 @@ const PatientFormModal = ({ open, onClose, onSave, patient }) => {
         },
         doctor_ids: selectedDoctors.map(Number)
       });
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         body
       });
-      if (!response.ok) {
+      if (!response || !response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Error al guardar paciente');
       }
