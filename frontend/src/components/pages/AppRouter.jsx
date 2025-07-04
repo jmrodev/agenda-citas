@@ -13,6 +13,7 @@ import PatientsList from './patients/PatientsList.jsx';
 import CalendarPage from './calendar/CalendarPage';
 import DesktopAppPage from './desktop/DesktopAppPage';
 import HealthInsurancesPage from './healthinsurances/HealthInsurancesPage';
+import Loader from '../atoms/Loader/Loader';
 
 // Componente que redirige según el rol del usuario
 const HomePage = () => {
@@ -41,12 +42,16 @@ const HomePage = () => {
           navigate('/secretary', { replace: true });
           break;
         default:
+          // Si el rol no es válido, limpiar y redirigir a login
+          localStorage.removeItem('token');
+          localStorage.removeItem('role');
           navigate('/login', { replace: true });
           break;
       }
     } catch (error) {
-      // Si hay error al decodificar el token, ir a login
+      // Si hay error al decodificar el token, limpiar y ir a login
       localStorage.removeItem('token');
+      localStorage.removeItem('role');
       navigate('/login', { replace: true });
     }
   }, [navigate, token]);
@@ -60,7 +65,7 @@ const HomePage = () => {
       height: '100vh',
       background: 'var(--app-bg, #f9fafb)'
     }}>
-      <div>Cargando...</div>
+      <Loader size="large" text="Redirigiendo..." />
     </div>
   );
 };
@@ -117,7 +122,7 @@ export default function AppRouter() {
                     <HealthInsurancesPage />
                   </RequireAuth>
                 } />
-                <Route path='*' element={<Navigate to='/login' />} />
+                <Route path='*' element={<Navigate to='/' />} />
             </Routes>
         </>
     );

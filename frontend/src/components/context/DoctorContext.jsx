@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authFetch } from '../../utils/authFetch';
+import { authFetch } from '../../auth/authFetch';
 
 const DoctorContext = createContext();
 
@@ -20,24 +20,6 @@ export const DoctorProvider = ({ children }) => {
       setDoctor(defaultDoctor);
     }
   };
-
-  useEffect(() => {
-    const fetchDoctors = async () => {
-      try {
-        const res = await authFetch('/api/doctors');
-        const data = await res.json();
-        if (data && data.length > 0) {
-          const firstDoctor = data[0];
-          setDoctor(firstDoctor);
-        } else {
-          setDoctor(defaultDoctor);
-        }
-      } catch (err) {
-        setDoctor(defaultDoctor);
-      }
-    };
-    fetchDoctors();
-  }, []);
 
   return (
     <DoctorContext.Provider value={{ doctor, setDoctor, setDoctorById }}>

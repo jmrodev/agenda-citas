@@ -1,37 +1,54 @@
 import React, { useEffect, useState } from 'react';
 import { useDoctor } from '../../context/DoctorContext';
-import { authFetch } from '../../utils/authFetch';
+import { authFetch } from '../../auth/authFetch';
+import DoctorSelector from '../../molecules/DoctorSelector/DoctorSelector';
 
 const DoctorSelect = () => {
   const { doctor, setDoctor } = useDoctor();
   const [doctors, setDoctors] = useState([]);
+  const [showSelector, setShowSelector] = useState(false);
 
-  useEffect(() => {
-    const fetchDoctors = async () => {
-      const res = await authFetch('/api/doctors');
-      const data = await res.json();
-      setDoctors(data);
-      if (!doctor && data.length > 0) setDoctor(data[0]);
-    };
-    fetchDoctors();
-    // eslint-disable-next-line
-  }, []);
+  // useEffect(() => {
+  //   const fetchDoctors = async () => { ... };
+  //   fetchDoctors();
+  // }, []);
 
   return (
-    <select
-      value={doctor?.doctor_id || ''}
-      onChange={e => {
-        const selected = doctors.find(d => d.doctor_id === Number(e.target.value));
-        setDoctor(selected);
-      }}
-      style={{ marginLeft: 16, minWidth: 120 }}
-    >
-      {doctors.map(d => (
-        <option key={d.doctor_id} value={d.doctor_id}>
-          Dr. {d.first_name} {d.last_name}
-        </option>
-      ))}
-    </select>
+    <>
+      <button
+        onClick={() => setShowSelector(true)}
+        style={{
+          background: 'none',
+          border: '1px solid var(--primary-color, #1976d2)',
+          color: 'var(--primary-color, #1976d2)',
+          cursor: 'pointer',
+          fontSize: 16,
+          padding: '6px 16px',
+          borderRadius: 6,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          marginLeft: 16,
+          minWidth: 120
+        }}
+        title="Cambiar doctor"
+      >
+        <span>{doctor?.name || `Dr. ${doctor?.first_name || ''} ${doctor?.last_name || ''}` || 'Seleccionar doctor'}</span>
+      </button>
+      {showSelector && (
+        <DoctorSelector
+          variant='dropdown'
+          doctors={doctors.map(d => ({ ...d, name: d.name || `Dr. ${d.first_name} ${d.last_name}` }))}
+          selectedDoctor={doctor}
+          onSelect={id => {
+            const selected = doctors.find(d => (d.id || d.doctor_id) === id);
+            setDoctor(selected);
+            setShowSelector(false);
+          }}
+          onClose={() => setShowSelector(false)}
+        />
+      )}
+    </>
   );
 };
 

@@ -1,0 +1,15 @@
+### Login secretaria stella
+# @name login_stella
+POST http://localhost:3001/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "stella",
+  "password": "Stella1974"
+}
+
+### guardar en variable el token
+@token_admin = {{login_stella.response.body.token}}
+###
+GET http://localhost:3001/api/doctors
+Authorization: Bearer {{token_admin}}

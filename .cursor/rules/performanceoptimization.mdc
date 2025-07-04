@@ -1,0 +1,54 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Rule Name: performanceoptimization
+Description: 
+Guidelines para optimización de performance en el proyecto:
+
+### FRONTEND PERFORMANCE:
+- Usar React.memo() para componentes que reciben props que no cambian frecuentemente
+- Implementar lazy loading para rutas y componentes pesados: React.lazy() y Suspense
+- Optimizar re-renders con useMemo() y useCallback() para cálculos costosos y funciones
+- Usar CSS Modules para evitar conflictos de estilos y mejorar tree-shaking
+- Implementar virtualización para listas largas (react-window o react-virtualized)
+- Optimizar imágenes con formatos modernos (WebP, AVIF) y lazy loading
+- Minimizar bundle size con code splitting y dynamic imports
+
+### BACKEND PERFORMANCE:
+- Implementar caching con Redis para consultas frecuentes
+- Usar índices en MySQL para queries complejas
+- Implementar paginación en endpoints que devuelven listas
+- Usar connection pooling para MySQL
+- Implementar rate limiting para prevenir abuso de APIs
+- Optimizar queries con JOINs apropiados y evitar N+1 queries
+- Usar streaming para respuestas grandes
+
+### DATABASE OPTIMIZATION:
+- Crear índices en columnas frecuentemente consultadas (user_id, created_at, status)
+- Usar EXPLAIN para analizar performance de queries
+- Implementar soft deletes en lugar de DELETE físicos
+- Usar transacciones para operaciones complejas
+- Optimizar esquema de base de datos para reducir redundancia
+
+### MONITORING & METRICS:
+- Implementar logging estructurado para debugging
+- Monitorear Core Web Vitals en frontend
+- Trackear tiempo de respuesta de APIs
+- Implementar health checks para servicios críticos
+- Usar herramientas como Lighthouse para auditorías de performance
+
+### CACHING STRATEGIES:
+- Cache de consultas frecuentes (horarios de doctores, configuraciones)
+- Cache de sesiones de usuario
+- Cache de datos estáticos (obras sociales, especialidades)
+- Invalidación inteligente de cache cuando datos cambian
+
+### BUNDLE OPTIMIZATION:
+- Tree shaking para eliminar código no usado
+- Code splitting por rutas y componentes
+- Optimizar imports (evitar importar librerías completas)
+- Usar webpack-bundle-analyzer para identificar bottlenecks
+- Implementar service workers para cache offline
+

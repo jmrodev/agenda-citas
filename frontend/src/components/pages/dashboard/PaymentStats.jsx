@@ -6,7 +6,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import PeopleIcon from '@mui/icons-material/People';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { parseAndValidateDate } from '../../../utils/date';
-import { authFetch } from '../../../utils/authFetch';
+import { authFetch } from '../../../auth/authFetch';
 
 const PaymentStats = () => {
   const [stats, setStats] = useState({
@@ -19,26 +19,10 @@ const PaymentStats = () => {
   const [doctorStats, setDoctorStats] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const [statsRes, doctorStatsRes] = await Promise.all([
-          authFetch('/api/facility-payments/stats'),
-          authFetch('/api/facility-payments/stats/by-doctor')
-        ]);
-        if (!statsRes || !doctorStatsRes) return;
-        const statsData = await statsRes.json();
-        const doctorStatsData = await doctorStatsRes.json();
-        setStats(statsData);
-        setDoctorStats(doctorStatsData);
-      } catch (error) {
-        console.error('Error fetching payment stats:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStats();
-  }, []);
+  // useEffect(() => {
+  //   const fetchStats = async () => { ... };
+  //   fetchStats();
+  // }, []);
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('es-AR', {

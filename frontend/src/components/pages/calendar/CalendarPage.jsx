@@ -10,7 +10,7 @@ import ModalFooter from '../../molecules/ModalFooter/ModalFooter';
 import Button from '../../atoms/Button/Button';
 import Input from '../../atoms/Input/Input';
 import { parseAndValidateDate } from '../../../utils/date';
-import { authFetch } from '../../../utils/authFetch';
+import { authFetch } from '../../../auth/authFetch';
 
 const initialFilters = {
   cita: true,
@@ -37,40 +37,6 @@ const CalendarPage = () => {
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
   const [createSuccess, setCreateSuccess] = useState('');
-
-  // Obtener lista de doctores al montar
-  useEffect(() => {
-    const fetchDoctors = async () => {
-      try {
-        const res = await authFetch('/api/doctors');
-        if (!res || !res.ok) throw new Error('Error al obtener doctores');
-        const data = await res.json();
-        setDoctors(data);
-        if (data.length > 0) setSelectedDoctorId(data[0].doctor_id.toString());
-      } catch (err) {
-        setDoctors([]);
-      }
-    };
-    fetchDoctors();
-  }, []);
-
-  useEffect(() => {
-    const fetchEvents = async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const res = await authFetch('/api/calendar/events');
-        if (!res || !res.ok) throw new Error('Error al obtener eventos');
-        const data = await res.json();
-        setEvents(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchEvents();
-  }, []);
 
   // Filtrar eventos según los filtros activos y el doctor seleccionado
   const filteredEvents = events.filter(ev => {
@@ -151,9 +117,11 @@ const CalendarPage = () => {
   return (
     <DashboardLayout title="Calendario">
       <DoctorSelector
-        doctors={doctors}
-        selectedDoctorId={selectedDoctorId}
-        onChange={setSelectedDoctorId}
+        variant='inline'
+        doctors={doctors.map(d => ({ ...d, name: d.name || `Dr. ${d.first_name} ${d.last_name}` }))}
+        selectedDoctor={{ doctor_id: selectedDoctorId }}
+        onSelect={id => setSelectedDoctorId(id.toString())}
+        onClose={() => {}}
       />
       <CalendarFilters filters={filters} onChange={setFilters} />
       {/* Leyenda de tipos de evento */}

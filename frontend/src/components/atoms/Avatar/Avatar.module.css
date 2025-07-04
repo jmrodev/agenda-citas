@@ -11,6 +11,8 @@
   border: 2px solid var(--border-color, #e5e7eb);
   user-select: none;
   transition: background 0.2s, color 0.2s;
+  width: var(--avatar-size, 40px);
+  height: var(--avatar-size, 40px);
 }
 
 .img {

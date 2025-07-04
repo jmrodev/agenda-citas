@@ -4,29 +4,13 @@ import DashboardLayout from '../templates/DashboardLayout/DashboardLayout'; // I
 import FormField from '../molecules/FormField/FormField'; // Importar FormField
 import Alert from '../atoms/Alert/Alert'; // Importar Alert
 import styles from './Settings.module.css'; // Importar CSS Module
-import { authFetch } from '../../utils/authFetch';
+import { authFetch } from '../../auth/authFetch';
 
 const Settings = () => {
   const [timeout, setTimeoutValue] = useState(15);
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    const fetchConfig = async () => {
-      try {
-        const res = await authFetch('/api/auth/user/config');
-        if (!res) return;
-        const data = await res.json();
-        setTimeoutValue(data.session_timeout_minutes || 15);
-      } catch (err) {
-        setError('Error al cargar configuración');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchConfig();
-  }, []);
 
   const handleSave = async (e) => {
     e.preventDefault();

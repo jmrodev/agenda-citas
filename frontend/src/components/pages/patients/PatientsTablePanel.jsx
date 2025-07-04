@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Button from '../../atoms/Button/Button';
 import Input from '../../atoms/Input/Input';
 import Alert from '../../atoms/Alert/Alert';
@@ -9,7 +9,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PatientFormModal from '../../organisms/PatientFormModal/PatientFormModal';
 import PatientDetailsModal from './PatientDetailsModal';
 import styles from './PatientsList.module.css';
-import { authFetch } from '../../../utils/authFetch';
+import { authFetch } from '../../../auth/authFetch';
 
 const PatientsTablePanel = ({ doctor, crudMode }) => {
   const [patients, setPatients] = useState([]);
@@ -20,11 +20,6 @@ const PatientsTablePanel = ({ doctor, crudMode }) => {
   const [editingPatient, setEditingPatient] = useState(null);
   const [detailsPatient, setDetailsPatient] = useState(null);
 
-  useEffect(() => {
-    if (doctor) fetchPatients();
-    // eslint-disable-next-line
-  }, [doctor]);
-
   const fetchPatients = async () => {
     setLoading(true);
     try {
@@ -32,6 +27,7 @@ const PatientsTablePanel = ({ doctor, crudMode }) => {
       if (!response || !response.ok) throw new Error('Error al cargar pacientes');
       const data = await response.json();
       setPatients(data);
+      console.log('Pacientes recibidos (PatientsTablePanel):', data);
     } catch (err) {
       setError(err.message);
     } finally {

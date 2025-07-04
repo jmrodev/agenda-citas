@@ -7,13 +7,30 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Redirección automática si ya hay sesión
+  // Redirección automática si ya hay sesión válida
   useEffect(() => {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
+    
+    // Solo redirigir si hay token y rol válidos
     if (token && role) {
-      // Usar solo la ruta raíz, HomePage se encargará de la redirección
-      navigate('/', { replace: true });
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        // Verificar que el token no esté expirado
+        if (!payload.exp || (payload.exp * 1000) > Date.now()) {
+          // Token válido, redirigir a la página principal
+          navigate('/', { replace: true });
+          return;
+        }
+      } catch (e) {
+        // Token malformado, continuar con el login
+      }
+    }
+    
+    // Si hay token o rol pero no son válidos, limpiar
+    if (token || role) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
     }
   }, [navigate]);
 
@@ -35,8 +52,8 @@ const Login = () => {
       const data = await res.json();
       localStorage.setItem('token', data.token);
       localStorage.setItem('role', data.user.role); // Guardar rol del usuario
-      // Redirigir según rol (o a una página principal que maneje la redirección por rol)
-      navigate('/'); // Simplificado, la página de inicio puede manejar la redirección basada en rol
+      // Redirigir a la página principal que manejará la redirección por rol
+      navigate('/', { replace: true });
     } catch (err) {
       setError('Error de red o servidor.');
     } finally {

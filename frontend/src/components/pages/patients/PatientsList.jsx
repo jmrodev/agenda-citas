@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx';
 import Button from '../../atoms/Button/Button';
 import Input from '../../atoms/Input/Input';
@@ -11,7 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PatientFormModal from '../../organisms/PatientFormModal/PatientFormModal';
 import styles from './PatientsList.module.css'; // Importar CSS Module
 import { parseAndValidateDate } from '../../../utils/date';
-import { authFetch } from '../../../utils/authFetch';
+import { authFetch } from '../../../auth/authFetch';
 
 const PatientsList = () => {
   const [patients, setPatients] = useState([]);
@@ -21,16 +21,13 @@ const PatientsList = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingPatient, setEditingPatient] = useState(null);
 
-  useEffect(() => {
-    fetchPatients();
-  }, []);
-
   const fetchPatients = async () => {
     try {
       const response = await authFetch('/api/patients');
       if (!response || !response.ok) throw new Error('Error al cargar pacientes');
       const data = await response.json();
       setPatients(data);
+      console.log('Pacientes recibidos (PatientsList):', data);
     } catch (err) {
       setError(err.message);
     } finally {

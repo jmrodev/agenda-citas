@@ -6,38 +6,15 @@ import PeopleIcon from '@mui/icons-material/People';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
-import { authFetch } from '../../../utils/authFetch';
+import { authFetch } from '../../../auth/authFetch';
 
 const DashboardAdmin = () => {
   const [stats, setStats] = useState({ pacientes: 0, citas: 0, doctores: 0, secretarias: 0 });
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const [pacRes, citaRes, docRes, secRes] = await Promise.all([
-          authFetch('/api/patients/dashboard-stats'),
-          authFetch('/api/appointments/dashboard-stats'),
-          authFetch('/api/doctors/dashboard-stats'),
-          authFetch('/api/secretaries/dashboard-stats')
-        ]);
-        // Helper para parsear JSON y obtener el valor o 0
-        const getJSONValue = async (response, key, defaultValue = 0) => {
-          if (!response || !response.ok) return defaultValue;
-          const data = await response.json();
-          return data[key] || defaultValue;
-        };
-        const pacientes = await getJSONValue(pacRes, 'totalPacientes');
-        const citas = await getJSONValue(citaRes, 'citasHoy');
-        const doctores = await getJSONValue(docRes, 'totalDoctores');
-        const secretarias = await getJSONValue(secRes, 'totalSecretarias');
-        setStats({ pacientes, citas, doctores, secretarias });
-      } catch (error) {
-        console.error("Error fetching dashboard stats:", error);
-        // Podrías establecer un estado de error aquí para mostrarlo en la UI
-      }
-    };
-    fetchStats();
-  }, []);
+  // useEffect(() => {
+  //   const fetchStats = async () => { ... };
+  //   fetchStats();
+  // }, []);
 
   const statCardsData = [
     {

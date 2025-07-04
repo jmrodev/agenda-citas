@@ -1,0 +1,79 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Rule Name: errorhandling
+Description: 
+Patrones de manejo de errores para el proyecto:
+
+### FRONTEND ERROR HANDLING:
+- Usar Error Boundaries para capturar errores de componentes React
+- Implementar try-catch en operaciones asíncronas (fetch, async/await)
+- Mostrar mensajes de error user-friendly, no técnicos
+- Implementar fallback UI para estados de error
+- Usar toast notifications para errores no críticos
+- Logging de errores para debugging (console.error, error tracking services)
+
+### BACKEND ERROR HANDLING:
+- Implementar middleware de error handling global
+- Usar códigos de estado HTTP apropiados (400, 401, 403, 404, 500)
+- Estructura consistente de respuesta de errores:
+```javascript
+{
+  "error": {
+    "message": "Mensaje descriptivo del error",
+    "code": "ERROR_CODE",
+    "details": "Información adicional si es necesario"
+  }
+}
+```
+- Validación de entrada con Joi o express-validator
+- Manejo de errores de base de datos con try-catch
+- Logging estructurado de errores para debugging
+
+### DATABASE ERROR HANDLING:
+- Manejar errores de conexión a base de datos
+- Implementar retry logic para operaciones fallidas
+- Validar constraints antes de operaciones críticas
+- Usar transacciones para operaciones que requieren consistencia
+- Manejar deadlocks y timeouts apropiadamente
+
+### API ERROR PATTERNS:
+- 400 Bad Request: Datos de entrada inválidos
+- 401 Unauthorized: Token faltante o inválido
+- 403 Forbidden: Usuario no tiene permisos
+- 404 Not Found: Recurso no encontrado
+- 409 Conflict: Conflicto de datos (ej. email duplicado)
+- 422 Unprocessable Entity: Validación fallida
+- 500 Internal Server Error: Error del servidor
+- 503 Service Unavailable: Servicio temporalmente no disponible
+
+### VALIDATION ERROR HANDLING:
+- Validación en frontend para UX inmediata
+- Validación en backend para seguridad
+- Mensajes de error específicos por campo
+- Sanitización de datos de entrada
+- Validación de tipos de datos y formatos
+
+### AUTHENTICATION ERROR HANDLING:
+- Manejo de tokens expirados
+- Refresh token automático
+- Redirección a login cuando sea necesario
+- Mensajes claros sobre problemas de autenticación
+- Rate limiting para intentos de login fallidos
+
+### NETWORK ERROR HANDLING:
+- Timeout handling para requests
+- Retry logic para requests fallidos
+- Offline state handling
+- Loading states durante requests
+- Fallback data cuando sea apropiado
+
+### ERROR MONITORING:
+- Implementar error tracking (Sentry, LogRocket)
+- Logging estructurado para debugging
+- Alertas para errores críticos
+- Métricas de error rates
+- User feedback para errores no manejados
+

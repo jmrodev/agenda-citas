@@ -1,0 +1,49 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Rule Name: atomicdesigncomponents
+Description: 
+Listado completo de componentes Atomic Design disponibles en el proyecto:
+
+### ÁTOMOS (Atoms) - frontend/src/components/atoms/
+- Alert, Avatar, Backdrop, Badge, Button, CalendarButton, CalendarDay, CalendarDot, CalendarIcon, CalendarWeekday
+- CardActions, CardBase, CardContent, CardImage, CardSubtitle, CardTitle, Checkbox, Chip, CloseIcon, Divider
+- FileInput, FormErrorIcon, HelperText, Icon, IconButton, Image, Input, Label, Link, Loader, MenuButton
+- MenuSeparator, ProgressBar, Radio, RatingStar, Select, SideMenuButton, Spinner, Switch, Text, Textarea, Title, Tooltip
+
+### MOLÉCULAS (Molecules) - frontend/src/components/molecules/
+- ActivityLogItem, AppointmentListItem, CalendarDayInfo, CalendarEventList, CalendarFilters, CalendarGrid
+- CalendarHeader, CalendarWeekdays, CardFooter, CardHeader, DoctorSelector, FormField, FormGroup
+- HealthInsuranceForm, InfoRow, ListItem, MenuBar, MenuDropdown, ModalContainer, ModalFooter, ModalHeader
+- QuickAction, SearchBar, SideMenu, StatCard, StatusIndicator, UserInfo, UserListItem
+
+### ORGANISMOS (Organisms) - frontend/src/components/organisms/
+- ActivityLogList, CalendarView, DesktopContentPanel, DesktopMenuBar, DesktopSideMenu, DoctorSelect
+- Header, LoginForm, PatientFormModal, QuickActionsBar, RecentUsersList, Sidebar, StatsGrid
+- SuccessScreen, UpcomingAppointmentsList, ViewModeSelect
+
+### TEMPLATES - frontend/src/components/templates/
+- DashboardLayout, DesktopAppLayout
+
+### PÁGINAS (Pages) - frontend/src/components/pages/
+- AppRouter, Settings, auth/ (Login, Register, RequireAuth), calendar/CalendarPage
+- dashboard/ (DashboardAdmin, DoctorDashboard, PaymentStats, SecretaryDashboard)
+- desktop/DesktopAppPage, healthinsurances/HealthInsurancesPage, patients/ (PatientForm, PatientList, PatientsList, PatientView)
+
+### HOOKS & CONTEXT - frontend/src/
+- hooks/InactivityHandler, components/context/ (DoctorContext, ViewModeContext)
+
+### ESTILOS - frontend/src/styles/
+- abstracts/_variables.css (variables CSS globales)
+
+### COMPONENTES DE LOADING DISPONIBLES:
+- Spinner (átomo): <Spinner size={32} color="primary" />
+- Loader (átomo): <Loader size="large" text="Cargando..." />
+- Button con loading: <Button loading>Guardar</Button>
+### CONVENCIONES:
+- CSS Modules (.module.css) para scoped styles
+- Variables CSS: var(--primary-color), var(--secondary-color), etc.
+- Mobile First como selección de media
+- Estructura: Componente/Componente.jsx + Componente.module.css

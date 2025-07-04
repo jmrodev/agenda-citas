@@ -7,7 +7,7 @@ import Alert from '../../atoms/Alert/Alert';
 import SuccessScreen from '../../organisms/SuccessScreen/SuccessScreen';
 import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx';
 import { parseAndValidateDate } from '../../../utils/date';
-import { authFetch } from '../../../utils/authFetch';
+import { authFetch } from '../../../auth/authFetch';
 
 function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);

@@ -8,7 +8,7 @@ import Alert from '../../atoms/Alert/Alert';
 import Select from '../../atoms/Select/Select';
 import { parseAndValidateDate } from '../../../utils/date';
 import styles from './PatientFormModal.module.css';
-import { authFetch } from '../../../utils/authFetch';
+import { authFetch } from '../../../auth/authFetch';
 
 const PatientFormModal = ({ open, onClose, onSave, patient }) => {
   const [formData, setFormData] = useState({
@@ -43,6 +43,7 @@ const PatientFormModal = ({ open, onClose, onSave, patient }) => {
         try {
           const res = await authFetch('/api/doctors');
           const data = await res.json();
+          console.log('Doctores recibidos (PatientFormModal):', data);
           setDoctors(data);
         } catch (err) {
           setDoctors([]);

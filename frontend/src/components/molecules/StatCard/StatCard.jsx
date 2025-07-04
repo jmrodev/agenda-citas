@@ -25,7 +25,7 @@ const StatCard = ({ doctor, doctors, value, icon, color, selected, onDoctorChang
       <p className={styles.value}>{value}</p>
       {showSelector && (
         <DoctorSelector
-          doctors={doctors}
+          doctors={doctors.map(d => ({ ...d, name: d.name || `Dr. ${d.first_name} ${d.last_name}` }))}
           selectedDoctor={doctor}
           onSelect={handleDoctorSelect}
           onClose={() => setShowSelector(false)}

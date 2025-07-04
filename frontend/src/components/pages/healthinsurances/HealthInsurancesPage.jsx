@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDoctor } from '../../context/DoctorContext';
 import HealthInsuranceForm from '../../molecules/HealthInsuranceForm/HealthInsuranceForm';
 import Button from '../../atoms/Button/Button';
-import { authFetch } from '../../../utils/authFetch';
+import { authFetch } from '../../../auth/authFetch';
 
 const HealthInsurancesPage = () => {
   const [insurances, setInsurances] = useState([]);
@@ -13,10 +13,10 @@ const HealthInsurancesPage = () => {
   const fetchInsurances = async () => {
     const res = await authFetch('/api/health-insurances');
     if (!res) return;
-    setInsurances(await res.json());
+    const data = await res.json();
+    setInsurances(data);
+    console.log('Obras sociales recibidas (HealthInsurancesPage):', data);
   };
-
-  useEffect(() => { fetchInsurances(); }, []);
 
   const handleSave = async (data) => {
     const method = selected ? 'PUT' : 'POST';
