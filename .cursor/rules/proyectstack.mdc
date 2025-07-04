@@ -20,3 +20,31 @@ Usar punto y coma al final de las statements.
 Colocar llaves de apertura en la misma línea que la statement (K&R style for blocks).
 Favor camelCase para JavaScript variables, functions, and object properties.
 Favor snake_case para MySQL table and column names in SQL queries/schema.
+
+uso de pruebas api rest : ejemplo de uso
+
+### Login como admin
+# @name login_admin
+POST http://localhost:3001/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@mail.com",
+  "password": "123456"
+}
+
+### guardar en variable el token
+@token_admin = {{login_admin.response.body.token}}
+
+
+### usar en los endpoints
+### Crear horario de consulta como admin
+POST http://localhost:3001/api/doctor-consultation-hours
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "doctor_id": 200001,
+  .... ,
+  ,,,
+}

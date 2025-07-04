@@ -48,7 +48,7 @@ CREATE TABLE secretaries (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE health_insurances (
-    insurance_id INT(6) UNSIGNED PRIMARY KEY,
+    insurance_id INT(6) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL UNIQUE,
     address VARCHAR(255),
     phone VARCHAR(20),

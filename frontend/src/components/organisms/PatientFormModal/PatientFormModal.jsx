@@ -6,6 +6,7 @@ import FormField from '../../molecules/FormField/FormField';
 import Button from '../../atoms/Button/Button';
 import Alert from '../../atoms/Alert/Alert';
 import Select from '../../atoms/Select/Select';
+import { parseAndValidateDate } from '../../../utils/date';
 import styles from './PatientFormModal.module.css';
 
 const PatientFormModal = ({ open, onClose, onSave, patient }) => {
@@ -31,6 +32,7 @@ const PatientFormModal = ({ open, onClose, onSave, patient }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
+  const [birthDate, setBirthDate] = useState({ day: '', month: '', year: '' });
   const firstInputRef = useRef(null);
 
   // Obtener lista de doctores al abrir el modal
@@ -103,6 +105,12 @@ const PatientFormModal = ({ open, onClose, onSave, patient }) => {
       } else {
         setSelectedDoctors([]);
       }
+      if (patient.date_of_birth) {
+        const [year, month, day] = patient.date_of_birth.split('-').map(Number);
+        setBirthDate({ day, month, year });
+      } else {
+        setBirthDate({ day: '', month: '', year: '' });
+      }
     } else {
       setFormData({
         first_name: '',
@@ -121,6 +129,7 @@ const PatientFormModal = ({ open, onClose, onSave, patient }) => {
         }
       });
       setSelectedDoctors([]);
+      setBirthDate({ day: '', month: '', year: '' });
     }
   }, [patient, open]);
 
@@ -134,9 +143,12 @@ const PatientFormModal = ({ open, onClose, onSave, patient }) => {
     if (formData.phone && !/^[0-9]{7,15}$/.test(formData.phone)) {
       errors.phone = 'Teléfono inválido';
     }
-    if (formData.date_of_birth && new Date(formData.date_of_birth) > new Date()) {
-      errors.date_of_birth = 'La fecha no puede ser futura';
-    }
+    const dateError = parseAndValidateDate({
+      day: Number(birthDate.day),
+      month: Number(birthDate.month),
+      year: Number(birthDate.year)
+    }, 'birth_date', false);
+    if (dateError) errors.birth_date = dateError;
     if (!selectedDoctors.length) {
       errors.doctors = 'Debe asignar al menos un doctor';
     }
@@ -158,7 +170,15 @@ const PatientFormModal = ({ open, onClose, onSave, patient }) => {
       const token = localStorage.getItem('token');
       const url = patient ? `/api/patients/${patient.patient_id}` : '/api/patients';
       const method = patient ? 'PUT' : 'POST';
-      const body = JSON.stringify({ ...formData, doctor_ids: selectedDoctors.map(Number) });
+      const body = JSON.stringify({
+        ...formData,
+        birth_date: {
+          day: Number(birthDate.day),
+          month: Number(birthDate.month),
+          year: Number(birthDate.year)
+        },
+        doctor_ids: selectedDoctors.map(Number)
+      });
       const response = await fetch(url, {
         method,
         headers: {
@@ -234,11 +254,38 @@ const PatientFormModal = ({ open, onClose, onSave, patient }) => {
           <div className={styles.row2}>
             <FormField
               label='Fecha de Nacimiento'
-              type='date'
-              value={formData.date_of_birth}
-              onChange={e => handleChange('date_of_birth', e.target.value)}
-              error={fieldErrors.date_of_birth}
-            />
+              error={fieldErrors.birth_date}
+            >
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <input
+                  type='number'
+                  placeholder='Día'
+                  min='1'
+                  max='31'
+                  value={birthDate.day}
+                  onChange={e => setBirthDate(prev => ({ ...prev, day: e.target.value }))}
+                  style={{ width: '4rem' }}
+                />
+                <input
+                  type='number'
+                  placeholder='Mes'
+                  min='1'
+                  max='12'
+                  value={birthDate.month}
+                  onChange={e => setBirthDate(prev => ({ ...prev, month: e.target.value }))}
+                  style={{ width: '4rem' }}
+                />
+                <input
+                  type='number'
+                  placeholder='Año'
+                  min='1900'
+                  max={new Date().getFullYear()}
+                  value={birthDate.year}
+                  onChange={e => setBirthDate(prev => ({ ...prev, year: e.target.value }))}
+                  style={{ width: '6rem' }}
+                />
+              </div>
+            </FormField>
             <FormField
               label='Teléfono'
               value={formData.phone}

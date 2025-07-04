@@ -96,8 +96,8 @@ async function login(req, res) {
  */
 async function registerDoctorWithUser(req, res) {
   try {
-    if (!req.user || req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Solo el administrador puede crear doctores.' });
+    if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'secretary')) {
+      return res.status(403).json({ error: 'Solo el administrador o secretaria pueden crear doctores.' });
     }
     const { doctor, user } = req.body;
     if (!doctor || !user) {
@@ -124,6 +124,11 @@ async function registerDoctorWithUser(req, res) {
     const existingEmail = await userService.getUserByEmail(user.email);
     if (existingEmail) {
       return res.status(409).json({ error: 'El email ya está registrado' });
+    }
+    // Validar y convertir fecha si es objeto
+    if (doctor.last_earnings_collection_date && typeof doctor.last_earnings_collection_date === 'object') {
+      const { parseAndValidateDate } = require('../utils/date');
+      doctor.last_earnings_collection_date = parseAndValidateDate(doctor.last_earnings_collection_date, 'last_earnings_collection_date', true);
     }
     // Crear doctor
     const doctorService = require('../services/doctorService');

@@ -51,7 +51,8 @@ const CalendarView = ({
       badge: events[dateKey] ? 'Evento' : '',
       onClick: () => {
         setSelectedDay(i);
-        if (onDayClick && !days[days.length - nextDays]?.isDisabled) {
+        if (onDayClick) {
+          console.log('Click en día:', dateKey);
           onDayClick(dateKey);
         }
       },

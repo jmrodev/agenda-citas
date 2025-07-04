@@ -1,5 +1,6 @@
 const prescriptionService = require('../services/prescriptionService');
 const prescriptionMedicationModel = require('../models/prescriptionMedicationModel');
+const { parseAndValidateDate } = require('../utils/date');
 
 async function getAll(req, res) {
   try {
@@ -21,7 +22,26 @@ async function getAllWithFilters(req, res) {
 
 async function create(req, res) {
   try {
-    const prescription = await prescriptionService.createPrescription(req.body);
+    let data = { ...req.body };
+    if (data.date && typeof data.date === 'object') {
+      try {
+        data.date = parseAndValidateDate(data.date, 'date', true);
+      } catch (err) {
+        return res.status(400).json({ error: err.message });
+      }
+    } else if (data.date) {
+      return res.status(400).json({ error: 'date debe ser un objeto { day, month, year }' });
+    }
+    if (data.payment_date && typeof data.payment_date === 'object') {
+      try {
+        data.payment_date = parseAndValidateDate(data.payment_date, 'payment_date', true);
+      } catch (err) {
+        return res.status(400).json({ error: err.message });
+      }
+    } else if (data.payment_date) {
+      return res.status(400).json({ error: 'payment_date debe ser un objeto { day, month, year }' });
+    }
+    const prescription = await prescriptionService.createPrescription(data);
     res.status(201).json(prescription);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -30,18 +50,27 @@ async function create(req, res) {
 
 async function update(req, res) {
   try {
-    const prescription = await prescriptionService.getPrescriptionById(req.params.id);
-    if (!prescription) {
-      return res.status(404).json({ error: 'Receta no encontrada' });
+    let data = { ...req.body };
+    if (data.date && typeof data.date === 'object') {
+      try {
+        data.date = parseAndValidateDate(data.date, 'date', true);
+      } catch (err) {
+        return res.status(400).json({ error: err.message });
+      }
+    } else if (data.date) {
+      return res.status(400).json({ error: 'date debe ser un objeto { day, month, year }' });
     }
-    const createdDate = new Date(prescription.date);
-    const now = new Date();
-    const diffDays = (now - createdDate) / (1000 * 60 * 60 * 24);
-    if (diffDays > 7) {
-      return res.status(403).json({ error: 'No se puede modificar la receta después de una semana' });
+    if (data.payment_date && typeof data.payment_date === 'object') {
+      try {
+        data.payment_date = parseAndValidateDate(data.payment_date, 'payment_date', true);
+      } catch (err) {
+        return res.status(400).json({ error: err.message });
+      }
+    } else if (data.payment_date) {
+      return res.status(400).json({ error: 'payment_date debe ser un objeto { day, month, year }' });
     }
-    const updated = await prescriptionService.updatePrescription(req.params.id, req.body);
-    res.json(updated);
+    const prescription = await prescriptionService.updatePrescription(req.params.id, data);
+    res.json(prescription);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

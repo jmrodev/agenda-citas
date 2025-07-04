@@ -1,5 +1,6 @@
 const medicalHistoryService = require('../services/medicalHistoryService');
 const medicalRecordPrescribedMedModel = require('../models/medicalRecordPrescribedMedModel');
+const { parseAndValidateDate } = require('../utils/date');
 
 async function getAll(req, res) {
   try {
@@ -21,7 +22,17 @@ async function getAllWithFilters(req, res) {
 
 async function create(req, res) {
   try {
-    const record = await medicalHistoryService.createMedicalHistory(req.body);
+    let data = { ...req.body };
+    if (data.date && typeof data.date === 'object') {
+      try {
+        data.date = parseAndValidateDate(data.date, 'date', true);
+      } catch (err) {
+        return res.status(400).json({ error: err.message });
+      }
+    } else if (data.date) {
+      return res.status(400).json({ error: 'date debe ser un objeto { day, month, year }' });
+    }
+    const record = await medicalHistoryService.createMedicalHistory(data);
     res.status(201).json(record);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -30,7 +41,17 @@ async function create(req, res) {
 
 async function update(req, res) {
   try {
-    const record = await medicalHistoryService.updateMedicalHistory(req.params.id, req.body);
+    let data = { ...req.body };
+    if (data.date && typeof data.date === 'object') {
+      try {
+        data.date = parseAndValidateDate(data.date, 'date', true);
+      } catch (err) {
+        return res.status(400).json({ error: err.message });
+      }
+    } else if (data.date) {
+      return res.status(400).json({ error: 'date debe ser un objeto { day, month, year }' });
+    }
+    const record = await medicalHistoryService.updateMedicalHistory(req.params.id, data);
     res.json(record);
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -28,4 +28,9 @@ async function deleteDoctor(id) {
   return { doctor_id: id };
 }
 
-module.exports = { getAllDoctors, createDoctor, updateDoctor, deleteDoctor }; 
+async function getDoctorById(id) {
+  const [rows] = await pool.query('SELECT * FROM doctors WHERE doctor_id = ?', [id]);
+  return rows[0] || null;
+}
+
+module.exports = { getAllDoctors, createDoctor, updateDoctor, deleteDoctor, getDoctorById }; 

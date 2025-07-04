@@ -6,6 +6,7 @@ import Button from '../../atoms/Button/Button';
 import Alert from '../../atoms/Alert/Alert';
 import SuccessScreen from '../../organisms/SuccessScreen/SuccessScreen';
 import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx';
+import { parseAndValidateDate } from '../../../utils/date';
 
 function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -26,13 +27,13 @@ const roles = [
   { value: 'secretary', label: 'Secretaria' }
 ];
 
-function RegisterForm() {
+function RegisterForm({ defaultRole }) {
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [role, setRole] = useState('admin');
+  const [role, setRole] = useState(defaultRole || 'admin');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -59,13 +60,19 @@ function RegisterForm() {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
     // Solo redirigir si el usuario autenticado NO es admin
-    if (token && role && role !== 'admin') {
+    // y solo si NO está en modo alta de doctor
+    if (
+      token &&
+      role &&
+      role !== 'admin' &&
+      !(defaultRole === 'doctor')
+    ) {
       if (role === 'doctor') navigate('/doctor', { replace: true });
       else if (role === 'secretary') navigate('/secretary', { replace: true });
       else if (role === 'patient') navigate('/patient', { replace: true });
       else navigate('/', { replace: true });
     }
-  }, [navigate, success]);
+  }, [navigate, success, defaultRole]);
 
   const validate = () => {
     const errors = {};
@@ -110,6 +117,17 @@ function RegisterForm() {
       let body = { nombre, apellido, username, email, password, role };
       if (role === 'doctor') {
         endpoint = '/api/auth/register-doctor';
+        let lastEarningsDateObj = null;
+        if (lastEarningsCollectionDate) {
+          const [year, month, day] = lastEarningsCollectionDate.split('-').map(Number);
+          lastEarningsDateObj = { day, month, year };
+          const dateError = parseAndValidateDate(lastEarningsDateObj, 'last_earnings_collection_date', true);
+          if (dateError) {
+            setFieldErrors({ lastEarningsCollectionDate: dateError });
+            setLoading(false);
+            return;
+          }
+        }
         body = {
           doctor: {
             first_name: nombre,
@@ -120,7 +138,7 @@ function RegisterForm() {
             email,
             consultation_fee: consultationFee,
             prescription_fee: prescriptionFee,
-            last_earnings_collection_date: lastEarningsCollectionDate
+            last_earnings_collection_date: lastEarningsDateObj
           },
           user: { username, email, password }
         };
@@ -311,10 +329,10 @@ function RegisterForm() {
   );
 }
 
-export default function RegisterUserWithLayout() {
+export default function Register(props) {
   return (
     <DashboardLayout>
-      <RegisterForm />
+      <RegisterForm {...props} />
     </DashboardLayout>
   );
 } 

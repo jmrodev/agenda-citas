@@ -21,4 +21,8 @@ async function getDashboardStats() {
   return { totalDoctores: rows.length };
 }
 
-module.exports = { listDoctors, createDoctor, updateDoctor, deleteDoctor, getDashboardStats }; 
+async function getDoctorById(id) {
+  return await doctorModel.getDoctorById(id);
+}
+
+module.exports = { listDoctors, createDoctor, updateDoctor, deleteDoctor, getDashboardStats, getDoctorById }; 

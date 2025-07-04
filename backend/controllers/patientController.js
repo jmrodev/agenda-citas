@@ -2,6 +2,7 @@ const patientService = require('../services/patientService');
 const userService = require('../services/userService');
 const bcrypt = require('bcryptjs');
 const { debugPatients } = require('../utils/debug');
+const { parseAndValidateDate } = require('../utils/date');
 
 async function getAll(req, res) {
   try {
@@ -24,6 +25,16 @@ async function getAllWithFilters(req, res) {
 async function create(req, res) {
   try {
     let patientData = { ...req.body };
+    // Validar y convertir birth_date
+    if (patientData.birth_date && typeof patientData.birth_date === 'object') {
+      try {
+        patientData.date_of_birth = parseAndValidateDate(patientData.birth_date, 'birth_date', false);
+      } catch (err) {
+        return res.status(400).json({ error: err.message });
+      }
+    } else if (patientData.birth_date) {
+      return res.status(400).json({ error: 'birth_date debe ser un objeto { day, month, year }' });
+    }
     // Permitir múltiples doctores: doctor_ids debe ser un array
     if (req.user.role === 'doctor') {
       patientData.doctor_ids = [req.user.entity_id];
@@ -48,12 +59,21 @@ async function update(req, res) {
     if (!current) {
       return res.status(404).json({ error: 'Paciente no encontrado' });
     }
+    // Validar y convertir birth_date si viene en el update
+    let merged = { ...current, ...req.body };
+    if (req.body.birth_date && typeof req.body.birth_date === 'object') {
+      try {
+        merged.date_of_birth = parseAndValidateDate(req.body.birth_date, 'birth_date', false);
+      } catch (err) {
+        return res.status(400).json({ error: err.message });
+      }
+    } else if (req.body.birth_date) {
+      return res.status(400).json({ error: 'birth_date debe ser un objeto { day, month, year }' });
+    }
     // Restricción para doctor
     if (req.user.role === 'doctor' && current.doctor_id !== req.user.entity_id) {
       return res.status(403).json({ error: 'No autorizado para editar este paciente' });
     }
-    // Merge datos existentes con los nuevos
-    const merged = { ...current, ...req.body };
     // Merge anidado para reference_person
     if (req.body.reference_person) {
       merged.reference_person = { ...current.reference_person, ...req.body.reference_person };

@@ -1,0 +1,49 @@
+.sideMenuButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: var(--text-color, #222);
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, padding 0.3s ease;
+  width: 100%;
+  text-align: left;
+  position: relative;
+}
+.sideMenuButton:hover,
+.sideMenuButton:focus {
+  background: var(--secondary-color, #e2e2e2);
+  color: var(--primary-color);
+}
+.active {
+  background: var(--primary-color);
+  color: var(--text-color-light, #fff);
+}
+.icon {
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+  min-width: 1.2em;
+}
+.label {
+  white-space: nowrap;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.collapsed {
+  padding: 0.5rem;
+  justify-content: center;
+}
+.collapsed .label {
+  opacity: 0;
+  transform: translateX(-10px);
+  position: absolute;
+  pointer-events: none;
+}
+.collapsed .icon {
+  font-size: 1.4em;
+} 

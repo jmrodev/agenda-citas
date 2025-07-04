@@ -1,0 +1,28 @@
+.desktopAppLayout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--background-color, #f5f6fa);
+}
+.bodyRow {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+.sideMenu {
+  min-width: 160px;
+  background: var(--surface-color, #fff);
+  border-right: 1.5px solid var(--border-color, #e5e7eb);
+  box-shadow: var(--box-shadow-sm, 0 1px 2px rgba(0,0,0,0.04));
+  z-index: 2;
+}
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-color, #fff);
+  border-radius: 0 0 8px 8px;
+  margin: 0 2vw;
+  box-shadow: var(--box-shadow-md, 0 4px 12px rgba(0,0,0,0.10));
+  min-width: 0;
+} 

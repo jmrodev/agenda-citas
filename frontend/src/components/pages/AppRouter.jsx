@@ -11,6 +11,8 @@ import DashboardAdmin from './dashboard/DashboardAdmin';
 import PaymentStats from './dashboard/PaymentStats.jsx';
 import PatientsList from './patients/PatientsList.jsx';
 import CalendarPage from './calendar/CalendarPage';
+import DesktopAppPage from './desktop/DesktopAppPage';
+import HealthInsurancesPage from './healthinsurances/HealthInsurancesPage';
 
 // Componente que redirige según el rol del usuario
 const HomePage = () => {
@@ -82,7 +84,7 @@ export default function AppRouter() {
                 } />
                 <Route path='/secretary' element={
                     <RequireAuth allowedRoles={['secretary']}>
-                        <SecretaryDashboard />
+                        <DesktopAppPage />
                     </RequireAuth>
                 } />
                 <Route path='/secretary/payment-stats' element={
@@ -99,6 +101,16 @@ export default function AppRouter() {
                 <Route path='/calendar' element={
                   <RequireAuth allowedRoles={['admin', 'secretary']}>
                     <CalendarPage />
+                  </RequireAuth>
+                } />
+                <Route path='/register-doctor' element={
+                  <RequireAuth allowedRoles={['admin', 'secretary']}>
+                    <Register defaultRole='doctor' />
+                  </RequireAuth>
+                } />
+                <Route path='/health-insurances' element={
+                  <RequireAuth allowedRoles={['admin', 'secretary']}>
+                    <HealthInsurancesPage />
                   </RequireAuth>
                 } />
                 <Route path='*' element={<Navigate to='/login' />} />

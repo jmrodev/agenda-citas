@@ -4,14 +4,47 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import PeopleIcon from '@mui/icons-material/People';
 import MedicationIcon from '@mui/icons-material/Medication';
 import SettingsIcon from '@mui/icons-material/Settings';
-import StatsGrid from '../../organisms/StatsGrid/StatsGrid.jsx'; // Importar StatsGrid
-import QuickActionsBar from '../../organisms/QuickActionsBar/QuickActionsBar.jsx'; // Importar QuickActionsBar
-import styles from './DoctorDashboard.module.css'; // Importar CSS Module
+import StatsGrid from '../../organisms/StatsGrid/StatsGrid.jsx';
+import QuickActionsBar from '../../organisms/QuickActionsBar/QuickActionsBar.jsx';
+import { useDoctor } from '../../context/DoctorContext';
+import styles from './DoctorDashboard.module.css';
+
+const mockDoctors = [
+  { id: 1, name: 'Dr. Juan Pérez' },
+  { id: 2, name: 'Dra. Ana López' },
+  { id: 3, name: 'Dr. Carlos Gómez' }
+];
 
 const DoctorDashboard = () => {
   const [stats, setStats] = useState({ citas: 0, pacientes: 0, consultas: 0 });
+  const [doctors, setDoctors] = useState(mockDoctors);
+  const { doctor, setDoctor, setDoctorById } = useDoctor();
 
-  // Definición de doctorActions dentro del componente o importado si es estático y reutilizable
+  useEffect(() => {
+    // Simular fetch de doctores reales si es necesario
+    setDoctors(mockDoctors);
+    if (!doctor) setDoctor(mockDoctors[0]);
+  }, []);
+
+  useEffect(() => {
+    // Simular fetch de stats por doctor
+    if (!doctor) return;
+    // Aquí deberías hacer fetch real según doctor.id
+    setStats({ citas: 5 * doctor.id, pacientes: 30 + doctor.id, consultas: 10 * doctor.id });
+  }, [doctor]);
+
+  const doctorStatCard = {
+    doctor,
+    doctors,
+    value: `${stats.citas} citas | ${stats.pacientes} pacientes | ${stats.consultas} consultas` ,
+    icon: <PeopleIcon fontSize='inherit' />,
+    color: '#1976d2',
+    selected: true,
+    onDoctorChange: setDoctorById
+  };
+
+  // Puedes agregar más StatCards si lo deseas
+
   const doctorActions = [
     { label: 'Mis citas', icon: <CalendarMonthIcon fontSize="small" />, onClick: () => { window.location.href = '/doctor/appointments'; } },
     { label: 'Pacientes', icon: <PeopleIcon fontSize="small" />, onClick: () => { window.location.href = '/doctor/patients'; } },
@@ -19,55 +52,11 @@ const DoctorDashboard = () => {
     { label: 'Configuración', icon: <SettingsIcon fontSize="small" />, onClick: () => { window.location.href = '/settings'; } }
   ];
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      const token = localStorage.getItem('token');
-      try {
-        const citaRes = await fetch('/api/appointments/dashboard-stats', { headers: { 'Authorization': `Bearer ${token}` } });
-        const citasData = citaRes.ok ? await citaRes.json() : { citasHoy: 0 };
-        const citas = citasData.citasHoy || 0;
-
-        // TODO: Reemplazar con endpoints reales para pacientes y consultas del doctor
-        // Por ahora, se usan datos de ejemplo
-        setStats({ citas, pacientes: 32, consultas: 45 });
-      } catch (error) {
-        console.error("Error fetching doctor dashboard stats:", error);
-        setStats({ citas: 0, pacientes: 0, consultas: 0 }); // Estado por defecto en caso de error
-      }
-    };
-    fetchStats();
-  }, []);
-
-  const statCardsData = [
-    {
-      title: 'Citas hoy',
-      value: stats.citas,
-      icon: <CalendarMonthIcon fontSize='inherit' />,
-      color: '#43a047'
-    },
-    {
-      title: 'Pacientes asignados',
-      value: stats.pacientes,
-      icon: <PeopleIcon fontSize='inherit' />,
-      color: '#1976d2'
-    },
-    {
-      title: 'Consultas este mes',
-      value: stats.consultas,
-      icon: <MedicationIcon fontSize='inherit' />,
-      color: '#d32f2f'
-    }
-  ];
-
   return (
     <DashboardLayout title='Dashboard del Doctor'>
-      <StatsGrid stats={statCardsData} />
-
+      <StatsGrid stats={[doctorStatCard]} />
       <h3 className={styles.sectionTitle}>Acciones Rápidas</h3>
       <QuickActionsBar actions={doctorActions} />
-
-      {/* Aquí podrían ir otros componentes específicos del dashboard del doctor,
-          como una lista de próximas citas, notificaciones, etc. */}
     </DashboardLayout>
   );
 };

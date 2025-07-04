@@ -11,16 +11,16 @@ const defaultIcons = {
 
 const Alert = ({
   children,
-  color = 'info',
+  type = 'info',
   icon,
   onClose,
   className = '',
   ...rest
 }) => {
   return (
-    <div className={[styles.alert, styles[color] || '', className].join(' ').trim()} {...rest}>
+    <div className={[styles.alert, styles[type] || '', className].join(' ').trim()} {...rest}>
       <span className={styles.icon}>
-        <Icon name={icon || defaultIcons[color] || 'info'} size={20} />
+        <Icon name={icon || defaultIcons[type] || 'info'} size={20} />
       </span>
       <span className={styles.content}>{children}</span>
       {onClose && (

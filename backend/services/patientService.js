@@ -24,8 +24,21 @@ function mapReferencePerson(row) {
 }
 
 async function listPatients(query, user) {
+  // Si se pasa doctor_id por query, filtrar por ese doctor
+  if (query.doctor_id) {
+    const rows = await patientModel.getAllPatients();
+    const patients = [];
+    for (const row of rows) {
+      const doctorIds = await patientModel.getDoctorsByPatientId(row.patient_id);
+      if (doctorIds.includes(Number(query.doctor_id))) {
+        const references = await patientReferenceModel.getReferencesByPatientId(row.patient_id);
+        patients.push({ ...row, reference_persons: references });
+      }
+    }
+    return patients;
+  }
+  // Si es doctor autenticado, filtrar por su propio id
   if (user && user.role === 'doctor') {
-    // Solo pacientes asociados a este doctor
     const rows = await patientModel.getAllPatients();
     const patients = [];
     for (const row of rows) {

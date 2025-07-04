@@ -10,6 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PatientFormModal from '../../organisms/PatientFormModal/PatientFormModal';
 import styles from './PatientsList.module.css'; // Importar CSS Module
+import { parseAndValidateDate } from '../../../utils/date';
 
 const PatientsList = () => {
   const [patients, setPatients] = useState([]);

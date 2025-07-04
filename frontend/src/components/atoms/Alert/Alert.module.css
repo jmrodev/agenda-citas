@@ -18,16 +18,16 @@
   color: var(--alert-info-color, #1976d2);
 }
 .success {
-  background: var(--alert-success-bg, #e6f9f0);
-  color: var(--alert-success-color, #21c87a);
+  background: #21c87a !important;
+  color: #fff !important;
 }
 .warning {
   background: var(--alert-warning-bg, #fff8e1);
   color: var(--alert-warning-color, #ffb300);
 }
 .danger {
-  background: var(--alert-danger-bg, #ffebee);
-  color: var(--alert-danger-color, #e00);
+  background: #e00 !important;
+  color: #fff !important;
 }
 
 .icon {

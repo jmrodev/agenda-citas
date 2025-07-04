@@ -15,6 +15,7 @@ const CalendarDayInfo = ({
   chip = '',
   className = '',
   style = {},
+  onClick,
   ...rest
 }) => {
   return (
@@ -25,7 +26,7 @@ const CalendarDayInfo = ({
           isToday={isToday}
           isSelected={isSelected}
           isDisabled={isDisabled}
-          onClick={rest.onClick}
+          onClick={onClick}
         />
         {hasEvent && <CalendarDot className={styles.dot} />}
       </div>

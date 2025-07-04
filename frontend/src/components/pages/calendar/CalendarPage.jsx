@@ -9,6 +9,7 @@ import ModalHeader from '../../molecules/ModalHeader/ModalHeader';
 import ModalFooter from '../../molecules/ModalFooter/ModalFooter';
 import Button from '../../atoms/Button/Button';
 import Input from '../../atoms/Input/Input';
+import { parseAndValidateDate } from '../../../utils/date';
 
 const initialFilters = {
   cita: true,
@@ -111,6 +112,14 @@ const CalendarPage = () => {
     setCreateError('');
     setCreateSuccess('');
     try {
+      const [year, month, day] = selectedDate.split('-').map(Number);
+      const dateObj = { day, month, year };
+      const dateError = parseAndValidateDate(dateObj, 'date', true);
+      if (dateError) {
+        setCreateError(dateError);
+        setCreating(false);
+        return;
+      }
       const token = localStorage.getItem('token');
       const res = await fetch('/api/appointments', {
         method: 'POST',
@@ -120,9 +129,8 @@ const CalendarPage = () => {
         },
         body: JSON.stringify({
           doctor_id: Number(selectedDoctorId),
-          date: selectedDate,
-          time: selectedHour,
-          // paciente: aquí puedes agregar el paciente si lo necesitas
+          date: dateObj,
+          time: selectedHour
         })
       });
       if (!res.ok) throw new Error('Error al crear cita');

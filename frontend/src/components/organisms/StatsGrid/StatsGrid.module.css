@@ -1,6 +1,21 @@
 .grid {
   display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 2rem;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--surface-color, #fff);
+  border-radius: 12px;
+  box-shadow: var(--box-shadow-md, 0 4px 12px rgba(0,0,0,0.10));
+  padding: 0.25rem 0.6rem;
+  min-height: 32px;
+  width: fit-content;
+  margin-bottom: 1rem;
+  border: 1.5px solid var(--border-color, #e5e7eb);
+}
+.separator {
+  width: 1px;
+  height: 22px;
+  background: var(--border-color, #e5e7eb);
+  margin: 0 0.3rem;
+  align-self: center;
 } 

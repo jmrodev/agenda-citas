@@ -1,0 +1,489 @@
+### Login secretaria stella
+# @name login_stella
+POST http://localhost:3001/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "stella",
+  "password": "Stella1974"
+}
+
+### Paciente 1
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "Juan",
+  "last_name": "Pérez",
+  "email": "juan.perez@mail.com",
+  "phone": "1140001001",
+  "birth_date": { "day": 15, "month": 1, "year": 1980 },
+  "address": "Calle Falsa 123, CABA",
+  "preferred_payment_methods": "Efectivo",
+  "health_insurance_id": 1,
+  "doctor_ids": [2],
+  "reference_person": {
+    "name": "Ana",
+    "last_name": "Pérez",
+    "address": "Calle Falsa 123, CABA",
+    "phone": "1140002001",
+    "relationship": "Madre"
+  }
+}
+
+### Paciente 2
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "María",
+  "last_name": "Gómez",
+  "email": "maria.gomez@mail.com",
+  "phone": "1140001002",
+  "birth_date": { "day": 20, "month": 2, "year": 1990 },
+  "address": "Av. Siempre Viva 742, CABA",
+  "preferred_payment_methods": "Tarjeta",
+  "health_insurance_id": 2,
+  "doctor_ids": [3],
+  "reference_person": {
+    "name": "Carlos",
+    "last_name": "Gómez",
+    "address": "Av. Siempre Viva 742, CABA",
+    "phone": "1140002002",
+    "relationship": "Padre"
+  }
+}
+
+### Paciente 3
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "Pedro",
+  "last_name": "López",
+  "email": "pedro.lopez@mail.com",
+  "phone": "1140001003",
+  "birth_date": { "day": 10, "month": 3, "year": 1985 },
+  "address": "Av. Corrientes 1000, CABA",
+  "preferred_payment_methods": "Débito",
+  "health_insurance_id": 3,
+  "doctor_ids": [4],
+  "reference_person": {
+    "name": "Laura",
+    "last_name": "López",
+    "address": "Av. Corrientes 1000, CABA",
+    "phone": "1140002003",
+    "relationship": "Hermana"
+  }
+}
+
+### Paciente 4
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "Sofía",
+  "last_name": "Martínez",
+  "email": "sofia.martinez@mail.com",
+  "phone": "1140001004",
+  "birth_date": { "day": 12, "month": 4, "year": 1992 },
+  "address": "Av. Belgrano 456, CABA",
+  "preferred_payment_methods": "Transferencia",
+  "health_insurance_id": 1,
+  "doctor_ids": [5],
+  "reference_person": {
+    "name": "Miguel",
+    "last_name": "Martínez",
+    "address": "Av. Belgrano 456, CABA",
+    "phone": "1140002004",
+    "relationship": "Padre"
+  }
+}
+
+### Paciente 5
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "Lucía",
+  "last_name": "Fernández",
+  "email": "lucia.fernandez@mail.com",
+  "phone": "1140001005",
+  "birth_date": { "day": 22, "month": 5, "year": 1988 },
+  "address": "Calle 9 de Julio 789, CABA",
+  "preferred_payment_methods": "Efectivo",
+  "health_insurance_id": 2,
+  "doctor_ids": [6],
+  "reference_person": {
+    "name": "Paula",
+    "last_name": "Fernández",
+    "address": "Calle 9 de Julio 789, CABA",
+    "phone": "1140002005",
+    "relationship": "Madre"
+  }
+}
+
+### Paciente 6
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "Diego",
+  "last_name": "Sánchez",
+  "email": "diego.sanchez@mail.com",
+  "phone": "1140001006",
+  "birth_date": { "day": 30, "month": 6, "year": 1975 },
+  "address": "Av. Libertador 321, CABA",
+  "preferred_payment_methods": "Tarjeta",
+  "health_insurance_id": 3,
+  "doctor_ids": [2],
+  "reference_person": {
+    "name": "Elena",
+    "last_name": "Sánchez",
+    "address": "Av. Libertador 321, CABA",
+    "phone": "1140002006",
+    "relationship": "Esposa"
+  }
+}
+
+### Paciente 7
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "Valentina",
+  "last_name": "Ruiz",
+  "email": "valentina.ruiz@mail.com",
+  "phone": "1140001007",
+  "birth_date": { "day": 18, "month": 7, "year": 1995 },
+  "address": "Calle San Martín 654, CABA",
+  "preferred_payment_methods": "Débito",
+  "health_insurance_id": 1,
+  "doctor_ids": [3],
+  "reference_person": {
+    "name": "Roberto",
+    "last_name": "Ruiz",
+    "address": "Calle San Martín 654, CABA",
+    "phone": "1140002007",
+    "relationship": "Padre"
+  }
+}
+
+### Paciente 8
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "Martín",
+  "last_name": "García",
+  "email": "martin.garcia@mail.com",
+  "phone": "1140001008",
+  "birth_date": { "day": 25, "month": 8, "year": 1982 },
+  "address": "Av. Rivadavia 852, CABA",
+  "preferred_payment_methods": "Transferencia",
+  "health_insurance_id": 2,
+  "doctor_ids": [4],
+  "reference_person": {
+    "name": "Silvia",
+    "last_name": "García",
+    "address": "Av. Rivadavia 852, CABA",
+    "phone": "1140002008",
+    "relationship": "Madre"
+  }
+}
+
+### Paciente 9
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "Camila",
+  "last_name": "Torres",
+  "email": "camila.torres@mail.com",
+  "phone": "1140001009",
+  "birth_date": { "day": 14, "month": 9, "year": 1993 },
+  "address": "Calle Moreno 963, CABA",
+  "preferred_payment_methods": "Efectivo",
+  "health_insurance_id": 3,
+  "doctor_ids": [5],
+  "reference_person": {
+    "name": "Jorge",
+    "last_name": "Torres",
+    "address": "Calle Moreno 963, CABA",
+    "phone": "1140002009",
+    "relationship": "Padre"
+  }
+}
+
+### Paciente 10
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "Federico",
+  "last_name": "Ramírez",
+  "email": "federico.ramirez@mail.com",
+  "phone": "1140001010",
+  "birth_date": { "day": 5, "month": 10, "year": 1987 },
+  "address": "Av. Córdoba 147, CABA",
+  "preferred_payment_methods": "Tarjeta",
+  "health_insurance_id": 1,
+  "doctor_ids": [6],
+  "reference_person": {
+    "name": "Marina",
+    "last_name": "Ramírez",
+    "address": "Av. Córdoba 147, CABA",
+    "phone": "1140002010",
+    "relationship": "Madre"
+  }
+}
+
+### Paciente 11
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "Agustina",
+  "last_name": "Silva",
+  "email": "agustina.silva@mail.com",
+  "phone": "1140001011",
+  "birth_date": { "day": 11, "month": 11, "year": 1991 },
+  "address": "Calle Lavalle 321, CABA",
+  "preferred_payment_methods": "Transferencia",
+  "health_insurance_id": 2,
+  "doctor_ids": [2],
+  "reference_person": {
+    "name": "Ricardo",
+    "last_name": "Silva",
+    "address": "Calle Lavalle 321, CABA",
+    "phone": "1140002011",
+    "relationship": "Padre"
+  }
+}
+
+### Paciente 12
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "Nicolás",
+  "last_name": "Méndez",
+  "email": "nicolas.mendez@mail.com",
+  "phone": "1140001012",
+  "birth_date": { "day": 19, "month": 12, "year": 1983 },
+  "address": "Av. San Juan 654, CABA",
+  "preferred_payment_methods": "Efectivo",
+  "health_insurance_id": 3,
+  "doctor_ids": [3],
+  "reference_person": {
+    "name": "Patricia",
+    "last_name": "Méndez",
+    "address": "Av. San Juan 654, CABA",
+    "phone": "1140002012",
+    "relationship": "Madre"
+  }
+}
+
+### Paciente 13
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "Emilia",
+  "last_name": "Castro",
+  "email": "emilia.castro@mail.com",
+  "phone": "1140001013",
+  "birth_date": { "day": 23, "month": 1, "year": 1996 },
+  "address": "Calle Sarmiento 987, CABA",
+  "preferred_payment_methods": "Tarjeta",
+  "health_insurance_id": 1,
+  "doctor_ids": [4],
+  "reference_person": {
+    "name": "Oscar",
+    "last_name": "Castro",
+    "address": "Calle Sarmiento 987, CABA",
+    "phone": "1140002013",
+    "relationship": "Padre"
+  }
+}
+
+### Paciente 14
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "Tomás",
+  "last_name": "Vega",
+  "email": "tomas.vega@mail.com",
+  "phone": "1140001014",
+  "birth_date": { "day": 28, "month": 2, "year": 1989 },
+  "address": "Av. Pueyrredón 753, CABA",
+  "preferred_payment_methods": "Débito",
+  "health_insurance_id": 2,
+  "doctor_ids": [5],
+  "reference_person": {
+    "name": "Graciela",
+    "last_name": "Vega",
+    "address": "Av. Pueyrredón 753, CABA",
+    "phone": "1140002014",
+    "relationship": "Madre"
+  }
+}
+
+### Paciente 15
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "Florencia",
+  "last_name": "Morales",
+  "email": "florencia.morales@mail.com",
+  "phone": "1140001015",
+  "birth_date": { "day": 17, "month": 3, "year": 1994 },
+  "address": "Calle Mitre 852, CABA",
+  "preferred_payment_methods": "Transferencia",
+  "health_insurance_id": 3,
+  "doctor_ids": [6],
+  "reference_person": {
+    "name": "Sergio",
+    "last_name": "Morales",
+    "address": "Calle Mitre 852, CABA",
+    "phone": "1140002015",
+    "relationship": "Padre"
+  }
+}
+
+### Paciente 16
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "Gabriel",
+  "last_name": "Navarro",
+  "email": "gabriel.navarro@mail.com",
+  "phone": "1140001016",
+  "birth_date": { "day": 9, "month": 4, "year": 1986 },
+  "address": "Av. Santa Fe 369, CABA",
+  "preferred_payment_methods": "Efectivo",
+  "health_insurance_id": 1,
+  "doctor_ids": [2],
+  "reference_person": {
+    "name": "Mónica",
+    "last_name": "Navarro",
+    "address": "Av. Santa Fe 369, CABA",
+    "phone": "1140002016",
+    "relationship": "Madre"
+  }
+}
+
+### Paciente 17
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "Julieta",
+  "last_name": "Ortega",
+  "email": "julieta.ortega@mail.com",
+  "phone": "1140001017",
+  "birth_date": { "day": 14, "month": 5, "year": 1997 },
+  "address": "Calle French 741, CABA",
+  "preferred_payment_methods": "Tarjeta",
+  "health_insurance_id": 2,
+  "doctor_ids": [3],
+  "reference_person": {
+    "name": "Esteban",
+    "last_name": "Ortega",
+    "address": "Calle French 741, CABA",
+    "phone": "1140002017",
+    "relationship": "Padre"
+  }
+}
+
+### Paciente 18
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "Matías",
+  "last_name": "Ponce",
+  "email": "matias.ponce@mail.com",
+  "phone": "1140001018",
+  "birth_date": { "day": 21, "month": 6, "year": 1984 },
+  "address": "Av. Independencia 963, CABA",
+  "preferred_payment_methods": "Débito",
+  "health_insurance_id": 3,
+  "doctor_ids": [4],
+  "reference_person": {
+    "name": "Liliana",
+    "last_name": "Ponce",
+    "address": "Av. Independencia 963, CABA",
+    "phone": "1140002018",
+    "relationship": "Madre"
+  }
+}
+
+### Paciente 19
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "Sol",
+  "last_name": "Ramos",
+  "email": "sol.ramos@mail.com",
+  "phone": "1140001019",
+  "birth_date": { "day": 30, "month": 7, "year": 1998 },
+  "address": "Calle Anchorena 258, CABA",
+  "preferred_payment_methods": "Transferencia",
+  "health_insurance_id": 1,
+  "doctor_ids": [5],
+  "reference_person": {
+    "name": "Gustavo",
+    "last_name": "Ramos",
+    "address": "Calle Anchorena 258, CABA",
+    "phone": "1140002019",
+    "relationship": "Padre"
+  }
+}
+
+### Paciente 20
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{login_stella.response.body.token}}
+
+{
+  "first_name": "Bruno",
+  "last_name": "Suárez",
+  "email": "bruno.suarez@mail.com",
+  "phone": "1140001020",
+  "birth_date": { "day": 11, "month": 8, "year": 1981 },
+  "address": "Av. Callao 369, CABA",
+  "preferred_payment_methods": "Efectivo",
+  "health_insurance_id": 2,
+  "doctor_ids": [6],
+  "reference_person": {
+    "name": "Viviana",
+    "last_name": "Suárez",
+    "address": "Av. Callao 369, CABA",
+    "phone": "1140002020",
+    "relationship": "Madre"
+  }
+} 

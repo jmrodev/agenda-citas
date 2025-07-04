@@ -1,5 +1,6 @@
 const facilityPaymentModel = require('../models/facilityPaymentModel');
 const facilityPaymentService = require('../services/facilityPaymentService');
+const { parseAndValidateDate } = require('../utils/date');
 
 async function updatePayment(req, res) {
   try {
@@ -75,6 +76,44 @@ async function getPaymentsByDateRange(req, res) {
   }
 }
 
+async function create(req, res) {
+  try {
+    let data = { ...req.body };
+    if (data.payment_date && typeof data.payment_date === 'object') {
+      try {
+        data.payment_date = parseAndValidateDate(data.payment_date, 'payment_date', true);
+      } catch (err) {
+        return res.status(400).json({ error: err.message });
+      }
+    } else if (data.payment_date) {
+      return res.status(400).json({ error: 'payment_date debe ser un objeto { day, month, year }' });
+    }
+    const payment = await facilityPaymentService.createPayment(data);
+    res.status(201).json(payment);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function update(req, res) {
+  try {
+    let data = { ...req.body };
+    if (data.payment_date && typeof data.payment_date === 'object') {
+      try {
+        data.payment_date = parseAndValidateDate(data.payment_date, 'payment_date', true);
+      } catch (err) {
+        return res.status(400).json({ error: err.message });
+      }
+    } else if (data.payment_date) {
+      return res.status(400).json({ error: 'payment_date debe ser un objeto { day, month, year }' });
+    }
+    const payment = await facilityPaymentService.updatePayment(req.params.id, data);
+    res.json(payment);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 module.exports = { 
   updatePayment, 
   removePayment, 
@@ -82,5 +121,7 @@ module.exports = {
   getPaymentsStats, 
   getPaymentsByDoctorStats,
   getAllPayments,
-  getPaymentsByDateRange
+  getPaymentsByDateRange,
+  create,
+  update
 }; 

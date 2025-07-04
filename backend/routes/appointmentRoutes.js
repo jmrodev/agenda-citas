@@ -10,5 +10,6 @@ router.get('/', authenticateToken, appointmentController.getAll);
 router.get('/filtros', authenticateToken, validateQuery(appointmentFiltersSchema), appointmentController.getAllWithFilters);
 router.get('/my', authenticateToken, authorizeRoles('patient'), appointmentController.getMyAppointments);
 router.get('/dashboard-stats', authenticateToken, authorizeRoles('admin', 'secretary', 'doctor'), appointmentController.getDashboardStats);
+router.post('/', authenticateToken, appointmentController.create);
 
 module.exports = router; 

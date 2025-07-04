@@ -1,0 +1,51 @@
+.sideMenu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  background: var(--surface-color, #fff);
+  border-right: 1.5px solid var(--border-color, #e5e7eb);
+  padding: 1rem 0.5rem;
+  min-width: 160px;
+  min-height: 100%;
+  box-shadow: var(--box-shadow-sm, 0 1px 2px rgba(0,0,0,0.04));
+  transition: min-width 0.3s ease, width 0.3s ease;
+  position: relative;
+}
+
+.collapsed {
+  min-width: 60px;
+  width: 60px;
+  padding: 1rem 0.25rem;
+}
+
+.toggleButton {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.collapseButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  color: var(--text-color, #666);
+  transition: background 0.15s, color 0.15s;
+}
+
+.collapseButton:hover {
+  background: var(--secondary-color, #e2e2e2);
+  color: var(--primary-color);
+}
+
+.collapseIcon {
+  font-size: 0.8rem;
+  transform: rotate(0deg);
+  transition: transform 0.3s ease;
+  display: block;
+}
+
+.collapsed .collapseIcon {
+  transform: rotate(180deg);
+} 
