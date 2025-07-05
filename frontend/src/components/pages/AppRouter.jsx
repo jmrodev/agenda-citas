@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import Login from './auth/Login';
-import Register from './auth/Register';
+import Login from './auth/Login/Login'; // Updated path
+import Register from './auth/Register/Register'; // Updated path
 import AdminDashboard from './dashboard/DashboardAdmin'; // Duplicate import, will be removed by linter if not used elsewhere or should be DashboardAdmin
 import DoctorDashboard from './dashboard/DoctorDashboard';
 import SecretaryDashboard from './dashboard/SecretaryDashboard';

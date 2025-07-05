@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import FormGroup from '../../molecules/FormGroup/FormGroup';
-import FormField from '../../molecules/FormField/FormField';
-import Button from '../../atoms/Button/Button';
-import Alert from '../../atoms/Alert/Alert';
-import SuccessScreen from '../../organisms/SuccessScreen/SuccessScreen';
-import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx';
+import FormGroup from '../../../molecules/FormGroup/FormGroup'; // Adjusted path
+import FormField from '../../../molecules/FormField/FormField'; // Adjusted path
+import Button from '../../../atoms/Button/Button'; // Adjusted path
+import Alert from '../../../atoms/Alert/Alert'; // Adjusted path
+import SuccessScreen from '../../../organisms/SuccessScreen/SuccessScreen'; // Adjusted path
+import DashboardLayout from '../../../templates/DashboardLayout/DashboardLayout.jsx'; // Adjusted path
 
 function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);

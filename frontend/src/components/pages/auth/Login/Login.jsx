@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import FormGroup from '../../molecules/FormGroup/FormGroup';
-import FormField from '../../molecules/FormField/FormField';
-import Button from '../../atoms/Button/Button';
-import Alert from '../../atoms/Alert/Alert';
+import FormGroup from '../../../molecules/FormGroup/FormGroup'; // Adjusted path
+import FormField from '../../../molecules/FormField/FormField'; // Adjusted path
+import Button from '../../../atoms/Button/Button'; // Adjusted path
+import Alert from '../../../atoms/Alert/Alert'; // Adjusted path
 
 const Login = () => {
   const [username, setUsername] = useState('');
