@@ -6,6 +6,7 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import SettingsIcon from '@mui/icons-material/Settings';
 import StatCard from '../../molecules/StatCard/StatCard';
 import { debugDashboard, debugPatients, debugCalendar } from '../../../utils/debug.js';
+import styles from './SecretaryDashboard.module.css';
 
 const secretaryActions = [
   { label: 'Agendar cita', icon: <CalendarMonthIcon fontSize='small' />, onClick: () => { window.location.href = '/appointments/new'; } },
@@ -94,7 +95,7 @@ const SecretaryDashboard = () => {
   
   return (
     <DashboardLayout title='Dashboard Secretaria (privado)'>
-      <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
+      <div className={styles.statsContainer}>
         {statCards.map(stat => (
           <StatCard key={stat.title} title={stat.title} value={stat.value} icon={stat.icon} color={stat.color} />
         ))}

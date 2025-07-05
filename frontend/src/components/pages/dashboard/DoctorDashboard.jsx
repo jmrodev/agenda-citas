@@ -5,6 +5,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import MedicationIcon from '@mui/icons-material/Medication';
 import SettingsIcon from '@mui/icons-material/Settings';
 import StatCard from '../../molecules/StatCard/StatCard';
+import styles from './DoctorDashboard.module.css';
 
 const doctorActions = [
   { label: 'Mis citas', icon: <CalendarMonthIcon fontSize='small' />, onClick: () => { window.location.href = '/doctor/appointments'; } },
@@ -45,7 +46,7 @@ const DoctorDashboard = () => {
   ];
   return (
     <DashboardLayout title='Dashboard Doctor (privado)'>
-      <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
+      <div className={styles.statsContainer}>
         {statCards.map(stat => (
           <StatCard key={stat.title} title={stat.title} value={stat.value} icon={stat.icon} color={stat.color} />
         ))}

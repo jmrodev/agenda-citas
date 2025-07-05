@@ -5,6 +5,7 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import PeopleIcon from '@mui/icons-material/People';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import styles from './PaymentStats.module.css';
 
 const PaymentStats = () => {
   const [stats, setStats] = useState({
@@ -90,41 +91,31 @@ const PaymentStats = () => {
   return (
     <DashboardLayout title='Estadísticas de Caja'>
       {/* Cards principales */}
-      <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
+      <div className={styles.statsCardContainer}>
         {statCards.map(stat => (
           <StatCard key={stat.title} title={stat.title} value={stat.value} icon={stat.icon} color={stat.color} />
         ))}
       </div>
 
       {/* Estadísticas por doctor */}
-      <div style={{ marginTop: '2rem' }}>
-        <h2 style={{ marginBottom: '1rem', color: 'var(--text-color)' }}>Estadísticas por Doctor</h2>
-        <div style={{ 
-          display: 'grid', 
-          gap: '1rem', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' 
-        }}>
+      <div className={styles.sectionContainer}>
+        <h2 className={styles.sectionTitle}>Estadísticas por Doctor</h2>
+        <div className={styles.doctorStatsGrid}>
           {doctorStats.map(doctor => (
-            <div key={doctor.doctor_id} style={{
-              background: 'var(--surface, #fff)',
-              padding: '1.5rem',
-              borderRadius: '8px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-              border: '1px solid var(--border-color, #e0e0e0)'
-            }}>
-              <h3 style={{ margin: '0 0 1rem 0', color: 'var(--text-color)' }}>
+            <div key={doctor.doctor_id} className={styles.doctorStatCard}>
+              <h3 className={styles.doctorNameTitle}>
                 Dr. {doctor.first_name} {doctor.last_name}
               </h3>
-              <div style={{ display: 'grid', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div className={styles.doctorStatDetails}>
+                <div className={styles.statDetailRow}>
                   <span>Total de pagos:</span>
                   <strong>{doctor.total_payments || 0}</strong>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div className={styles.statDetailRow}>
                   <span>Monto total:</span>
                   <strong>{formatCurrency(doctor.total_amount)}</strong>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div className={styles.statDetailRow}>
                   <span>Promedio por pago:</span>
                   <strong>{formatCurrency(doctor.average_amount)}</strong>
                 </div>
@@ -135,12 +126,12 @@ const PaymentStats = () => {
       </div>
 
       {/* Información adicional */}
-      <div style={{ marginTop: '2rem', padding: '1rem', background: 'var(--surface-secondary, #f8f9fa)', borderRadius: '8px' }}>
-        <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--text-color)' }}>Información adicional</h3>
-        <p style={{ margin: '0', color: 'var(--text-secondary)' }}>
+      <div className={styles.additionalInfoContainer}>
+        <h3 className={styles.additionalInfoTitle}>Información adicional</h3>
+        <p className={styles.additionalInfoText}>
           <strong>Primer pago registrado:</strong> {formatDate(stats.firstPayment)}
         </p>
-        <p style={{ margin: '0.5rem 0 0 0', color: 'var(--text-secondary)' }}>
+        <p className={styles.additionalInfoTextWithMargin}>
           <strong>Último pago registrado:</strong> {formatDate(stats.lastPayment)}
         </p>
       </div>

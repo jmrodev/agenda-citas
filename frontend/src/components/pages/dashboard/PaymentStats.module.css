@@ -1,0 +1,70 @@
+/* Styles for PaymentStats.jsx */
+
+.statsCardContainer {
+  display: flex;
+  gap: var(--spacing-lg); /* 1.5rem */
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-xl); /* 2rem */
+}
+
+.sectionContainer {
+  margin-top: var(--spacing-xl); /* 2rem */
+}
+
+.sectionTitle {
+  margin-bottom: var(--spacing-md); /* 1rem */
+  color: var(--text-color);
+  /* Assuming h2 styles would be handled by a global h2 style or a Text component in a full system */
+}
+
+.doctorStatsGrid {
+  display: grid;
+  gap: var(--spacing-md); /* 1rem */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.doctorStatCard {
+  background: var(--card-bg);
+  padding: var(--card-padding); /* 1.5rem */
+  border-radius: var(--card-radius); /* 8px */
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+}
+
+.doctorNameTitle {
+  margin: 0 0 var(--spacing-md) 0; /* 0 0 1rem 0 */
+  color: var(--text-color);
+  /* Assuming h3 styles would be handled by a global h3 style or a Text component */
+}
+
+.doctorStatDetails {
+  display: grid;
+  gap: var(--spacing-sm); /* 0.5rem */
+}
+
+.statDetailRow {
+  display: flex;
+  justify-content: space-between;
+}
+
+.additionalInfoContainer {
+  margin-top: var(--spacing-xl); /* 2rem */
+  padding: var(--spacing-md); /* 1rem */
+  background: var(--surface-color); /* Assuming --surface-secondary was a placeholder, using --surface-color */
+  border-radius: var(--card-radius); /* 8px */
+}
+
+.additionalInfoTitle {
+  margin: 0 0 var(--spacing-sm) 0; /* 0 0 0.5rem 0 */
+  color: var(--text-color);
+}
+
+.additionalInfoText {
+  margin: 0;
+  color: var(--text-color-secondary);
+}
+
+.additionalInfoTextWithMargin {
+  margin: var(--spacing-sm) 0 0 0; /* 0.5rem 0 0 0 */
+  color: var(--text-color-secondary);
+}
