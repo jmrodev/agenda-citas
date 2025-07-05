@@ -1,0 +1,101 @@
+/* Styles for PatientsList.jsx */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl); /* 2rem */
+  flex-wrap: wrap;
+  gap: var(--spacing-md); /* 1rem */
+}
+
+.titleContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm); /* 0.5rem */
+}
+
+.titleIcon {
+  color: var(--primary-color);
+}
+
+.title {
+  margin: 0;
+  /* Assuming h2 styles are handled globally or by a Text component */
+}
+
+.actionsContainer {
+  display: flex;
+  gap: var(--spacing-md); /* 1rem */
+  align-items: center;
+}
+
+.searchInputContainer {
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px; /* Consider var(--spacing-sm) or md if it aligns */
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-color-secondary); /* #666 */
+}
+
+.searchInput {
+  padding-left: 40px !important; /* Increased specificity if Input component has its own padding */
+}
+
+.addButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm); /* 0.5rem */
+}
+
+.listContainer {
+  background: var(--card-bg); /* var(--surface) */
+  border-radius: var(--card-radius); /* 8px */
+  overflow: hidden;
+  box-shadow: var(--card-shadow); /* 0 2px 8px rgba(0,0,0,0.04) -> map to --box-shadow-sm or md */
+}
+
+.grid {
+  display: grid;
+  /* Columns updated for more descriptive names if possible, or keep as is */
+  grid-template-columns: 2fr 2fr 1fr 1fr minmax(100px, auto); /* Adjusted for typical content */
+  gap: var(--spacing-md); /* 1rem */
+  padding: var(--spacing-md); /* 1rem */
+  align-items: center;
+}
+
+.gridHeader {
+  background: var(--table-header-bg); /* var(--surface-secondary) */
+  font-weight: bold;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.gridRow {
+  border-bottom: 1px solid var(--border-color);
+}
+.gridRow:last-child {
+  border-bottom: none;
+}
+
+.noPatientsMessage {
+  padding: var(--spacing-xl); /* 2rem */
+  text-align: center;
+  color: var(--text-color-secondary); /* #666 */
+}
+
+.patientName {
+  font-weight: bold;
+}
+
+.rowActions {
+  display: flex;
+  gap: var(--spacing-sm); /* 0.5rem */
+}
+
+.actionButton {
+  padding: var(--spacing-xs) var(--spacing-sm) !important; /* 0.25rem 0.5rem, added important if Button's own padding is too large */
+}

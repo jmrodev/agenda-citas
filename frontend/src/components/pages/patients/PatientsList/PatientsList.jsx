@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx';
-import Button from '../../atoms/Button/Button';
-import Input from '../../atoms/Input/Input';
-import Alert from '../../atoms/Alert/Alert';
+import DashboardLayout from '../../../templates/DashboardLayout/DashboardLayout.jsx'; // Adjusted path
+import Button from '../../../atoms/Button/Button'; // Adjusted path
+import Input from '../../../atoms/Input/Input'; // Adjusted path
+import Alert from '../../../atoms/Alert/Alert'; // Adjusted path
 import PeopleIcon from '@mui/icons-material/People';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import PatientFormModal from '../../organisms/PatientFormModal/PatientFormModal';
+import PatientFormModal from '../../../organisms/PatientFormModal/PatientFormModal'; // Adjusted path
+import styles from './PatientsList.module.css'; // This path will be correct after move
 
 const PatientsList = () => {
   const [patients, setPatients] = useState([]);
@@ -75,39 +76,26 @@ const PatientsList = () => {
   return (
     <DashboardLayout title="Gestión de Pacientes">
       {/* Header con búsqueda y botón agregar */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        marginBottom: '2rem',
-        flexWrap: 'wrap',
-        gap: '1rem'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <PeopleIcon style={{ color: 'var(--primary-color)' }} />
-          <h2 style={{ margin: 0 }}>Pacientes ({filteredPatients.length})</h2>
+      <div className={styles.header}>
+        <div className={styles.titleContainer}>
+          <PeopleIcon className={styles.titleIcon} />
+          <h2 className={styles.title}>Pacientes ({filteredPatients.length})</h2>
         </div>
         
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <div style={{ position: 'relative' }}>
-            <SearchIcon style={{ 
-              position: 'absolute', 
-              left: '12px', 
-              top: '50%', 
-              transform: 'translateY(-50%)',
-              color: '#666'
-            }} />
+        <div className={styles.actionsContainer}>
+          <div className={styles.searchInputContainer}>
+            <SearchIcon className={styles.searchIcon} />
             <Input
               type="text"
               placeholder="Buscar pacientes..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ paddingLeft: '40px' }}
+              className={styles.searchInput}
             />
           </div>
           <Button 
             onClick={() => setShowForm(true)}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+            className={styles.addButton}
           >
             <AddIcon />
             Nuevo Paciente
@@ -118,21 +106,8 @@ const PatientsList = () => {
       {error && <Alert type="error">{error}</Alert>}
 
       {/* Lista de pacientes */}
-      <div style={{ 
-        background: 'var(--surface)', 
-        borderRadius: '8px', 
-        overflow: 'hidden',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
-      }}>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: '1fr 1fr 1fr 1fr auto',
-          gap: '1rem',
-          padding: '1rem',
-          background: 'var(--surface-secondary)',
-          fontWeight: 'bold',
-          borderBottom: '1px solid var(--border-color)'
-        }}>
+      <div className={styles.listContainer}>
+        <div className={`${styles.grid} ${styles.gridHeader}`}>
           <div>Nombre</div>
           <div>Email</div>
           <div>Teléfono</div>
@@ -141,33 +116,26 @@ const PatientsList = () => {
         </div>
 
         {filteredPatients.length === 0 ? (
-          <div style={{ padding: '2rem', textAlign: 'center', color: '#666' }}>
+          <div className={styles.noPatientsMessage}>
             {searchTerm ? 'No se encontraron pacientes con esa búsqueda' : 'No hay pacientes registrados'}
           </div>
         ) : (
           filteredPatients.map(patient => (
-            <div key={patient.patient_id} style={{ 
-              display: 'grid', 
-              gridTemplateColumns: '1fr 1fr 1fr 1fr auto',
-              gap: '1rem',
-              padding: '1rem',
-              borderBottom: '1px solid var(--border-color)',
-              alignItems: 'center'
-            }}>
+            <div key={patient.patient_id} className={`${styles.grid} ${styles.gridRow}`}>
               <div>
                 <strong>{patient.first_name} {patient.last_name}</strong>
               </div>
               <div>{patient.email || '-'}</div>
               <div>{patient.phone || '-'}</div>
               <div>{patient.date_of_birth ? new Date(patient.date_of_birth).toLocaleDateString('es-AR') : '-'}</div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div className={styles.rowActions}>
                 <Button 
                   size="small"
                   onClick={() => {
                     setEditingPatient(patient);
                     setShowForm(true);
                   }}
-                  style={{ padding: '0.25rem 0.5rem' }}
+                  className={styles.actionButton}
                 >
                   <EditIcon fontSize="small" />
                 </Button>
@@ -175,7 +143,7 @@ const PatientsList = () => {
                   size="small"
                   variant="danger"
                   onClick={() => handleDelete(patient.patient_id)}
-                  style={{ padding: '0.25rem 0.5rem' }}
+                  className={styles.actionButton}
                 >
                   <DeleteIcon fontSize="small" />
                 </Button>

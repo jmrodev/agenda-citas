@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import Button from '../atoms/Button/Button';
-import Header from '../organisms/Header/Header.jsx';
+import Button from '../../atoms/Button/Button'; // Adjusted path
+import Header from '../../organisms/Header/Header.jsx'; // Adjusted path
+import styles from './Settings.module.css'; // This path will be correct after move
 
 const Settings = () => {
   const [timeout, setTimeoutValue] = useState(15);
@@ -53,10 +54,10 @@ const Settings = () => {
   return (
     <>
       <Header />
-      <div style={{ maxWidth: 400, margin: '2rem auto', background: 'var(--surface, #fff)', borderRadius: 10, boxShadow: '0 2px 8px rgba(0,0,0,0.04)', padding: '2rem' }}>
+      <div className={styles.container}>
         <h2>Configuración</h2>
         <form onSubmit={handleSave}>
-          <div style={{ marginBottom: 16 }}>
+          <div className={styles.formGroup}>
             <label htmlFor='timeout'>Tiempo de cierre de sesión por inactividad (minutos):</label>
             <input
               id='timeout'
@@ -64,13 +65,13 @@ const Settings = () => {
               min={1}
               value={timeout}
               onChange={e => setTimeoutValue(Number(e.target.value))}
-              style={{ width: '100%', padding: 8, marginTop: 4 }}
+              className={styles.inputField}
               required
             />
           </div>
           <Button type='submit' disabled={loading}>Guardar</Button>
-          {success && <div style={{ color: 'green', marginTop: 8 }}>Guardado correctamente</div>}
-          {error && <div style={{ color: 'red', marginTop: 8 }}>{error}</div>}
+          {success && <div className={styles.successMessage}>Guardado correctamente</div>}
+          {error && <div className={styles.errorMessage}>{error}</div>}
         </form>
       </div>
     </>

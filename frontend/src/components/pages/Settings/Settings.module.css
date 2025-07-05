@@ -1,0 +1,45 @@
+/* Styles for Settings.jsx */
+
+.container {
+  max-width: 400px;
+  margin: var(--spacing-xl) auto; /* 2rem auto */
+  background: var(--card-bg);    /* var(--surface, #fff) */
+  border-radius: var(--card-radius); /* 10px -> 8px */
+  box-shadow: var(--card-shadow); /* 0 2px 8px rgba(0,0,0,0.04) -> var(--box-shadow-md) or sm */
+  padding: var(--spacing-xl);     /* 2rem */
+}
+
+/* Assuming h2 styles are handled globally or by a Text component */
+/* .title { ... } */
+
+.formGroup {
+  margin-bottom: var(--spacing-md); /* 16px -> 1rem */
+}
+
+/* Styling for native input, assuming no global input styling is sufficient */
+.inputField {
+  width: 100%;
+  padding: var(--spacing-sm); /* 8px -> 0.5rem */
+  margin-top: var(--spacing-xs); /* 4px -> 0.25rem */
+  border: 1px solid var(--input-border);
+  border-radius: var(--input-radius);
+  background-color: var(--input-bg);
+  color: var(--text-color);
+}
+
+.inputField:focus {
+  border-color: var(--input-border-focus);
+  outline: none;
+}
+
+.successMessage {
+  color: var(--success-color); /* green */
+  margin-top: var(--spacing-sm); /* 8px */
+  font-size: var(--font-size-sm);
+}
+
+.errorMessage {
+  color: var(--danger-color); /* red */
+  margin-top: var(--spacing-sm); /* 8px */
+  font-size: var(--font-size-sm);
+}

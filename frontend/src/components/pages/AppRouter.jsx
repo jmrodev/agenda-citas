@@ -3,14 +3,14 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Login from './auth/Login/Login';
 import Register from './auth/Register/Register';
 import AdminDashboard from './dashboard/DashboardAdmin/DashboardAdmin'; // Updated path
-import DoctorDashboard from './dashboard/DoctorDashboard/DoctorDashboard'; // Updated path
-import SecretaryDashboard from './dashboard/SecretaryDashboard/SecretaryDashboard'; // Updated path
+import DoctorDashboard from './dashboard/DoctorDashboard/DoctorDashboard';
+import SecretaryDashboard from './dashboard/SecretaryDashboard/SecretaryDashboard';
 import RequireAuth from './auth/RequireAuth';
-import Settings from './Settings';
-import PaymentStats from './dashboard/PaymentStats/PaymentStats.jsx'; // Updated path
-import PatientsList from './patients/PatientsList.jsx';
+import Settings from './Settings/Settings'; // Updated path
+import PaymentStats from './dashboard/PaymentStats/PaymentStats.jsx';
+import PatientsList from './patients/PatientsList/PatientsList'; // Updated path
 import CalendarPage from './calendar/CalendarPage';
-import LoadingRedirectPage from './auth/LoadingRedirectPage/LoadingRedirectPage.jsx'; // Updated import path
+import LoadingRedirectPage from './auth/LoadingRedirectPage/LoadingRedirectPage.jsx';
 
 export default function AppRouter() {
     return (
