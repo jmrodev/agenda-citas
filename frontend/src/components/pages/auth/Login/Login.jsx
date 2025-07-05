@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import FormGroup from '../../../molecules/FormGroup/FormGroup'; // Adjusted path
-import FormField from '../../../molecules/FormField/FormField'; // Adjusted path
-import Button from '../../../atoms/Button/Button'; // Adjusted path
-import Alert from '../../../atoms/Alert/Alert'; // Adjusted path
+import FormGroup from '../../../molecules/FormGroup/FormGroup';
+import FormField from '../../../molecules/FormField/FormField';
+import Button from '../../../atoms/Button/Button';
+import Alert from '../../../atoms/Alert/Alert';
+import styles from './Login.module.css'; // Import CSS module
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -66,12 +67,12 @@ const Login = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--app-bg, #f9fafb)' }}>
-      <form onSubmit={handleSubmit} style={{ minWidth: 320, maxWidth: 360, width: '100%', background: 'var(--surface, #fff)', borderRadius: 10, boxShadow: '0 2px 8px rgba(0,0,0,0.04)', padding: '2.5rem 2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }} noValidate>
-        <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
-          <span style={{ fontWeight: 700, fontSize: '1.3rem', color: 'var(--primary, #2563eb)' }}>Agenda de Citas</span>
+    <div className={styles.container}>
+      <form onSubmit={handleSubmit} className={styles.form} noValidate>
+        <div className={styles.titleContainer}>
+          <span className={styles.appTitle}>Agenda de Citas</span>
         </div>
-        <h2 style={{ textAlign: 'center', fontWeight: 600, fontSize: '1.1rem', margin: 0 }}>Iniciar sesión</h2>
+        <h2 className={styles.formTitle}>Iniciar sesión</h2>
         <FormGroup>
           <FormField
             label='Nombre de usuario'
@@ -92,11 +93,11 @@ const Login = () => {
           />
         </FormGroup>
         {error && <Alert type='error'>{error}</Alert>}
-        <Button type='submit' loading={loading} style={{ width: '100%' }} disabled={loading || Object.keys(fieldErrors).length > 0 || !username || !password}>
+        <Button type='submit' loading={loading} className={styles.submitButton} disabled={loading || Object.keys(fieldErrors).length > 0 || !username || !password}>
           Iniciar sesión
         </Button>
-        <div style={{ textAlign: 'center', fontSize: '0.97em', marginTop: '0.5rem' }}>
-          <a href='#' style={{ color: 'var(--primary, #2563eb)', textDecoration: 'underline' }}>¿Olvidaste tu contraseña?</a>
+        <div className={styles.forgotPasswordContainer}>
+          <a href='#' className={styles.forgotPasswordLink}>¿Olvidaste tu contraseña?</a>
         </div>
       </form>
     </div>

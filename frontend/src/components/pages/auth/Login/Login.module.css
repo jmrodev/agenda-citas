@@ -1,0 +1,55 @@
+/* Styles for Login.jsx */
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--app-bg, #f9fafb);
+}
+
+.form {
+  min-width: 320px;
+  max-width: 360px;
+  width: 100%;
+  background: var(--surface, #fff);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.titleContainer {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.appTitle {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--primary, #2563eb);
+}
+
+.formTitle {
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.submitButton {
+  width: 100%;
+}
+
+.forgotPasswordContainer {
+  text-align: center;
+  font-size: 0.97em;
+  margin-top: 0.5rem;
+}
+
+.forgotPasswordLink {
+  color: var(--primary, #2563eb);
+  text-decoration: underline;
+}

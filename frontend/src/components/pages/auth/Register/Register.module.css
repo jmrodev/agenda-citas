@@ -1,0 +1,49 @@
+/* Styles for Register.jsx */
+
+.pageContainer {
+  background: var(--app-bg, #f9fafb);
+  /* Ensures the container takes at least viewport height if content is short,
+     but can grow if content is taller like the register form. */
+  min-height: 100vh;
+  padding-top: 2rem; /* Add some padding at the top */
+  padding-bottom: 2rem; /* Add some padding at the bottom */
+  display: flex; /* Helps in centering if needed, though form has margin: auto */
+  flex-direction: column;
+  align-items: center; /* Center form horizontally */
+}
+
+.form {
+  min-width: 320px;
+  max-width: 450px; /* Increased max-width for more fields */
+  width: 100%;
+  background: var(--surface, #fff);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 0 auto; /* Auto margins for horizontal centering if pageContainer is flex */
+}
+
+.titleContainer {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.appTitle {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--primary, #2563eb);
+}
+
+.formTitle {
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.submitButton {
+  width: 100%;
+}

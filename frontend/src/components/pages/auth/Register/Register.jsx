@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import FormGroup from '../../../molecules/FormGroup/FormGroup'; // Adjusted path
 import FormField from '../../../molecules/FormField/FormField'; // Adjusted path
 import Button from '../../../atoms/Button/Button'; // Adjusted path
-import Alert from '../../../atoms/Alert/Alert'; // Adjusted path
-import SuccessScreen from '../../../organisms/SuccessScreen/SuccessScreen'; // Adjusted path
-import DashboardLayout from '../../../templates/DashboardLayout/DashboardLayout.jsx'; // Adjusted path
+import Alert from '../../../atoms/Alert/Alert';
+import SuccessScreen from '../../../organisms/SuccessScreen/SuccessScreen';
+import DashboardLayout from '../../../templates/DashboardLayout/DashboardLayout.jsx';
+import styles from './Register.module.css'; // Import CSS module
 
 function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -211,15 +212,20 @@ function RegisterForm() {
   };
 
   return (
-    <div style={{ background: 'var(--app-bg, #f9fafb)' }}>
+    // The DashboardLayout will provide the main page background for RegisterUserWithLayout
+    // For RegisterForm directly (if used standalone), this container ensures background consistency.
+    // However, RegisterForm is always wrapped by RegisterUserWithLayout which uses DashboardLayout.
+    // So, this outer div in RegisterForm might be redundant if RegisterForm is never used standalone.
+    // For now, applying styles.pageContainer to the div that was styled.
+    <div className={styles.pageContainer}>
       {success ? (
         <SuccessScreen message={success} redirectTo='/users' linkText='Ir a la lista de usuarios' delay={3000} />
       ) : (
-        <form onSubmit={handleSubmit} style={{ minWidth: 320, maxWidth: 400, width: '100%', background: 'var(--surface, #fff)', borderRadius: 10, boxShadow: '0 2px 8px rgba(0,0,0,0.04)', padding: '2.5rem 2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', margin: '2rem auto' }} noValidate>
-          <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ fontWeight: 700, fontSize: '1.3rem', color: 'var(--primary, #2563eb)' }}>Agenda de Citas</span>
+        <form onSubmit={handleSubmit} className={styles.form} noValidate>
+          <div className={styles.titleContainer}>
+            <span className={styles.appTitle}>Agenda de Citas</span>
           </div>
-          <h2 style={{ textAlign: 'center', fontWeight: 600, fontSize: '1.1rem', margin: 0 }}>Registrar usuario</h2>
+          <h2 className={styles.formTitle}>Registrar usuario</h2>
           <FormGroup>
             <FormField
               label='Nombre'
@@ -302,7 +308,7 @@ function RegisterForm() {
             )}
           </FormGroup>
           {error && <Alert type='error'>{error}</Alert>}
-          <Button type='submit' loading={loading} style={{ width: '100%' }} disabled={loading || Object.values(fieldErrors).some(Boolean) || !nombre || !email || !password || !confirm || !role}>
+          <Button type='submit' loading={loading} className={styles.submitButton} disabled={loading || Object.values(fieldErrors).some(Boolean) || !nombre || !email || !password || !confirm || !role}>
             Registrar
           </Button>
         </form>
