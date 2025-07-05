@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx';
-import StatCard from '../../molecules/StatCard/StatCard';
+import DashboardLayout from '../../../templates/DashboardLayout/DashboardLayout.jsx'; // Adjusted path
+import StatCard from '../../../molecules/StatCard/StatCard'; // Adjusted path
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import PeopleIcon from '@mui/icons-material/People';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import styles from './PaymentStats.module.css';
+import styles from './PaymentStats.module.css'; // Correct path once in new folder
 
 const PaymentStats = () => {
   const [stats, setStats] = useState({
@@ -139,4 +139,4 @@ const PaymentStats = () => {
   );
 };
 
-export default PaymentStats; 
+export default PaymentStats;

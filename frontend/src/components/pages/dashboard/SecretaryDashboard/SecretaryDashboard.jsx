@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx';
+import DashboardLayout from '../../../templates/DashboardLayout/DashboardLayout.jsx'; // Adjusted path
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import PeopleIcon from '@mui/icons-material/People';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import SettingsIcon from '@mui/icons-material/Settings';
-import StatCard from '../../molecules/StatCard/StatCard';
-import { debugDashboard, debugPatients, debugCalendar } from '../../../utils/debug.js';
-import styles from './SecretaryDashboard.module.css';
+import StatCard from '../../../molecules/StatCard/StatCard'; // Adjusted path
+import { debugDashboard, debugPatients, debugCalendar } from '../../../../utils/debug.js'; // Adjusted path
+import styles from './SecretaryDashboard.module.css'; // Correct path once in new folder
 
 const secretaryActions = [
   { label: 'Agendar cita', icon: <CalendarMonthIcon fontSize='small' />, onClick: () => { window.location.href = '/appointments/new'; } },

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx';
-import StatCard from '../../molecules/StatCard/StatCard';
+import DashboardLayout from '../../../templates/DashboardLayout/DashboardLayout.jsx'; // Adjusted path
+import StatCard from '../../../molecules/StatCard/StatCard'; // Adjusted path
 import PeopleIcon from '@mui/icons-material/People';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';

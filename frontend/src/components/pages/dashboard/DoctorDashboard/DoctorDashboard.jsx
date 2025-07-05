@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx';
+import DashboardLayout from '../../../templates/DashboardLayout/DashboardLayout.jsx'; // Adjusted path
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import PeopleIcon from '@mui/icons-material/People';
 import MedicationIcon from '@mui/icons-material/Medication';
 import SettingsIcon from '@mui/icons-material/Settings';
-import StatCard from '../../molecules/StatCard/StatCard';
-import styles from './DoctorDashboard.module.css';
+import StatCard from '../../../molecules/StatCard/StatCard'; // Adjusted path
+import styles from './DoctorDashboard.module.css'; // Path will be correct once this file is in the new folder
 
 const doctorActions = [
   { label: 'Mis citas', icon: <CalendarMonthIcon fontSize='small' />, onClick: () => { window.location.href = '/doctor/appointments'; } },

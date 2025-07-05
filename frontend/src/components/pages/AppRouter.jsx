@@ -1,14 +1,13 @@
 import React from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import Login from './auth/Login/Login'; // Updated path
-import Register from './auth/Register/Register'; // Updated path
-import AdminDashboard from './dashboard/DashboardAdmin'; // Duplicate import, will be removed by linter if not used elsewhere or should be DashboardAdmin
-import DoctorDashboard from './dashboard/DoctorDashboard';
-import SecretaryDashboard from './dashboard/SecretaryDashboard';
+import Login from './auth/Login/Login';
+import Register from './auth/Register/Register';
+import AdminDashboard from './dashboard/DashboardAdmin/DashboardAdmin'; // Updated path
+import DoctorDashboard from './dashboard/DoctorDashboard/DoctorDashboard'; // Updated path
+import SecretaryDashboard from './dashboard/SecretaryDashboard/SecretaryDashboard'; // Updated path
 import RequireAuth from './auth/RequireAuth';
 import Settings from './Settings';
-// import DashboardAdmin from './dashboard/DashboardAdmin'; // This was a duplicate import
-import PaymentStats from './dashboard/PaymentStats.jsx';
+import PaymentStats from './dashboard/PaymentStats/PaymentStats.jsx'; // Updated path
 import PatientsList from './patients/PatientsList.jsx';
 import CalendarPage from './calendar/CalendarPage';
 import LoadingRedirectPage from './auth/LoadingRedirectPage/LoadingRedirectPage.jsx'; // Updated import path
