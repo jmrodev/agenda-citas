@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import RequireAuth from './auth/RequireAuth';
+import RequireAuth from './auth/RequireAuth'; // Importación directa
+import RoleBasedRedirect from './auth/RoleBasedRedirect';
 import Loader from '../atoms/Loader/Loader';
 
 // Lazy loading de todas las páginas
@@ -10,7 +11,7 @@ const Register = lazy(() => import('./auth/Register'));
 // Dashboard pages
 const DashboardAdmin = lazy(() => import('./dashboard/DashboardAdmin'));
 const SecretaryDashboard = lazy(() => import('./dashboard/SecretaryDashboard'));
-const DoctorDashboard = lazy(() => import('./dashboard/DashboardAdmin'));
+const DoctorDashboard = lazy(() => import('./dashboard/DoctorDashboard')); // Corregido
 const PaymentStats = lazy(() => import('./dashboard/PaymentStats'));
 
 // Patient pages
@@ -56,12 +57,23 @@ const AppRouter = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           
-          {/* Ruta por defecto - redirigir a login */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          {/* Ruta raíz protegida que redirige según el rol */}
+          <Route
+            path="/"
+            element={
+              <RequireAuth>
+                <RoleBasedRedirect />
+              </RequireAuth>
+            }
+          />
           
           {/* Rutas protegidas */}
           <Route element={<RequireAuth />}>
             {/* Dashboard routes */}
+            {/* Se necesita una ruta base para /dashboard o asegurar que todas las subrutas de dashboard estén definidas */}
+            {/* Si RoleBasedRedirect ya dirige a /dashboard/admin, /dashboard/secretary, etc.,
+                quizás /dashboard como ruta genérica no sea necesaria o deba ser un layout.
+                Por ahora, se asume que DashboardAdmin puede ser una vista genérica o de admin. */}
             <Route path="/dashboard" element={<DashboardAdmin />} />
             <Route path="/dashboard/admin" element={<DashboardAdmin />} />
             <Route path="/dashboard/secretary" element={<SecretaryDashboard />} />
