@@ -8,25 +8,19 @@
 }
 
 /* Theme classes for StatCard */
-/* Assuming StatCard's icon has a class like '.icon' from its own module */
+/* These classes provide the CSS variables that StatCard.module.css will use. */
 
 .themeSuccess {
-  border-color: var(--success-color) !important;
-}
-.themeSuccess .icon {
-  color: var(--success-color) !important;
+  --statcard-internal-border-color: var(--success-color);
+  --statcard-internal-icon-color: var(--success-color);
 }
 
 .themeInfo {
-  border-color: var(--alert-info-color) !important;
-}
-.themeInfo .icon {
-  color: var(--alert-info-color) !important;
+  --statcard-internal-border-color: var(--alert-info-color);
+  --statcard-internal-icon-color: var(--alert-info-color);
 }
 
 .themeDanger {
-  border-color: var(--danger-color) !important;
-}
-.themeDanger .icon {
-  color: var(--danger-color) !important;
+  --statcard-internal-border-color: var(--danger-color);
+  --statcard-internal-icon-color: var(--danger-color);
 }

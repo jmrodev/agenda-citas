@@ -8,33 +8,24 @@
 }
 
 /* Theme classes for StatCard */
-/* These will be merged with StatCard's own 'styles.card' class */
-/* The icon class from StatCard.module.css is 'icon' */
+/* These classes provide the CSS variables that StatCard.module.css will use. */
 
 .themeInfo {
-  border-color: var(--alert-info-color) !important; /* Use !important if specificity issues arise with StatCard's own border */
-}
-.themeInfo .icon { /* This targets StatCard_icon__XYZ if 'icon' is the class name in StatCard.module.css */
-  color: var(--alert-info-color) !important;
+  --statcard-internal-border-color: var(--alert-info-color);
+  --statcard-internal-icon-color: var(--alert-info-color);
 }
 
 .themeSuccess {
-  border-color: var(--success-color) !important;
-}
-.themeSuccess .icon {
-  color: var(--success-color) !important;
+  --statcard-internal-border-color: var(--success-color);
+  --statcard-internal-icon-color: var(--success-color);
 }
 
 .themeDanger {
-  border-color: var(--danger-color) !important;
-}
-.themeDanger .icon {
-  color: var(--danger-color) !important;
+  --statcard-internal-border-color: var(--danger-color);
+  --statcard-internal-icon-color: var(--danger-color);
 }
 
 .themeWarning {
-  border-color: var(--warning-color) !important;
-}
-.themeWarning .icon {
-  color: var(--warning-color) !important;
+  --statcard-internal-border-color: var(--warning-color);
+  --statcard-internal-icon-color: var(--warning-color);
 }
