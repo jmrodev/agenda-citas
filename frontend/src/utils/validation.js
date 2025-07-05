@@ -205,12 +205,12 @@ export const validateField = (value, rules) => {
 export const SCHEMAS = {
   LOGIN: {
     username: ['required'],
-    password: ['required', 'minLength:6']
+    password: ['required', (value) => value.length >= 6 ? null : 'Mínimo 6 caracteres']
   },
 
   REGISTER: {
-    first_name: ['required', 'onlyLetters', 'minLength:2'],
-    last_name: ['required', 'onlyLetters', 'minLength:2'],
+    first_name: ['required', 'onlyLetters', (value) => value.length >= 2 ? null : 'Mínimo 2 caracteres'],
+    last_name: ['required', 'onlyLetters', (value) => value.length >= 2 ? null : 'Mínimo 2 caracteres'],
     email: ['required', 'email'],
     password: ['required', 'password'],
     confirm_password: ['required', (value, password) => 
@@ -219,8 +219,8 @@ export const SCHEMAS = {
   },
 
   PATIENT: {
-    first_name: ['required', 'onlyLetters', 'minLength:2'],
-    last_name: ['required', 'onlyLetters', 'minLength:2'],
+    first_name: ['required', 'onlyLetters', (value) => value.length >= 2 ? null : 'Mínimo 2 caracteres'],
+    last_name: ['required', 'onlyLetters', (value) => value.length >= 2 ? null : 'Mínimo 2 caracteres'],
     email: ['email'],
     phone: ['phone'],
     dni: ['dni'],
@@ -232,6 +232,6 @@ export const SCHEMAS = {
     doctor_id: ['required'],
     date: ['required', 'date'],
     time: ['required', 'time'],
-    notes: ['maxLength:500']
+    notes: [(value) => !value || value.length <= 500 ? null : 'Máximo 500 caracteres']
   }
 }; 

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import styles from './FormField.module.css';
 import Label from '../../atoms/Label/Label';
 import Input from '../../atoms/Input/Input';
@@ -6,8 +6,7 @@ import Textarea from '../../atoms/Textarea/Textarea';
 import Select from '../../atoms/Select/Select';
 import HelperText from '../../atoms/HelperText/HelperText';
 import FormErrorIcon from '../../atoms/FormErrorIcon/FormErrorIcon';
-import { validateField } from '../../../utils/validation';
-import { sanitizeText, sanitizeEmail, sanitizePhone, sanitizeDNI, sanitizeDate, sanitizeTime } from '../../../utils/sanitization';
+import { sanitizeText, sanitizeInputText, sanitizeEmail, sanitizePhone, sanitizeDNI, sanitizeDate, sanitizeTime } from '../../../utils/sanitization';
 
 const FormField = React.memo(({
   label,
@@ -21,15 +20,12 @@ const FormField = React.memo(({
   required = false,
   disabled = false,
   placeholder,
-  validationRules = [],
   sanitizeType = 'text',
   className = '',
   children,
+  validationRules,
   ...props
 }) => {
-  const [isTouched, setIsTouched] = useState(false);
-  const [localError, setLocalError] = useState('');
-
   // Sanitización según tipo
   const sanitizeValue = useCallback((value) => {
     switch (sanitizeType) {
@@ -45,64 +41,31 @@ const FormField = React.memo(({
         return sanitizeTime(value);
       case 'text':
       default:
-        return sanitizeText(value);
+        return sanitizeInputText(value);
     }
   }, [sanitizeType]);
 
-  // Validación en tiempo real
-  const validateValue = useCallback((value) => {
-    if (validationRules.length === 0) return null;
-    return validateField(value, validationRules);
-  }, [validationRules]);
-
   // Manejar cambio de valor
   const handleChange = useCallback((e) => {
-    const rawValue = e.target.value;
-    const sanitizedValue = sanitizeValue(rawValue);
-    const validationError = validateValue(sanitizedValue);
-
-    setLocalError(validationError || '');
-    
+    // Pasar el evento directamente sin modificaciones
     if (onChange) {
-      onChange({
-        ...e,
-        target: {
-          ...e.target,
-          value: sanitizedValue
-        }
-      });
+      onChange(e);
     }
-  }, [sanitizeValue, validateValue, onChange]);
-
-  // Manejar pérdida de foco
-  const handleBlur = useCallback((e) => {
-    setIsTouched(true);
-    const validationError = validateValue(e.target.value);
-    setLocalError(validationError || '');
-    
-    if (onBlur) {
-      onBlur(e);
-    }
-  }, [validateValue, onBlur]);
-
-  // Error final (prop o local)
-  const finalError = useMemo(() => {
-    return error || (isTouched ? localError : '');
-  }, [error, localError, isTouched]);
+  }, [onChange]);
 
   // Clases CSS
   const fieldClasses = useMemo(() => {
     return [
       styles.formField,
-      finalError ? styles.error : '',
+      error ? styles.error : '',
       disabled ? styles.disabled : '',
       className
     ].filter(Boolean).join(' ');
-  }, [finalError, disabled, className]);
+  }, [error, disabled, className]);
 
-  // Props para Input (sin pasar error como boolean)
+  // Props para Input (filtrar props que no deben llegar al DOM)
   const inputProps = useMemo(() => {
-    const { error: _, ...restProps } = props;
+    const { error: _, validationRules: __, ...restProps } = props;
     return {
       ...restProps,
       id: name,
@@ -110,11 +73,11 @@ const FormField = React.memo(({
       type: type,
       value: value,
       onChange: handleChange,
-      onBlur: handleBlur,
+      onBlur: onBlur,
       disabled: disabled,
       placeholder: placeholder
     };
-  }, [props, name, type, value, handleChange, handleBlur, disabled, placeholder]);
+  }, [props, name, type, value, handleChange, onBlur, disabled, placeholder]);
 
   return (
     <div className={fieldClasses}>
@@ -127,20 +90,34 @@ const FormField = React.memo(({
         {children ? (
           children
         ) : type === 'textarea' ? (
-          <Textarea id={name} value={value} onChange={handleChange} onBlur={handleBlur} required={required} {...props} />
+          <Textarea 
+            id={name} 
+            value={value} 
+            onChange={handleChange} 
+            onBlur={onBlur} 
+            required={required} 
+            {...inputProps}
+          />
         ) : type === 'select' ? (
-          <Select id={name} value={value} onChange={handleChange} onBlur={handleBlur} required={required} {...props} />
+          <Select 
+            id={name} 
+            value={value} 
+            onChange={handleChange} 
+            onBlur={onBlur} 
+            required={required} 
+            {...inputProps}
+          />
         ) : (
           <Input
             {...inputProps}
-            className={finalError ? styles.inputError : ''}
+            className={error ? styles.inputError : ''}
           />
         )}
-        {finalError && <FormErrorIcon className={styles.errorIcon} />}
+        {error && <FormErrorIcon className={styles.errorIcon} />}
       </div>
-      {(helperText || finalError) && (
-        <HelperText type={finalError ? 'error' : 'helper'} className={finalError ? styles.errorText : styles.helperText}>
-          {finalError || helperText}
+      {(helperText || error) && (
+        <HelperText type={error ? 'error' : 'helper'} className={error ? styles.errorText : styles.helperText}>
+          {error || helperText}
         </HelperText>
       )}
     </div>

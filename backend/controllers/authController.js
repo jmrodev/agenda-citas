@@ -79,6 +79,8 @@ async function login(req, res) {
     if (!user) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
+    // Log temporal para depuración
+    console.log('Intento login:', { username, password, hash: user.password });
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
       return res.status(401).json({ error: 'Credenciales inválidas' });

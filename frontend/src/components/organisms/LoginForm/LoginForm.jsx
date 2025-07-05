@@ -1,131 +1,142 @@
-import React, { useCallback } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLoginForm } from '../../../hooks/useForm';
-import { login } from '../../../auth/authService';
-import FormField from '../../molecules/FormField/FormField';
 import Button from '../../atoms/Button/Button';
 import Alert from '../../atoms/Alert/Alert';
 import styles from './LoginForm.module.css';
 
-const LoginForm = React.memo(() => {
+const LoginForm = React.memo(({ onSubmit, isLoading, serverError }) => {
   const navigate = useNavigate();
-  
-  // Usar el hook de formulario con esquema de login
-  const {
-    values,
-    errors,
-    touched,
-    isSubmitting,
-    isValid,
-    handleChange,
-    handleBlur,
-    handleSubmit
-  } = useLoginForm({
-    username: '',
-    password: ''
-  });
-
-  // Manejar cambio de campo
-  const handleFieldChange = useCallback((e) => {
-    const { name, value } = e.target;
-    handleChange(name, value);
-  }, [handleChange]);
-
-  // Manejar pérdida de foco
-  const handleFieldBlur = useCallback((e) => {
-    const { name } = e.target;
-    handleBlur(name);
-  }, [handleBlur]);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   // Manejar envío del formulario
-  const onSubmit = useCallback(async (formData) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError('');
+
     try {
-      const response = await login(formData.username, formData.password);
+      console.log('Intentando login con:', { username, password });
       
-      if (response.success) {
-        // Redirigir según el rol del usuario
-        const { role } = response.user;
-        
-        switch (role) {
-          case 'admin':
-            navigate('/dashboard/admin');
-            break;
-          case 'secretary':
-            navigate('/dashboard/secretary');
-            break;
-          case 'doctor':
-            navigate('/dashboard/doctor');
-            break;
-          default:
-            navigate('/dashboard');
-        }
-        
-        return true;
-      } else {
-        // El error se maneja en authService
-        return false;
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      console.log('Respuesta del servidor:', res.status);
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Credenciales incorrectas');
+      }
+
+      const data = await res.json();
+      console.log('Login exitoso:', data);
+
+      // Guardar token y rol
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('role', data.user.role);
+
+      // Redirigir según el rol del usuario
+      const { role } = data.user;
+      
+      switch (role) {
+        case 'admin':
+          navigate('/dashboard/admin');
+          break;
+        case 'secretary':
+          navigate('/dashboard/secretary');
+          break;
+        case 'doctor':
+          navigate('/dashboard/doctor');
+          break;
+        default:
+          navigate('/dashboard');
       }
     } catch (error) {
       console.error('Error en login:', error);
-      return false;
+      setError(error.message || 'Error al iniciar sesión');
+    } finally {
+      setIsSubmitting(false);
     }
-  }, [navigate]);
-
-  // Manejar envío
-  const handleFormSubmit = useCallback(async (e) => {
-    e.preventDefault();
-    await handleSubmit(onSubmit);
-  }, [handleSubmit, onSubmit]);
+  };
 
   return (
     <div className={styles.loginForm}>
       <h2 className={styles.title}>Iniciar Sesión</h2>
       
-      <form onSubmit={handleFormSubmit} className={styles.form}>
-        <FormField
-          label="Usuario"
-          name="username"
-          type="text"
-          value={values.username}
-          onChange={handleFieldChange}
-          onBlur={handleFieldBlur}
-          error={touched.username && errors.username ? errors.username : ''}
-          placeholder="Ingrese su usuario"
-          required
-          validationRules={['required']}
-          sanitizeType="text"
+      {/* Input de prueba temporal */}
+      <div style={{ marginBottom: '20px', padding: '10px', border: '1px solid #ccc' }}>
+        <h4>Input de prueba:</h4>
+        <input 
+          type="text" 
+          placeholder="Escribe aquí para probar"
+          style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
         />
+        <p>Si puedes escribir aquí, el problema está en el sistema de formularios</p>
+      </div>
+      
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <div style={{ marginBottom: '15px' }}>
+          <label htmlFor="username" style={{ display: 'block', marginBottom: '5px' }}>
+            Usuario *
+          </label>
+          <input
+            id="username"
+            name="username"
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Ingrese su usuario"
+            required
+            style={{ 
+              width: '100%', 
+              padding: '8px', 
+              border: '1px solid #ccc',
+              borderRadius: '4px'
+            }}
+          />
+        </div>
 
-        <FormField
-          label="Contraseña"
-          name="password"
-          type="password"
-          value={values.password}
-          onChange={handleFieldChange}
-          onBlur={handleFieldBlur}
-          error={touched.password && errors.password ? errors.password : ''}
-          placeholder="Ingrese su contraseña"
-          required
-          validationRules={['required', 'minLength:6']}
-          sanitizeType="text"
-        />
+        <div style={{ marginBottom: '15px' }}>
+          <label htmlFor="password" style={{ display: 'block', marginBottom: '5px' }}>
+            Contraseña *
+          </label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Ingrese su contraseña"
+            required
+            style={{ 
+              width: '100%', 
+              padding: '8px', 
+              border: '1px solid #ccc',
+              borderRadius: '4px'
+            }}
+          />
+        </div>
 
         <Button
           type="submit"
           variant="primary"
           size="large"
-          disabled={!isValid || isSubmitting}
-          loading={isSubmitting}
+          disabled={!username || !password || isSubmitting || isLoading}
+          loading={isSubmitting || isLoading}
           className={styles.submitButton}
         >
-          {isSubmitting ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+          {isSubmitting || isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
         </Button>
       </form>
 
-      {/* Mostrar errores generales si los hay */}
-      {Object.keys(errors).length > 0 && (
+      {(error || serverError) && (
         <Alert type="error" className={styles.errorAlert}>
-          Por favor, corrija los errores en el formulario
+          {error || serverError}
         </Alert>
       )}
     </div>

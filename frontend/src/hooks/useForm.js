@@ -6,10 +6,9 @@ import { sanitizeForAPI } from '../utils/sanitization';
  * Hook personalizado para manejo de formularios
  * @param {Object} initialValues - Valores iniciales del formulario
  * @param {Object} validationSchema - Esquema de validación
- * @param {Object} sanitizationSchema - Esquema de sanitización
  * @returns {Object} - Funciones y estado del formulario
  */
-export const useForm = (initialValues = {}, validationSchema = {}, sanitizationSchema = {}) => {
+export const useForm = (initialValues = {}, validationSchema = {}) => {
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
@@ -34,7 +33,7 @@ export const useForm = (initialValues = {}, validationSchema = {}, sanitizationS
   const handleChange = useCallback((name, value) => {
     setValues(prev => ({ ...prev, [name]: value }));
     
-    // Validar campo si ya fue tocado
+    // Solo validar si el campo ya fue tocado
     if (touched[name]) {
       const fieldError = validateField(name, value);
       setErrors(prev => ({
@@ -96,10 +95,20 @@ export const useForm = (initialValues = {}, validationSchema = {}, sanitizationS
     }
   }, [values, validateForm]);
 
-  // Verificar si el formulario es válido
+  // Verificar si el formulario es válido (solo si todos los campos requeridos están llenos)
   const isValid = useMemo(() => {
-    return Object.keys(errors).length === 0 && Object.keys(values).length > 0;
-  }, [errors, values]);
+    // Verificar que todos los campos requeridos tengan valor
+    const requiredFields = Object.keys(validationSchema);
+    const hasRequiredValues = requiredFields.every(field => {
+      const value = values[field];
+      return value !== null && value !== undefined && value !== '';
+    });
+    
+    // Verificar que no hay errores
+    const hasNoErrors = Object.keys(errors).length === 0;
+    
+    return hasRequiredValues && hasNoErrors;
+  }, [values, errors, validationSchema]);
 
   // Verificar si el formulario ha sido modificado
   const isDirty = useMemo(() => {

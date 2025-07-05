@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoginForm from '../../organisms/LoginForm/LoginForm'; // Importar el nuevo organismo
 
@@ -32,9 +32,9 @@ const Login = () => {
       localStorage.removeItem('token');
       localStorage.removeItem('role');
     }
-  }, [navigate]);
+  }, []); // Removido navigate de las dependencias
 
-  const handleLoginSubmit = async (formData) => {
+  const handleLoginSubmit = useCallback(async (formData) => {
     setError('');
     setLoading(true);
     try {
@@ -59,7 +59,7 @@ const Login = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]);
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--app-bg, #f9fafb)' }}>

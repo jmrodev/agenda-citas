@@ -1,18 +1,24 @@
 import { setSession, clearSession, getRefreshToken, setRefreshToken, clearRefreshToken } from './session.js';
 
-export async function login({ email, password }) {
+export async function login({ username, password }) {
+  console.log('authService.login - Datos a enviar:', { username, password });
   const res = await fetch('/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify({ username, password })
   });
+  console.log('authService.login - Status:', res.status, res.statusText);
   if (!res.ok) {
     const data = await res.json();
+    console.log('authService.login - Error response:', data);
     throw new Error(data.message || 'Credenciales incorrectas');
   }
   const data = await res.json();
+  console.log('authService.login - Success response:', data);
   setSession(data.token, data.user.role);
-  setRefreshToken(data.refresh_token);
+  if (data.refresh_token) {
+    setRefreshToken(data.refresh_token);
+  }
   return data;
 }
 

@@ -11,11 +11,23 @@ export const sanitizeText = (text) => {
   if (!text || typeof text !== 'string') return '';
   
   return text
-    .trim()
-    .replace(/[<>]/g, '') // Remover < y >
     .replace(/javascript:/gi, '') // Remover javascript:
-    .replace(/on\w+=/gi, '') // Remover event handlers
-    .replace(/\s+/g, ' '); // Normalizar espacios
+    .replace(/on\w+=/gi, ''); // Remover event handlers
+};
+
+/**
+ * Sanitiza texto para inputs (versión más permisiva)
+ * @param {string} text - Texto a sanitizar
+ * @returns {string} - Texto sanitizado
+ */
+export const sanitizeInputText = (text) => {
+  if (!text || typeof text !== 'string') return '';
+  
+  // Solo remover scripts y event handlers, mantener el resto
+  return text
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remover tags script
+    .replace(/javascript:/gi, '') // Remover javascript:
+    .replace(/on\w+=/gi, ''); // Remover event handlers
 };
 
 /**
