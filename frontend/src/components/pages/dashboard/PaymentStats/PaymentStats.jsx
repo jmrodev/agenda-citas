@@ -58,25 +58,25 @@ const PaymentStats = () => {
       title: 'Total de pagos',
       value: stats.totalPayments || 0,
       icon: <AttachMoneyIcon fontSize='inherit' />,
-      color: 'var(--success-color)'
+      theme: 'themeSuccess'
     },
     {
       title: 'Monto total',
       value: formatCurrency(stats.totalAmount),
       icon: <TrendingUpIcon fontSize='inherit' />,
-      color: 'var(--alert-info-color)'
+      theme: 'themeInfo'
     },
     {
       title: 'Promedio por pago',
       value: formatCurrency(stats.averageAmount),
       icon: <PeopleIcon fontSize='inherit' />,
-      color: 'var(--warning-color)'
+      theme: 'themeWarning'
     },
     {
       title: 'Último pago',
       value: formatDate(stats.lastPayment),
       icon: <CalendarTodayIcon fontSize='inherit' />,
-      color: 'var(--danger-color)'
+      theme: 'themeDanger'
     }
   ];
 
@@ -93,7 +93,13 @@ const PaymentStats = () => {
       {/* Cards principales */}
       <div className={styles.statsCardContainer}>
         {statCards.map(stat => (
-          <StatCard key={stat.title} title={stat.title} value={stat.value} icon={stat.icon} color={stat.color} />
+          <StatCard
+            key={stat.title}
+            title={stat.title}
+            value={stat.value}
+            icon={stat.icon}
+            className={styles[stat.theme]}
+          />
         ))}
       </div>
 

@@ -77,17 +77,17 @@ const SecretaryDashboard = () => {
     {
       title: 'Citas agendadas hoy',
       value: stats.citas,
-      icon: <CalendarMonthIcon fontSize='inherit' />, color: 'var(--success-color)'
+      icon: <CalendarMonthIcon fontSize='inherit' />, theme: 'themeSuccess'
     },
     {
       title: 'Pacientes registrados',
       value: stats.pacientes,
-      icon: <PeopleIcon fontSize='inherit' />, color: 'var(--alert-info-color)'
+      icon: <PeopleIcon fontSize='inherit' />, theme: 'themeInfo'
     },
     {
       title: 'Pagos procesados',
       value: stats.pagos,
-      icon: <AssignmentIcon fontSize='inherit' />, color: 'var(--warning-color)'
+      icon: <AssignmentIcon fontSize='inherit' />, theme: 'themeWarning'
     }
   ];
   
@@ -97,7 +97,13 @@ const SecretaryDashboard = () => {
     <DashboardLayout title='Dashboard Secretaria (privado)'>
       <div className={styles.statsContainer}>
         {statCards.map(stat => (
-          <StatCard key={stat.title} title={stat.title} value={stat.value} icon={stat.icon} color={stat.color} />
+          <StatCard
+            key={stat.title}
+            title={stat.title}
+            value={stat.value}
+            icon={stat.icon}
+            className={styles[stat.theme]}
+          />
         ))}
       </div>
       {/* ... aquí el resto del dashboard ... */}

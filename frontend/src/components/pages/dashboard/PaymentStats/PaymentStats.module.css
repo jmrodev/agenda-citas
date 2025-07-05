@@ -68,3 +68,32 @@
   margin: var(--spacing-sm) 0 0 0; /* 0.5rem 0 0 0 */
   color: var(--text-color-secondary);
 }
+
+/* Theme classes for StatCard */
+.themeSuccess {
+  border-color: var(--success-color) !important;
+}
+.themeSuccess .icon {
+  color: var(--success-color) !important;
+}
+
+.themeInfo {
+  border-color: var(--alert-info-color) !important;
+}
+.themeInfo .icon {
+  color: var(--alert-info-color) !important;
+}
+
+.themeWarning {
+  border-color: var(--warning-color) !important;
+}
+.themeWarning .icon {
+  color: var(--warning-color) !important;
+}
+
+.themeDanger {
+  border-color: var(--danger-color) !important;
+}
+.themeDanger .icon {
+  color: var(--danger-color) !important;
+}

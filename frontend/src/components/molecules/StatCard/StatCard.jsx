@@ -1,9 +1,9 @@
 import React from 'react';
 import styles from './StatCard.module.css';
 
-const StatCard = ({ title, value, icon, color }) => (
-  <div className={styles.card} style={{ borderColor: color }}>
-    {icon && <div className={styles.icon} style={{ color }}>{icon}</div>}
+const StatCard = ({ title, value, icon, className = '' }) => (
+  <div className={`${styles.card} ${className}`}>
+    {icon && <div className={styles.icon}>{icon}</div>} {/* Icon color will be handled by parent's CSS module targeting styles.icon */}
     <h2 className={styles.title}>{title}</h2>
     <p className={styles.value}>{value}</p>
   </div>

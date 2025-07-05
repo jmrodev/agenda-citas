@@ -31,24 +31,30 @@ const DoctorDashboard = () => {
     {
       title: 'Citas hoy',
       value: stats.citas,
-      icon: <CalendarMonthIcon fontSize='inherit' />, color: 'var(--success-color)'
+      icon: <CalendarMonthIcon fontSize='inherit' />, theme: 'themeSuccess'
     },
     {
       title: 'Pacientes asignados',
       value: stats.pacientes,
-      icon: <PeopleIcon fontSize='inherit' />, color: 'var(--alert-info-color)'
+      icon: <PeopleIcon fontSize='inherit' />, theme: 'themeInfo'
     },
     {
       title: 'Consultas este mes',
       value: stats.consultas,
-      icon: <MedicationIcon fontSize='inherit' />, color: 'var(--danger-color)'
+      icon: <MedicationIcon fontSize='inherit' />, theme: 'themeDanger'
     }
   ];
   return (
     <DashboardLayout title='Dashboard Doctor (privado)'>
       <div className={styles.statsContainer}>
         {statCards.map(stat => (
-          <StatCard key={stat.title} title={stat.title} value={stat.value} icon={stat.icon} color={stat.color} />
+          <StatCard
+            key={stat.title}
+            title={stat.title}
+            value={stat.value}
+            icon={stat.icon}
+            className={styles[stat.theme]}
+          />
         ))}
       </div>
       <DashboardLayout

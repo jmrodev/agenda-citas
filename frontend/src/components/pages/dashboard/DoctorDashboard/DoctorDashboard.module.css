@@ -6,3 +6,27 @@
   flex-wrap: wrap;
   margin-bottom: var(--spacing-xl); /* 2rem */
 }
+
+/* Theme classes for StatCard */
+/* Assuming StatCard's icon has a class like '.icon' from its own module */
+
+.themeSuccess {
+  border-color: var(--success-color) !important;
+}
+.themeSuccess .icon {
+  color: var(--success-color) !important;
+}
+
+.themeInfo {
+  border-color: var(--alert-info-color) !important;
+}
+.themeInfo .icon {
+  color: var(--alert-info-color) !important;
+}
+
+.themeDanger {
+  border-color: var(--danger-color) !important;
+}
+.themeDanger .icon {
+  color: var(--danger-color) !important;
+}

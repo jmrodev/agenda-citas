@@ -30,22 +30,22 @@ const DashboardAdmin = () => {
     {
       title: 'Pacientes activos',
       value: stats.pacientes,
-      icon: <PeopleIcon fontSize='inherit' />, color: 'var(--alert-info-color)'
+      icon: <PeopleIcon fontSize='inherit' />, theme: 'themeInfo'
     },
     {
       title: 'Citas hoy',
       value: stats.citas,
-      icon: <CalendarMonthIcon fontSize='inherit' />, color: 'var(--success-color)'
+      icon: <CalendarMonthIcon fontSize='inherit' />, theme: 'themeSuccess'
     },
     {
       title: 'Doctores',
       value: stats.doctores,
-      icon: <LocalHospitalIcon fontSize='inherit' />, color: 'var(--danger-color)'
+      icon: <LocalHospitalIcon fontSize='inherit' />, theme: 'themeDanger'
     },
     {
       title: 'Secretarias',
       value: stats.secretarias,
-      icon: <SupervisorAccountIcon fontSize='inherit' />, color: 'var(--warning-color)'
+      icon: <SupervisorAccountIcon fontSize='inherit' />, theme: 'themeWarning'
     }
   ];
   return (
@@ -53,7 +53,13 @@ const DashboardAdmin = () => {
       <h1>Bienvenido, Administrador</h1>
       <div className={styles.statsContainer}>
         {statCards.map(stat => (
-          <StatCard key={stat.title} title={stat.title} value={stat.value} icon={stat.icon} color={stat.color} />
+          <StatCard
+            key={stat.title}
+            title={stat.title}
+            value={stat.value}
+            icon={stat.icon}
+            className={styles[stat.theme]} // Apply theme class from DashboardAdmin.module.css
+          />
         ))}
       </div>
     </DashboardLayout>
