@@ -1,0 +1,13 @@
+.loadingContainer {
+  display: flex;
+  flex-direction: column; /* Align spinner and text vertically */
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: var(--app-bg, #f9fafb);
+  color: var(--text-color, #333); /* Added text color for visibility */
+}
+
+.loadingText {
+  margin-top: 1rem;
+}

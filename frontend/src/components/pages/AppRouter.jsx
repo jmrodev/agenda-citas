@@ -2,66 +2,16 @@ import React from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Login from './auth/Login';
 import Register from './auth/Register';
-import AdminDashboard from './dashboard/DashboardAdmin';
+import AdminDashboard from './dashboard/DashboardAdmin'; // Duplicate import, will be removed by linter if not used elsewhere or should be DashboardAdmin
 import DoctorDashboard from './dashboard/DoctorDashboard';
 import SecretaryDashboard from './dashboard/SecretaryDashboard';
 import RequireAuth from './auth/RequireAuth';
 import Settings from './Settings';
-import DashboardAdmin from './dashboard/DashboardAdmin';
+// import DashboardAdmin from './dashboard/DashboardAdmin'; // This was a duplicate import
 import PaymentStats from './dashboard/PaymentStats.jsx';
 import PatientsList from './patients/PatientsList.jsx';
 import CalendarPage from './calendar/CalendarPage';
-
-// Componente que redirige según el rol del usuario
-const HomePage = () => {
-  const navigate = useNavigate();
-  const token = localStorage.getItem('token');
-  
-  React.useEffect(() => {
-    if (!token) {
-      navigate('/login', { replace: true });
-      return;
-    }
-    
-    try {
-      // Decodificar el token para obtener el rol
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const userRole = payload.role;
-      
-      switch (userRole) {
-        case 'admin':
-          navigate('/admin', { replace: true });
-          break;
-        case 'doctor':
-          navigate('/doctor', { replace: true });
-          break;
-        case 'secretary':
-          navigate('/secretary', { replace: true });
-          break;
-        default:
-          navigate('/login', { replace: true });
-          break;
-      }
-    } catch (error) {
-      // Si hay error al decodificar el token, ir a login
-      localStorage.removeItem('token');
-      navigate('/login', { replace: true });
-    }
-  }, [navigate, token]);
-
-  // Mostrar un loading mientras redirige
-  return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      height: '100vh',
-      background: 'var(--app-bg, #f9fafb)'
-    }}>
-      <div>Cargando...</div>
-    </div>
-  );
-};
+import LoadingRedirectPage from './auth/LoadingRedirectPage/LoadingRedirectPage.jsx'; // Updated import path
 
 export default function AppRouter() {
     return (
@@ -69,10 +19,10 @@ export default function AppRouter() {
             <Routes>
                 <Route path='/login' element={<Login />} />
                 <Route path='/register' element={<Register />} />
-                <Route path='/' element={<HomePage />} />
+                <Route path='/' element={<LoadingRedirectPage />} /> {/* Use the new component */}
                 <Route path='/admin' element={
                     <RequireAuth allowedRoles={['admin']}>
-                        <DashboardAdmin />
+                        <AdminDashboard /> {/* Corrected to AdminDashboard if it was the intended one */}
                     </RequireAuth>
                 } />
                 <Route path='/doctor' element={
