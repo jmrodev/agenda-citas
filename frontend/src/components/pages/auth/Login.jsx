@@ -19,7 +19,7 @@ const Login = () => {
         // Verificar que el token no esté expirado
         if (!payload.exp || (payload.exp * 1000) > Date.now()) {
           // Token válido, redirigir a la página principal
-          navigate('/', { replace: true });
+          navigate('/dashboard', { replace: true });
           return;
         }
       } catch (e) {
@@ -53,7 +53,7 @@ const Login = () => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('role', data.user.role); // Guardar rol del usuario
       // Redirigir a la página principal que manejará la redirección por rol
-      navigate('/', { replace: true });
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       setError('Error de red o servidor.');
     } finally {
