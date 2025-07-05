@@ -58,25 +58,25 @@ const PaymentStats = () => {
       title: 'Total de pagos',
       value: stats.totalPayments || 0,
       icon: <AttachMoneyIcon fontSize='inherit' />,
-      color: '#43a047'
+      color: 'var(--success-color)'
     },
     {
       title: 'Monto total',
       value: formatCurrency(stats.totalAmount),
       icon: <TrendingUpIcon fontSize='inherit' />,
-      color: '#1976d2'
+      color: 'var(--alert-info-color)'
     },
     {
       title: 'Promedio por pago',
       value: formatCurrency(stats.averageAmount),
       icon: <PeopleIcon fontSize='inherit' />,
-      color: '#fbc02d'
+      color: 'var(--warning-color)'
     },
     {
       title: 'Último pago',
       value: formatDate(stats.lastPayment),
       icon: <CalendarTodayIcon fontSize='inherit' />,
-      color: '#d32f2f'
+      color: 'var(--danger-color)'
     }
   ];
 

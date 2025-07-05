@@ -77,17 +77,17 @@ const SecretaryDashboard = () => {
     {
       title: 'Citas agendadas hoy',
       value: stats.citas,
-      icon: <CalendarMonthIcon fontSize='inherit' />, color: '#43a047'
+      icon: <CalendarMonthIcon fontSize='inherit' />, color: 'var(--success-color)'
     },
     {
       title: 'Pacientes registrados',
       value: stats.pacientes,
-      icon: <PeopleIcon fontSize='inherit' />, color: '#1976d2'
+      icon: <PeopleIcon fontSize='inherit' />, color: 'var(--alert-info-color)'
     },
     {
       title: 'Pagos procesados',
       value: stats.pagos,
-      icon: <AssignmentIcon fontSize='inherit' />, color: '#fbc02d'
+      icon: <AssignmentIcon fontSize='inherit' />, color: 'var(--warning-color)'
     }
   ];
   

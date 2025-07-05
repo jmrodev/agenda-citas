@@ -31,17 +31,17 @@ const DoctorDashboard = () => {
     {
       title: 'Citas hoy',
       value: stats.citas,
-      icon: <CalendarMonthIcon fontSize='inherit' />, color: '#43a047'
+      icon: <CalendarMonthIcon fontSize='inherit' />, color: 'var(--success-color)'
     },
     {
       title: 'Pacientes asignados',
       value: stats.pacientes,
-      icon: <PeopleIcon fontSize='inherit' />, color: '#1976d2'
+      icon: <PeopleIcon fontSize='inherit' />, color: 'var(--alert-info-color)'
     },
     {
       title: 'Consultas este mes',
       value: stats.consultas,
-      icon: <MedicationIcon fontSize='inherit' />, color: '#d32f2f'
+      icon: <MedicationIcon fontSize='inherit' />, color: 'var(--danger-color)'
     }
   ];
   return (

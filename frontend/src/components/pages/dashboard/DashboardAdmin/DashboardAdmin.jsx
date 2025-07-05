@@ -30,22 +30,22 @@ const DashboardAdmin = () => {
     {
       title: 'Pacientes activos',
       value: stats.pacientes,
-      icon: <PeopleIcon fontSize='inherit' />, color: '#1976d2'
+      icon: <PeopleIcon fontSize='inherit' />, color: 'var(--alert-info-color)'
     },
     {
       title: 'Citas hoy',
       value: stats.citas,
-      icon: <CalendarMonthIcon fontSize='inherit' />, color: '#43a047'
+      icon: <CalendarMonthIcon fontSize='inherit' />, color: 'var(--success-color)'
     },
     {
       title: 'Doctores',
       value: stats.doctores,
-      icon: <LocalHospitalIcon fontSize='inherit' />, color: '#d32f2f'
+      icon: <LocalHospitalIcon fontSize='inherit' />, color: 'var(--danger-color)'
     },
     {
       title: 'Secretarias',
       value: stats.secretarias,
-      icon: <SupervisorAccountIcon fontSize='inherit' />, color: '#fbc02d'
+      icon: <SupervisorAccountIcon fontSize='inherit' />, color: 'var(--warning-color)'
     }
   ];
   return (
