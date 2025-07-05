@@ -1,32 +1,39 @@
 .patientForm {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 2rem;
+  background: var(--background-primary);
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .title {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: 600;
   margin-bottom: 2rem;
   color: var(--text-primary);
+  text-align: center;
+  border-bottom: 3px solid var(--primary-color);
+  padding-bottom: 1rem;
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 .actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 1rem;
   margin-top: 2rem;
-  padding-top: 1rem;
+  padding-top: 2rem;
   border-top: 1px solid var(--border-color);
 }
 
-.errorAlert {
+.errorAlert,
+.statusAlert {
   margin-top: 1rem;
 }
 

@@ -6,7 +6,19 @@ const { parseAndValidateDate } = require('../utils/date');
 
 async function getAll(req, res) {
   try {
-    const patients = await patientService.listPatients(req.query, req.user);
+    // Verificar si hay filtros en la query
+    const hasFilters = Object.keys(req.query).length > 0 && 
+      Object.values(req.query).some(value => value && value.trim());
+    
+    let patients;
+    if (hasFilters) {
+      // Usar filtros avanzados
+      patients = await patientService.listPatientsWithFilters(req.query);
+    } else {
+      // Usar listado normal
+      patients = await patientService.listPatients(req.query, req.user);
+    }
+    
     res.json(patients);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -181,6 +193,40 @@ async function updatePatientDoctors(req, res) {
   }
 }
 
+// POST /patients/:id/doctors/:doctor_id - agregar relación específica
+async function addDoctorToPatient(req, res) {
+  try {
+    const patientId = req.params.id;
+    const doctorId = req.params.doctor_id;
+    
+    // Verificar que el paciente existe
+    const patient = await patientService.getPatientById(patientId);
+    if (!patient) {
+      return res.status(404).json({ error: 'Paciente no encontrado' });
+    }
+    
+    // Verificar que el doctor existe
+    const doctorService = require('../services/doctorService');
+    const doctor = await doctorService.getDoctorById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ error: 'Doctor no encontrado' });
+    }
+    
+    // Verificar que la relación no existe ya
+    const currentDoctors = await patientService.getDoctorsForPatient(patientId);
+    const doctorExists = currentDoctors.some(d => d.doctor_id === parseInt(doctorId));
+    if (doctorExists) {
+      return res.status(409).json({ error: 'El doctor ya está asignado a este paciente' });
+    }
+    
+    // Agregar la relación
+    await patientService.addDoctorToPatient(patientId, [parseInt(doctorId)]);
+    res.json({ message: 'Doctor agregado correctamente al paciente' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 // DELETE /patients/:id/doctors/:doctor_id - eliminar relación específica
 async function removeDoctorFromPatient(req, res) {
   try {
@@ -208,4 +254,42 @@ async function getDashboardStats(req, res) {
   }
 }
 
-module.exports = { getAll, getAllWithFilters, create, update, remove, registerPatientWithUser, getMe, updateMe, getById, updatePatientDoctors, removeDoctorFromPatient, getDashboardStats }; 
+async function getSearchStats(req, res) {
+  try {
+    const stats = await patientService.getSearchStats(req.query);
+    res.json(stats);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function getPatientsByDoctor(req, res) {
+  try {
+    const doctorId = req.params.doctor_id;
+    const patients = await patientService.getPatientsByDoctor(doctorId);
+    res.json(patients);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function getPatientsByHealthInsurance(req, res) {
+  try {
+    const insuranceId = req.params.insurance_id;
+    const patients = await patientService.getPatientsByHealthInsurance(insuranceId);
+    res.json(patients);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function getFilterOptions(req, res) {
+  try {
+    const options = await patientService.getFilterOptions();
+    res.json(options);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+module.exports = { getAll, getAllWithFilters, create, update, remove, registerPatientWithUser, getMe, updateMe, getById, updatePatientDoctors, addDoctorToPatient, removeDoctorFromPatient, getDashboardStats, getSearchStats, getPatientsByDoctor, getPatientsByHealthInsurance, getFilterOptions }; 

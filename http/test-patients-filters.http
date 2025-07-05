@@ -1,0 +1,60 @@
+### Login como admin
+# @name login_admin
+POST http://localhost:3001/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@mail.com",
+  "password": "123456"
+}
+
+### guardar en variable el token
+@token_admin = {{login_admin.response.body.token}}
+
+### Obtener todos los pacientes
+GET http://localhost:3001/api/patients
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por nombre
+GET http://localhost:3001/api/patients?nombre=Juan
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por apellido
+GET http://localhost:3001/api/patients?apellido=García
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por email
+GET http://localhost:3001/api/patients?email=test
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por teléfono
+GET http://localhost:3001/api/patients?telefono=123
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por dirección
+GET http://localhost:3001/api/patients?direccion=calle
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por DNI
+GET http://localhost:3001/api/patients?dni=12345678
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por fecha de nacimiento
+GET http://localhost:3001/api/patients?fecha_nacimiento=1990-01-01
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por obra social
+GET http://localhost:3001/api/patients?obra_social_id=1
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por método de pago
+GET http://localhost:3001/api/patients?metodo_pago=efectivo
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por persona de referencia
+GET http://localhost:3001/api/patients?persona_referencia=María
+Authorization: Bearer {{token_admin}}
+
+### Combinación de filtros
+GET http://localhost:3001/api/patients?nombre=Juan&apellido=García&email=test
+Authorization: Bearer {{token_admin}} 

@@ -5,7 +5,7 @@ import FormField from '../../molecules/FormField/FormField';
 import Button from '../../atoms/Button/Button';
 import Alert from '../../atoms/Alert/Alert';
 import SuccessScreen from '../../organisms/SuccessScreen/SuccessScreen';
-import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx';
+// import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx';
 import { parseAndValidateDate } from '../../../utils/date';
 import { authFetch } from '../../../auth/authFetch';
 
@@ -330,9 +330,5 @@ function RegisterForm({ defaultRole }) {
 }
 
 export default function Register(props) {
-  return (
-    <DashboardLayout>
-      <RegisterForm {...props} />
-    </DashboardLayout>
-  );
+  return <RegisterForm {...props} />;
 } 

@@ -111,10 +111,6 @@ export const lazyOrganisms = {
  * Lazy loading de templates
  */
 export const lazyTemplates = {
-  DashboardLayout: createLazyComponent(() => import('../components/templates/DashboardLayout/DashboardLayout'), {
-    fallbackText: 'Cargando layout...',
-    fallbackSize: 'large'
-  }),
   DesktopAppLayout: createLazyComponent(() => import('../components/templates/DesktopAppLayout/DesktopAppLayout'), {
     fallbackText: 'Cargando aplicación...',
     fallbackSize: 'large'
@@ -135,16 +131,8 @@ export const lazyPages = {
     fallbackSize: 'large'
   }),
 
-  // Páginas de dashboard
-  DashboardAdmin: createLazyComponent(() => import('../components/pages/dashboard/DashboardAdmin'), {
-    fallbackText: 'Cargando dashboard...',
-    fallbackSize: 'large'
-  }),
-  SecretaryDashboard: createLazyComponent(() => import('../components/pages/dashboard/SecretaryDashboard'), {
-    fallbackText: 'Cargando dashboard...',
-    fallbackSize: 'large'
-  }),
-  PaymentStats: createLazyComponent(() => import('../components/pages/dashboard/PaymentStats'), {
+  // Páginas de estadísticas
+  PaymentStats: createLazyComponent(() => import('../components/pages/stats/PaymentStats'), {
     fallbackText: 'Cargando estadísticas...',
     fallbackSize: 'large'
   }),
@@ -211,9 +199,9 @@ export const preloadComponent = (componentType, componentName) => {
  * Preload de rutas comunes
  */
 export const preloadCommonRoutes = () => {
-  // Preload dashboard después del login
+  // Preload desktop después del login
   setTimeout(() => {
-    preloadComponent('pages', 'DashboardAdmin');
+    preloadComponent('pages', 'DesktopAppPage');
     preloadComponent('pages', 'PatientList');
     preloadComponent('pages', 'CalendarPage');
   }, 1000);

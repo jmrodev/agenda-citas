@@ -19,19 +19,17 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { ViewModeProvider } from '../../context/ViewModeContext';
 import ViewModeSelect from '../../organisms/ViewModeSelect/ViewModeSelect';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
-// Componentes reales:
-import PatientsTablePanel from '../patients/PatientsTablePanel';
-import DoctorDashboard from '../dashboard/DoctorDashboard';
-import CalendarPage from '../calendar/CalendarPage';
-import PaymentStats from '../dashboard/PaymentStats';
-import Settings from '../Settings';
-import ActivityLogList from '../../organisms/ActivityLogList/ActivityLogList';
 import { DoctorProvider } from '../../context/DoctorContext';
 import { useDoctor } from '../../../hooks/useDoctor';
+import { getRole } from '../../../auth';
 import Alert from '../../atoms/Alert/Alert';
 import UserInfo from '../../molecules/UserInfo/UserInfo';
 import DoctorSelector from '../../molecules/DoctorSelector/DoctorSelector';
 import LogoutIcon from '@mui/icons-material/Logout';
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import MedicationIcon from '@mui/icons-material/Medication';
+import StatsGrid from '../../organisms/StatsGrid/StatsGrid';
+import QuickActionsBar from '../../organisms/QuickActionsBar/QuickActionsBar';
 
 const menuItems = [
   {
@@ -88,67 +86,191 @@ const getUserInfo = () => {
   }
 };
 
-// Menú lateral solo para secretaria
-const secretaryMenu = [
-  { label: 'Pacientes', icon: <PeopleIcon fontSize='small' />, route: '/patients' },
-  { label: 'Obras Sociales', icon: <AssignmentIcon fontSize='small' />, route: '/health-insurances' },
-  { label: 'Agenda', icon: <CalendarMonthIcon fontSize='small' />, route: '/calendar' },
-  { label: 'Configuración', icon: <SettingsIcon fontSize='small' />, route: '/settings' }
-];
+// Menús específicos por rol
+const getMenuByRole = (role) => {
+  const baseMenu = [
+    { label: 'Pacientes', icon: <PeopleIcon fontSize='small' />, route: 'patients' },
+    { label: 'Agenda', icon: <CalendarMonthIcon fontSize='small' />, route: 'calendar' },
+    { label: 'Configuración', icon: <SettingsIcon fontSize='small' />, route: 'settings' }
+  ];
 
-const SecretaryHeader = () => {
+  switch (role) {
+    case 'admin':
+      return [
+        ...baseMenu,
+        { label: 'Doctores', icon: <LocalHospitalIcon fontSize='small' />, route: 'doctors' },
+        { label: 'Secretarias', icon: <SupervisorAccountIcon fontSize='small' />, route: 'secretaries' },
+        { label: 'Obras Sociales', icon: <AssignmentIcon fontSize='small' />, route: 'health-insurances' },
+        { label: 'Reportes', icon: <AssessmentIcon fontSize='small' />, route: 'reports' }
+      ];
+    
+    case 'doctor':
+      return [
+        ...baseMenu,
+        { label: 'Recetas', icon: <MedicationIcon fontSize='small' />, route: 'prescriptions' },
+        { label: 'Estadísticas', icon: <AssessmentIcon fontSize='small' />, route: 'stats' }
+      ];
+    
+    case 'secretary':
+      return [
+        ...baseMenu,
+        { label: 'Obras Sociales', icon: <AssignmentIcon fontSize='small' />, route: 'health-insurances' },
+        { label: 'Estadísticas', icon: <AssessmentIcon fontSize='small' />, route: 'stats' }
+      ];
+    
+    default:
+      return baseMenu;
+  }
+};
+
+// Acciones rápidas por rol
+const getQuickActionsByRole = (role) => {
+  const baseActions = [
+    { label: 'Agendar cita', icon: <CalendarMonthIcon fontSize="small" />, onClick: () => window.location.href = '/desktop/calendar' },
+    { label: 'Nuevo paciente', icon: <PeopleIcon fontSize="small" />, onClick: () => window.location.href = '/desktop/patients/new' }
+  ];
+
+  switch (role) {
+    case 'admin':
+      return [
+        ...baseActions,
+        { label: 'Nuevo doctor', icon: <LocalHospitalIcon fontSize="small" />, onClick: () => window.location.href = '/desktop/doctors/new' },
+        { label: 'Nueva secretaria', icon: <SupervisorAccountIcon fontSize="small" />, onClick: () => window.location.href = '/desktop/secretaries/new' }
+      ];
+    
+    case 'doctor':
+      return [
+        ...baseActions,
+        { label: 'Mis citas', icon: <CalendarMonthIcon fontSize="small" />, onClick: () => window.location.href = '/desktop/calendar' },
+        { label: 'Nueva receta', icon: <MedicationIcon fontSize="small" />, onClick: () => window.location.href = '/desktop/prescriptions/new' }
+      ];
+    
+    case 'secretary':
+      return [
+        ...baseActions,
+        { label: 'Obras sociales', icon: <AssignmentIcon fontSize="small" />, onClick: () => window.location.href = '/desktop/health-insurances' },
+        { label: 'Estadísticas', icon: <AssessmentIcon fontSize="small" />, onClick: () => window.location.href = '/desktop/stats' }
+      ];
+    
+    default:
+      return baseActions;
+  }
+};
+
+// Dashboard content por rol
+const getDashboardContentByRole = (role, doctor, stats) => {
+  switch (role) {
+    case 'admin':
+      return (
+        <div>
+          <h2>Dashboard de Administración</h2>
+          <StatsGrid stats={[
+            { title: 'Pacientes activos', value: stats.pacientes || 0, icon: <PeopleIcon fontSize='inherit' />, color: '#1976d2' },
+            { title: 'Citas hoy', value: stats.citas || 0, icon: <CalendarMonthIcon fontSize='inherit' />, color: '#43a047' },
+            { title: 'Doctores', value: stats.doctores || 0, icon: <LocalHospitalIcon fontSize='inherit' />, color: '#d32f2f' },
+            { title: 'Secretarias', value: stats.secretarias || 0, icon: <SupervisorAccountIcon fontSize='inherit' />, color: '#fbc02d' }
+          ]} />
+          <h3>Acciones Rápidas</h3>
+          <QuickActionsBar actions={getQuickActionsByRole(role)} />
+        </div>
+      );
+    
+    case 'doctor':
+      return (
+        <div>
+          <h2>Dashboard del Doctor</h2>
+          <StatsGrid stats={[
+            { 
+              title: 'Mi actividad',
+              value: `${stats.citas || 0} citas | ${stats.pacientes || 0} pacientes | ${stats.consultas || 0} consultas`,
+              icon: <PeopleIcon fontSize='inherit' />,
+              color: '#1976d2'
+            }
+          ]} />
+          <h3>Acciones Rápidas</h3>
+          <QuickActionsBar actions={getQuickActionsByRole(role)} />
+        </div>
+      );
+    
+    case 'secretary':
+      return (
+        <div>
+          <h2>Dashboard de Secretaría</h2>
+          <StatsGrid stats={[
+            { title: 'Citas hoy', value: stats.citas || 0, icon: <CalendarMonthIcon fontSize='inherit' />, color: '#43a047' },
+            { title: 'Pacientes', value: stats.pacientes || 0, icon: <PeopleIcon fontSize='inherit' />, color: '#1976d2' },
+            { title: 'Doctores', value: stats.doctores || 0, icon: <LocalHospitalIcon fontSize='inherit' />, color: '#d32f2f' }
+          ]} />
+          <h3>Acciones Rápidas</h3>
+          <QuickActionsBar actions={getQuickActionsByRole(role)} />
+        </div>
+      );
+    
+    default:
+      return <div><h2>Bienvenido</h2><p>Selecciona una opción del menú.</p></div>;
+  }
+};
+
+const DesktopHeader = () => {
   const user = getUserInfo();
   const { doctor, setDoctorById } = useDoctor();
   const [showSelector, setShowSelector] = React.useState(false);
   const [doctors, setDoctors] = React.useState([]);
   const [loadingDoctors, setLoadingDoctors] = React.useState(false);
 
+  const getRoleDisplayName = (role) => {
+    switch (role) {
+      case 'admin': return 'Administrador';
+      case 'doctor': return 'Doctor';
+      case 'secretary': return 'Secretaria';
+      default: return role;
+    }
+  };
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2rem', height: 64, background: 'var(--surface, #fff)', borderBottom: '1px solid var(--border-color, #e5e7eb)' }}>
-      <UserInfo name={user.name} subtitle={user.role === 'secretary' ? 'Secretaria' : user.role} badge={user.email} />
+      <UserInfo 
+        name={user.name} 
+        subtitle={getRoleDisplayName(user.role)} 
+        badge={user.email} 
+      />
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <button
-          onClick={() => setShowSelector(true)}
-          style={{
-            background: 'none',
-            border: '1px solid var(--primary-color, #1976d2)',
-            color: 'var(--primary-color, #1976d2)',
-            cursor: 'pointer',
-            fontSize: 16,
-            padding: '6px 16px',
-            borderRadius: 6,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8
-          }}
-          title="Cambiar doctor"
-        >
-          <LocalHospitalIcon fontSize="small" />
-          <span>{doctor?.name || 'Seleccionar doctor'}</span>
-        </button>
-        {showSelector && (
-          loadingDoctors ? (
-            <div style={{ position: 'absolute', right: 32, top: 72, background: '#fff', border: '1px solid #ccc', padding: 24, borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-              <p style={{ margin: 0 }}>Cargando doctores...</p>
-            </div>
-          ) : doctors.length === 0 ? (
-            <div style={{ position: 'absolute', right: 32, top: 72, background: '#fff', border: '1px solid #ccc', padding: 24, borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-              <p style={{ margin: 0 }}>No hay doctores disponibles.</p>
-              <button onClick={() => setShowSelector(false)} style={{ marginTop: 12 }}>Cerrar</button>
-            </div>
-          ) : (
-            <DoctorSelector
-              variant='dropdown'
-              doctors={doctors.map(d => ({ ...d, name: d.name || `Dr. ${d.first_name} ${d.last_name}` }))}
-              selectedDoctor={doctor}
-              onSelect={id => {
-                setDoctorById(id);
-                setShowSelector(false);
-              }}
-              onClose={() => setShowSelector(false)}
-            />
-          )
+        {/* Selector de doctor solo para secretarias */}
+        {user.role === 'secretary' && (
+          <button
+            onClick={() => setShowSelector(true)}
+            style={{
+              background: 'none',
+              border: '1px solid var(--primary-color, #1976d2)',
+              color: 'var(--primary-color, #1976d2)',
+              cursor: 'pointer',
+              fontSize: 16,
+              padding: '6px 16px',
+              borderRadius: 6,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8
+            }}
+            title="Cambiar doctor"
+          >
+            <LocalHospitalIcon fontSize="small" />
+            <span>{doctor?.name || 'Seleccionar doctor'}</span>
+          </button>
         )}
+        
+        {showSelector && user.role === 'secretary' && (
+          <DoctorSelector
+            variant='dropdown'
+            doctors={doctors.map(d => ({ ...d, name: d.name || `Dr. ${d.first_name} ${d.last_name}` }))}
+            selectedDoctor={doctor}
+            onSelect={id => {
+              setDoctorById(id);
+              setShowSelector(false);
+            }}
+            onClose={() => setShowSelector(false)}
+          />
+        )}
+        
         <button
           onClick={() => {
             localStorage.removeItem('token');
@@ -180,15 +302,33 @@ const SecretaryHeader = () => {
 const DesktopAppPageInner = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const activeIndex = secretaryMenu.findIndex(item => location.pathname.startsWith(item.route));
+  const userRole = getRole();
+  const [stats, setStats] = React.useState({ pacientes: 0, citas: 0, doctores: 0, secretarias: 0, consultas: 0 });
+  
+  const menuItems = getMenuByRole(userRole);
+  const activeIndex = menuItems.findIndex(item => location.pathname.startsWith(item.route));
+
+  // Cargar estadísticas según el rol
+  React.useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        // Aquí deberías hacer fetch real de estadísticas según el rol
+        // Por ahora usamos datos mock
+        setStats({ pacientes: 150, citas: 25, doctores: 8, secretarias: 3, consultas: 45 });
+      } catch (error) {
+        console.error('Error cargando estadísticas:', error);
+      }
+    };
+    fetchStats();
+  }, [userRole]);
 
   return (
     <DesktopAppLayout
-      menuBar={<SecretaryHeader />}
+      menuBar={<DesktopHeader />}
       sideMenu={
         <nav style={{ padding: 0 }}>
           <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-            {secretaryMenu.map((item, idx) => (
+            {menuItems.map((item, idx) => (
               <li key={item.label}>
                 <button
                   onClick={() => navigate(item.route)}
@@ -210,7 +350,11 @@ const DesktopAppPageInner = () => {
       }
     >
       <div style={{ padding: 24, minHeight: 400 }}>
-        <Outlet />
+        {location.pathname === '/desktop' ? (
+          getDashboardContentByRole(userRole, null, stats)
+        ) : (
+          <Outlet />
+        )}
       </div>
     </DesktopAppLayout>
   );

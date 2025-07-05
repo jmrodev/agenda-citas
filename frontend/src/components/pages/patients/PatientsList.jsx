@@ -1,35 +1,74 @@
-import React, { useState } from 'react';
-import DashboardLayout from '../../templates/DashboardLayout/DashboardLayout.jsx';
-import Button from '../../atoms/Button/Button';
-import Input from '../../atoms/Input/Input';
-import Alert from '../../atoms/Alert/Alert';
-import PeopleIcon from '@mui/icons-material/People'; // Mantener por ahora, posible refactor a IconAtom más adelante
-import AddIcon from '@mui/icons-material/Add';
-import SearchIcon from '@mui/icons-material/Search';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import PatientFormModal from '../../organisms/PatientFormModal/PatientFormModal';
-import styles from './PatientsList.module.css'; // Importar CSS Module
-import { parseAndValidateDate } from '../../../utils/date';
+import React, { useState, useEffect } from 'react';
 import { authFetch } from '../../../auth/authFetch';
-import { createLogger } from '../../../utils/debug.js';
+import SearchBar from '../../molecules/SearchBar/SearchBar';
+import Button from '../../atoms/Button/Button';
+import Alert from '../../atoms/Alert/Alert';
+import Spinner from '../../atoms/Spinner/Spinner';
+import Input from '../../atoms/Input/Input';
+import Select from '../../atoms/Select/Select';
+import CardBase from '../../atoms/CardBase/CardBase';
+import CardContent from '../../atoms/CardContent/CardContent';
+import CardHeader from '../../molecules/CardHeader/CardHeader';
+import FormGroup from '../../molecules/FormGroup/FormGroup';
+import Badge from '../../atoms/Badge/Badge';
+import PatientFormModal from '../../organisms/PatientFormModal/PatientFormModal';
 
 const PatientsList = () => {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [showForm, setShowForm] = useState(false);
-  const [editingPatient, setEditingPatient] = useState(null);
-  const logger = createLogger('PatientsList');
+  const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
+  const [showPatientModal, setShowPatientModal] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState({
+    dni: '',
+    nombre: '',
+    apellido: '',
+    email: '',
+    telefono: '',
+    direccion: '',
+    fecha_nacimiento: '',
+    obra_social_id: '',
+    metodo_pago: '',
+    persona_referencia: ''
+  });
+  const [healthInsurances, setHealthInsurances] = useState([]);
+  const [filterOptions, setFilterOptions] = useState({});
+  const [searchStats, setSearchStats] = useState(null);
 
-  const fetchPatients = async () => {
+  useEffect(() => {
+    fetchPatients();
+    fetchHealthInsurances();
+    fetchFilterOptions();
+  }, []);
+
+  const fetchPatients = async (filters = {}) => {
     try {
-      const response = await authFetch('/api/patients');
-      if (!response || !response.ok) throw new Error('Error al cargar pacientes');
-      const data = await response.json();
+      setLoading(true);
+      const queryParams = new URLSearchParams();
+      
+      // Agregar filtros avanzados si están activos
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value && value.trim()) {
+          queryParams.append(key, value.trim());
+        }
+      });
+      
+      const url = filters && Object.keys(filters).length > 0 
+        ? `/api/patients?${queryParams.toString()}`
+        : '/api/patients';
+        
+      const res = await authFetch(url);
+      if (!res.ok) throw new Error('Error al cargar pacientes');
+      const data = await res.json();
       setPatients(data);
-      logger.log('Pacientes recibidos:', data);
+      
+      // Obtener estadísticas si hay filtros
+      if (Object.keys(filters).length > 0) {
+        fetchSearchStats(filters);
+      } else {
+        setSearchStats(null);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -37,126 +76,363 @@ const PatientsList = () => {
     }
   };
 
-  const handleDelete = async (patientId) => {
-    if (!confirm('¿Estás seguro de que quieres eliminar este paciente?')) return;
+  const fetchHealthInsurances = async () => {
     try {
-      const response = await authFetch(`/api/patients/${patientId}`, {
-        method: 'DELETE'
-      });
-      if (!response || !response.ok) throw new Error('Error al eliminar paciente');
-      setPatients(patients.filter(p => p.patient_id !== patientId));
+      const res = await authFetch('/api/health-insurances');
+      if (res.ok) {
+        const data = await res.json();
+        setHealthInsurances(data);
+      }
     } catch (err) {
-      setError(err.message);
+      console.error('Error al cargar obras sociales:', err);
     }
   };
 
-  const filteredPatients = patients.filter(patient =>
-    patient.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    patient.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    patient.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const fetchFilterOptions = async () => {
+    try {
+      const res = await authFetch('/api/patients/search/options');
+      if (res.ok) {
+        const data = await res.json();
+        setFilterOptions(data);
+      }
+    } catch (err) {
+      console.error('Error al cargar opciones de filtros:', err);
+    }
+  };
+
+  const fetchSearchStats = async (filters) => {
+    try {
+      const queryParams = new URLSearchParams();
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value && value.trim()) {
+          queryParams.append(key, value.trim());
+        }
+      });
+      
+      const res = await authFetch(`/api/patients/search/stats?${queryParams.toString()}`);
+      if (res.ok) {
+        const data = await res.json();
+        setSearchStats(data);
+      }
+    } catch (err) {
+      console.error('Error al obtener estadísticas:', err);
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value || '');
+  };
+
+  const handleAdvancedFilterChange = (field, value) => {
+    setAdvancedFilters(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleAdvancedSearch = () => {
+    const activeFilters = {};
+    Object.entries(advancedFilters).forEach(([key, value]) => {
+      if (value && value.trim()) {
+        activeFilters[key] = value.trim();
+      }
+    });
+    fetchPatients(activeFilters);
+  };
+
+  const handleClearFilters = () => {
+    setAdvancedFilters({
+      dni: '',
+      nombre: '',
+      apellido: '',
+      email: '',
+      telefono: '',
+      direccion: '',
+      fecha_nacimiento: '',
+      obra_social_id: '',
+      metodo_pago: '',
+      persona_referencia: ''
+    });
+    fetchPatients();
+  };
+
+  const filteredPatients = patients.filter(patient => {
+    if (!searchTerm) return true;
+    
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      (patient.first_name || '').toLowerCase().includes(searchLower) ||
+      (patient.last_name || '').toLowerCase().includes(searchLower) ||
+      (patient.email || '').toLowerCase().includes(searchLower) ||
+      (patient.phone || '').toLowerCase().includes(searchLower) ||
+      (patient.address || '').toLowerCase().includes(searchLower) ||
+      (patient.dni || '').toLowerCase().includes(searchLower)
+    );
+  });
 
   if (loading) {
     return (
-      <DashboardLayout title="Gestión de Pacientes">
-        <div>Cargando pacientes...</div>
-      </DashboardLayout>
+      <div>
+        <h2>Gestión de Pacientes</h2>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
+          <Spinner size={32} color="primary" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div>
+        <h2>Gestión de Pacientes</h2>
+        <Alert type="error">{error}</Alert>
+        <Button onClick={() => fetchPatients()}>Reintentar</Button>
+      </div>
     );
   }
 
   return (
-    <DashboardLayout title="Gestión de Pacientes">
-      {/* Header con búsqueda y botón agregar */}
-      <div className={styles.pageHeader}>
-        <div className={styles.titleGroup}>
-          <PeopleIcon className={styles.titleIcon} />
-          <h2 className={styles.title}>Pacientes ({filteredPatients.length})</h2>
-        </div>
-        
-        <div className={styles.actionsGroup}>
-          <div className={styles.searchInputContainer}>
-            <SearchIcon className={styles.searchIcon} />
-            <Input
-              type="text"
-              placeholder="Buscar pacientes..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={styles.searchInput}
-            />
-          </div>
+    <div>
+      <h2>Gestión de Pacientes</h2>
+      
+      {/* Estadísticas de búsqueda */}
+      {searchStats && (
+        <CardBase style={{ marginBottom: '1rem' }}>
+          <CardContent>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <Badge variant="primary">{searchStats.total} pacientes encontrados</Badge>
+              {searchStats.filters.length > 0 && (
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <span>Filtros aplicados:</span>
+                  {searchStats.filters.map(filter => (
+                    <Badge key={filter} variant="secondary">{filter}</Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </CardBase>
+      )}
+      
+      <div style={{ marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1rem' }}>
+          <SearchBar
+            placeholder="Búsqueda rápida por nombre, apellido, email, teléfono, dirección o DNI..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            style={{ flex: 1 }}
+          />
           <Button 
-            onClick={() => setShowForm(true)}
-            className={styles.addButton}
+            onClick={() => setShowPatientModal(true)}
           >
-            <AddIcon />
             Nuevo Paciente
           </Button>
-        </div>
-      </div>
-
-      {error && <Alert type="error" style={{ marginBottom: '1rem' }}>{error}</Alert>}
-
-      {/* Lista de pacientes */}
-      <div className={styles.listContainer}>
-        <div className={`${styles.listGrid} ${styles.listHeader}`}>
-          <div>Nombre</div>
-          <div>Email</div>
-          <div>Teléfono</div>
-          <div>Fecha de Nacimiento</div>
-          <div>Acciones</div>
+          <Button 
+            variant="outline"
+            onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
+          >
+            {showAdvancedSearch ? 'Ocultar' : 'Mostrar'} Búsqueda Avanzada
+          </Button>
         </div>
 
-        {filteredPatients.length === 0 ? (
-          <div className={styles.noPatientsMessage}>
-            {searchTerm ? 'No se encontraron pacientes con esa búsqueda.' : 'No hay pacientes registrados.'}
-          </div>
-        ) : (
-          filteredPatients.map(patient => (
-            <div key={patient.patient_id} className={`${styles.listGrid} ${styles.listRow}`}>
-              <div>
-                <strong>{patient.first_name} {patient.last_name}</strong>
+        {showAdvancedSearch && (
+          <CardBase>
+            <CardHeader title="Búsqueda Avanzada" />
+            <CardContent>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                gap: '1rem',
+                marginBottom: '1rem'
+              }}>
+                <FormGroup title="DNI">
+                  <Input
+                    type="text"
+                    placeholder="DNI exacto"
+                    value={advancedFilters.dni}
+                    onChange={(e) => handleAdvancedFilterChange('dni', e.target.value)}
+                  />
+                </FormGroup>
+
+                <FormGroup title="Nombre">
+                  <Input
+                    type="text"
+                    placeholder="Nombre del paciente"
+                    value={advancedFilters.nombre}
+                    onChange={(e) => handleAdvancedFilterChange('nombre', e.target.value)}
+                  />
+                </FormGroup>
+
+                <FormGroup title="Apellido">
+                  <Input
+                    type="text"
+                    placeholder="Apellido del paciente"
+                    value={advancedFilters.apellido}
+                    onChange={(e) => handleAdvancedFilterChange('apellido', e.target.value)}
+                  />
+                </FormGroup>
+
+                <FormGroup title="Email">
+                  <Input
+                    type="email"
+                    placeholder="Email del paciente"
+                    value={advancedFilters.email}
+                    onChange={(e) => handleAdvancedFilterChange('email', e.target.value)}
+                  />
+                </FormGroup>
+
+                <FormGroup title="Teléfono">
+                  <Input
+                    type="text"
+                    placeholder="Teléfono del paciente"
+                    value={advancedFilters.telefono}
+                    onChange={(e) => handleAdvancedFilterChange('telefono', e.target.value)}
+                  />
+                </FormGroup>
+
+                <FormGroup title="Dirección">
+                  <Input
+                    type="text"
+                    placeholder="Dirección del paciente"
+                    value={advancedFilters.direccion}
+                    onChange={(e) => handleAdvancedFilterChange('direccion', e.target.value)}
+                  />
+                </FormGroup>
+
+                <FormGroup title="Fecha de Nacimiento">
+                  <Input
+                    type="date"
+                    value={advancedFilters.fecha_nacimiento}
+                    onChange={(e) => handleAdvancedFilterChange('fecha_nacimiento', e.target.value)}
+                  />
+                </FormGroup>
+
+                <FormGroup title="Obra Social">
+                  <Select
+                    value={advancedFilters.obra_social_id}
+                    onChange={(e) => handleAdvancedFilterChange('obra_social_id', e.target.value)}
+                  >
+                    <option value="">Todas las obras sociales</option>
+                    {healthInsurances.map(insurance => (
+                      <option key={insurance.insurance_id} value={insurance.insurance_id}>
+                        {insurance.name}
+                      </option>
+                    ))}
+                  </Select>
+                </FormGroup>
+
+                <FormGroup title="Método de Pago">
+                  <Select
+                    value={advancedFilters.metodo_pago}
+                    onChange={(e) => handleAdvancedFilterChange('metodo_pago', e.target.value)}
+                  >
+                    <option value="">Todos los métodos</option>
+                    {filterOptions.paymentMethods?.map(method => (
+                      <option key={method} value={method}>
+                        {method}
+                      </option>
+                    ))}
+                  </Select>
+                </FormGroup>
+
+                <FormGroup title="Persona de Referencia">
+                  <Input
+                    type="text"
+                    placeholder="Nombre o apellido de referencia"
+                    value={advancedFilters.persona_referencia}
+                    onChange={(e) => handleAdvancedFilterChange('persona_referencia', e.target.value)}
+                  />
+                </FormGroup>
               </div>
-              <div>{patient.email || '-'}</div>
-              <div>{patient.phone || '-'}</div>
-              <div>{patient.date_of_birth ? new Date(patient.date_of_birth).toLocaleDateString('es-AR') : '-'}</div>
-              <div className={styles.actionsCell}>
-                <Button 
-                  size="sm" // Asumiendo que 'sm' es el tamaño pequeño en Button atom
-                  onClick={() => {
-                    setEditingPatient(patient);
-                    setShowForm(true);
-                  }}
-                >
-                  <EditIcon fontSize="small" />
+
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                <Button variant="outline" onClick={handleClearFilters}>
+                  Limpiar Filtros
                 </Button>
-                <Button 
-                  size="sm" // Asumiendo que 'sm' es el tamaño pequeño en Button atom
-                  variant="danger"
-                  onClick={() => handleDelete(patient.patient_id)}
-                >
-                  <DeleteIcon fontSize="small" />
+                <Button onClick={handleAdvancedSearch}>
+                  Buscar
                 </Button>
               </div>
-            </div>
-          ))
+            </CardContent>
+          </CardBase>
         )}
       </div>
 
-      {/* Modal de formulario */}
+      <div style={{ 
+        display: 'grid', 
+        gap: '1rem',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))'
+      }}>
+        {filteredPatients.map(patient => (
+          <CardBase
+            key={patient.patient_id}
+            style={{ cursor: 'pointer' }}
+            onClick={() => window.location.href = `/desktop/patients/${patient.patient_id}`}
+          >
+            <CardContent>
+              <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--primary-color)' }}>
+                {patient.first_name} {patient.last_name}
+              </h3>
+              
+              <div style={{ display: 'grid', gap: '0.5rem', fontSize: '0.9rem' }}>
+                {patient.dni && (
+                  <div>
+                    <strong>DNI:</strong> {patient.dni}
+                  </div>
+                )}
+                
+                {patient.email && (
+                  <div>
+                    <strong>Email:</strong> {patient.email}
+                  </div>
+                )}
+                
+                {patient.phone && (
+                  <div>
+                    <strong>Teléfono:</strong> {patient.phone}
+                  </div>
+                )}
+                
+                {patient.date_of_birth && (
+                  <div>
+                    <strong>Fecha de Nacimiento:</strong> {new Date(patient.date_of_birth).toLocaleDateString('es-ES')}
+                  </div>
+                )}
+                
+                {patient.address && (
+                  <div>
+                    <strong>Dirección:</strong> {patient.address}
+                  </div>
+                )}
+                
+                {patient.preferred_payment_methods && (
+                  <div>
+                    <strong>Método de Pago:</strong> {patient.preferred_payment_methods}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </CardBase>
+        ))}
+      </div>
+
+      {filteredPatients.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <p>No se encontraron pacientes</p>
+        </div>
+      )}
+
+      {/* Modal para nuevo paciente */}
       <PatientFormModal
-        open={showForm}
-        patient={editingPatient}
-        onClose={() => {
-          setShowForm(false);
-          setEditingPatient(null);
-        }}
-        onSave={() => {
+        isOpen={showPatientModal}
+        onClose={() => setShowPatientModal(false)}
+        onSuccess={(patientData) => {
+          // Recargar la lista de pacientes
           fetchPatients();
-          setShowForm(false);
-          setEditingPatient(null);
+          setShowPatientModal(false);
         }}
       />
-    </DashboardLayout>
+    </div>
   );
 };
 

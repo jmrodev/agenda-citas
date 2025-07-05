@@ -1,0 +1,104 @@
+### Login como admin
+# @name login_admin
+POST http://localhost:3001/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@mail.com",
+  "password": "123456"
+}
+
+### guardar en variable el token
+@token_admin = {{login_admin.response.body.token}}
+
+### ===== BÚSQUEDA BÁSICA =====
+
+### Obtener todos los pacientes
+GET http://localhost:3001/api/patients
+Authorization: Bearer {{token_admin}}
+
+### ===== BÚSQUEDA AVANZADA POR CAMPOS =====
+
+### Buscar pacientes por DNI
+GET http://localhost:3001/api/patients?dni=12345678A
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por nombre
+GET http://localhost:3001/api/patients?nombre=Juan
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por apellido
+GET http://localhost:3001/api/patients?apellido=García
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por email
+GET http://localhost:3001/api/patients?email=juan.garcia
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por teléfono
+GET http://localhost:3001/api/patients?telefono=600
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por dirección
+GET http://localhost:3001/api/patients?direccion=Madrid
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por fecha de nacimiento
+GET http://localhost:3001/api/patients?fecha_nacimiento=1990-05-15
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por obra social
+GET http://localhost:3001/api/patients?obra_social_id=1
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por método de pago
+GET http://localhost:3001/api/patients?metodo_pago=efectivo
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por persona de referencia
+GET http://localhost:3001/api/patients?persona_referencia=Antonio
+Authorization: Bearer {{token_admin}}
+
+### ===== COMBINACIÓN DE FILTROS =====
+
+### Buscar pacientes con múltiples filtros
+GET http://localhost:3001/api/patients?nombre=Juan&apellido=García&email=juan.garcia
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por obra social y método de pago
+GET http://localhost:3001/api/patients?obra_social_id=1&metodo_pago=efectivo
+Authorization: Bearer {{token_admin}}
+
+### ===== NUEVOS ENDPOINTS =====
+
+### Obtener estadísticas de búsqueda
+GET http://localhost:3001/api/patients/search/stats?nombre=Juan
+Authorization: Bearer {{token_admin}}
+
+### Obtener pacientes por doctor
+GET http://localhost:3001/api/patients/by-doctor/1
+Authorization: Bearer {{token_admin}}
+
+### Obtener pacientes por obra social
+GET http://localhost:3001/api/patients/by-insurance/1
+Authorization: Bearer {{token_admin}}
+
+### ===== PRUEBAS DE PAGINACIÓN =====
+
+### Búsqueda con paginación
+GET http://localhost:3001/api/patients?page=1&limit=5
+Authorization: Bearer {{token_admin}}
+
+### Búsqueda con ordenamiento
+GET http://localhost:3001/api/patients?sort=first_name&order=asc
+Authorization: Bearer {{token_admin}}
+
+### ===== PRUEBAS DE ERRORES =====
+
+### Búsqueda con DNI inexistente
+GET http://localhost:3001/api/patients?dni=99999999Z
+Authorization: Bearer {{token_admin}}
+
+### Búsqueda con obra social inexistente
+GET http://localhost:3001/api/patients?obra_social_id=999
+Authorization: Bearer {{token_admin}} 

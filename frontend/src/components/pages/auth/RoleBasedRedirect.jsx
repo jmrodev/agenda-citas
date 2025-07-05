@@ -1,23 +1,17 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { getRole } from '../../../auth/session'; // Asumiendo que getRole está en session.js
+import { getRole } from '../../../auth';
 
 const RoleBasedRedirect = () => {
   const userRole = getRole();
 
-  switch (userRole) {
-    case 'admin':
-      return <Navigate to="/dashboard/admin" replace />;
-    case 'secretary':
-      return <Navigate to="/dashboard/secretary" replace />;
-    case 'doctor':
-      return <Navigate to="/dashboard/doctor" replace />;
-    default:
-      // Si el rol no es ninguno de los esperados o no hay rol (aunque RequireAuth debería manejar esto)
-      // redirigir a una página de dashboard genérica o de vuelta a login si es más apropiado.
-      // Por ahora, un dashboard genérico.
-      return <Navigate to="/dashboard" replace />;
+  // Todos los usuarios van a /desktop que maneja la lógica específica por rol
+  if (userRole && ['admin', 'doctor', 'secretary'].includes(userRole)) {
+    return <Navigate to="/desktop" replace />;
   }
+  
+  // Si no hay rol válido, ir a login
+  return <Navigate to="/login" replace />;
 };
 
 export default RoleBasedRedirect;

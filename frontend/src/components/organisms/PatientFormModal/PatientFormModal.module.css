@@ -23,3 +23,15 @@
   color: var(--text-color-secondary);
   margin-bottom: var(--spacing-sm);
 } 
+.modalContent {
+  padding: 1rem;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modalContent {
+    padding: 0.5rem;
+  }
+} 

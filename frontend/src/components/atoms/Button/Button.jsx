@@ -5,7 +5,8 @@ const variantClass = {
   primary: styles.primary,
   secondary: styles.secondary,
   danger: styles.danger,
-  success: styles.success
+  success: styles.success,
+  outline: styles.outline
 };
 
 const sizeClass = {

@@ -1,9 +1,9 @@
 import { authFetch } from './authFetch';
+import { handleAuthResponse } from './authUtils';
 
 export async function fetchUserProfile() {
   const res = await authFetch('/api/auth/user/profile');
-  if (!res.ok) throw new Error('No se pudo obtener el perfil');
-  return await res.json();
+  return await handleAuthResponse(res);
 }
 
 export async function updateUserProfile(profileData) {
@@ -12,6 +12,5 @@ export async function updateUserProfile(profileData) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(profileData)
   });
-  if (!res.ok) throw new Error('No se pudo actualizar el perfil');
-  return await res.json();
+  return await handleAuthResponse(res);
 } 

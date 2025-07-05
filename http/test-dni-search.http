@@ -1,0 +1,28 @@
+### Login como admin
+# @name login_admin
+POST http://localhost:3001/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@mail.com",
+  "password": "123456"
+}
+
+### guardar en variable el token
+@token_admin = {{login_admin.response.body.token}}
+
+### Obtener todos los pacientes
+GET http://localhost:3001/api/patients
+Authorization: Bearer {{token_admin}}
+
+### Buscar paciente por DNI específico
+GET http://localhost:3001/api/patients?dni=00000001A
+Authorization: Bearer {{token_admin}}
+
+### Buscar paciente por DNI específico (otro)
+GET http://localhost:3001/api/patients?dni=00000002B
+Authorization: Bearer {{token_admin}}
+
+### Buscar paciente por DNI inexistente
+GET http://localhost:3001/api/patients?dni=99999999Z
+Authorization: Bearer {{token_admin}} 

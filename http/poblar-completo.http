@@ -1,0 +1,644 @@
+### ========================================
+### SCRIPT COMPLETO DE POBLAMIENTO VÍA API
+### ========================================
+
+### 1. LOGIN COMO ADMIN
+# @name login_admin
+POST http://localhost:3001/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@mail.com",
+  "password": "123456"
+}
+
+### Guardar token de admin
+@token_admin = {{login_admin.response.body.token}}
+
+### 2. CREAR SECRETARIAS
+### Secretaria 1
+# @name create_secretary_1
+POST http://localhost:3001/api/secretaries
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "first_name": "Ana",
+  "last_name": "García",
+  "shift": "mañana",
+  "entry_time": "08:00:00",
+  "exit_time": "16:00:00",
+  "email": "ana.garcia@clinic.com"
+}
+
+### Secretaria 2
+# @name create_secretary_2
+POST http://localhost:3001/api/secretaries
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "first_name": "María",
+  "last_name": "López",
+  "shift": "tarde",
+  "entry_time": "16:00:00",
+  "exit_time": "00:00:00",
+  "email": "maria.lopez@clinic.com"
+}
+
+### Guardar IDs de secretarias
+@secretary_1_id = {{create_secretary_1.response.body.secretary.secretary_id}}
+@secretary_2_id = {{create_secretary_2.response.body.secretary.secretary_id}}
+
+### 3. CREAR USUARIOS PARA SECRETARIAS
+### Usuario para Secretaria 1
+# @name create_user_secretary_1
+POST http://localhost:3001/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "ana.garcia",
+  "email": "ana.garcia@clinic.com",
+  "password": "123456",
+  "role": "secretary",
+  "entity_id": {{secretary_1_id}}
+}
+
+### Usuario para Secretaria 2
+# @name create_user_secretary_2
+POST http://localhost:3001/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "maria.lopez",
+  "email": "maria.lopez@clinic.com",
+  "password": "123456",
+  "role": "secretary",
+  "entity_id": {{secretary_2_id}}
+}
+
+### 4. CREAR USUARIOS PARA DOCTORES
+### Usuario para Doctor 1
+# @name create_user_doctor_1
+POST http://localhost:3001/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "roberto.hernandez",
+  "email": "roberto.hernandez@clinic.com",
+  "password": "123456",
+  "role": "doctor",
+  "entity_id": 1
+}
+
+### Usuario para Doctor 2
+# @name create_user_doctor_2
+POST http://localhost:3001/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "laura.diaz",
+  "email": "laura.diaz@clinic.com",
+  "password": "123456",
+  "role": "doctor",
+  "entity_id": 2
+}
+
+### 5. CREAR HORARIOS DE CONSULTA PARA DOCTORES
+### Horarios para Doctor 1 (Roberto Hernández - Cardiología)
+POST http://localhost:3001/api/doctor-consultation-hours
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "doctor_id": 1,
+  "day_of_week": "lunes",
+  "start_time": "09:00:00",
+  "end_time": "13:00:00"
+}
+
+POST http://localhost:3001/api/doctor-consultation-hours
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "doctor_id": 1,
+  "day_of_week": "miércoles",
+  "start_time": "09:00:00",
+  "end_time": "13:00:00"
+}
+
+POST http://localhost:3001/api/doctor-consultation-hours
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "doctor_id": 1,
+  "day_of_week": "viernes",
+  "start_time": "09:00:00",
+  "end_time": "13:00:00"
+}
+
+### Horarios para Doctor 2 (Laura Díaz - Dermatología)
+POST http://localhost:3001/api/doctor-consultation-hours
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "doctor_id": 2,
+  "day_of_week": "martes",
+  "start_time": "14:00:00",
+  "end_time": "18:00:00"
+}
+
+POST http://localhost:3001/api/doctor-consultation-hours
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "doctor_id": 2,
+  "day_of_week": "jueves",
+  "start_time": "14:00:00",
+  "end_time": "18:00:00"
+}
+
+### 6. CREAR CITAS MÉDICAS
+### Cita 1 - Juan García con Dr. Roberto Hernández
+# @name create_appointment_1
+POST http://localhost:3001/api/appointments
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "patient_id": 1,
+  "doctor_id": 1,
+  "date": "2024-01-15",
+  "time": "10:00:00",
+  "reason": "Control cardiológico rutinario",
+  "type": "consulta",
+  "status": "confirmada",
+  "recorded_by_secretary_id": {{secretary_1_id}},
+  "service_type": "consulta_cardiológica",
+  "amount": 80.00,
+  "payment_method": "efectivo",
+  "payment_date": "2024-01-15"
+}
+
+### Cita 2 - María López con Dr. Roberto Hernández
+# @name create_appointment_2
+POST http://localhost:3001/api/appointments
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "patient_id": 2,
+  "doctor_id": 1,
+  "date": "2024-01-16",
+  "time": "11:00:00",
+  "reason": "Dolor en el pecho",
+  "type": "consulta",
+  "status": "confirmada",
+  "recorded_by_secretary_id": {{secretary_1_id}},
+  "service_type": "consulta_cardiológica",
+  "amount": 80.00,
+  "payment_method": "tarjeta",
+  "payment_date": "2024-01-16"
+}
+
+### Cita 3 - Ana Rodríguez con Dra. Laura Díaz
+# @name create_appointment_3
+POST http://localhost:3001/api/appointments
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "patient_id": 4,
+  "doctor_id": 2,
+  "date": "2024-01-17",
+  "time": "15:00:00",
+  "reason": "Revisión de manchas en la piel",
+  "type": "consulta",
+  "status": "confirmada",
+  "recorded_by_secretary_id": {{secretary_2_id}},
+  "service_type": "consulta_dermatológica",
+  "amount": 75.00,
+  "payment_method": "efectivo",
+  "payment_date": "2024-01-17"
+}
+
+### Cita 4 - Carlos Martínez con Dr. Francisco Ruiz
+# @name create_appointment_4
+POST http://localhost:3001/api/appointments
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "patient_id": 3,
+  "doctor_id": 3,
+  "date": "2024-01-18",
+  "time": "09:30:00",
+  "reason": "Dolor en la rodilla",
+  "type": "consulta",
+  "status": "confirmada",
+  "recorded_by_secretary_id": {{secretary_1_id}},
+  "service_type": "consulta_ortopédica",
+  "amount": 85.00,
+  "payment_method": "transferencia",
+  "payment_date": "2024-01-18"
+}
+
+### Cita 5 - Luis Fernández con Dra. Patricia Vega
+# @name create_appointment_5
+POST http://localhost:3001/api/appointments
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "patient_id": 5,
+  "doctor_id": 4,
+  "date": "2024-01-19",
+  "time": "10:30:00",
+  "reason": "Control ginecológico anual",
+  "type": "consulta",
+  "status": "confirmada",
+  "recorded_by_secretary_id": {{secretary_2_id}},
+  "service_type": "consulta_ginecológica",
+  "amount": 90.00,
+  "payment_method": "efectivo",
+  "payment_date": "2024-01-19"
+}
+
+### Guardar IDs de citas
+@appointment_1_id = {{create_appointment_1.response.body.appointment.appointment_id}}
+@appointment_2_id = {{create_appointment_2.response.body.appointment.appointment_id}}
+@appointment_3_id = {{create_appointment_3.response.body.appointment.appointment_id}}
+@appointment_4_id = {{create_appointment_4.response.body.appointment.appointment_id}}
+@appointment_5_id = {{create_appointment_5.response.body.appointment.appointment_id}}
+
+### 7. CREAR PRESCRIPCIONES
+### Prescripción 1 - Juan García
+# @name create_prescription_1
+POST http://localhost:3001/api/prescriptions
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "patient_id": 1,
+  "doctor_id": 1,
+  "date": "2024-01-15",
+  "issued_by_secretary_id": {{secretary_1_id}},
+  "amount": 25.00,
+  "payment_method": "efectivo",
+  "payment_date": "2024-01-15"
+}
+
+### Prescripción 2 - María López
+# @name create_prescription_2
+POST http://localhost:3001/api/prescriptions
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "patient_id": 2,
+  "doctor_id": 1,
+  "date": "2024-01-16",
+  "issued_by_secretary_id": {{secretary_1_id}},
+  "amount": 25.00,
+  "payment_method": "tarjeta",
+  "payment_date": "2024-01-16"
+}
+
+### Prescripción 3 - Ana Rodríguez
+# @name create_prescription_3
+POST http://localhost:3001/api/prescriptions
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "patient_id": 4,
+  "doctor_id": 2,
+  "date": "2024-01-17",
+  "issued_by_secretary_id": {{secretary_2_id}},
+  "amount": 20.00,
+  "payment_method": "efectivo",
+  "payment_date": "2024-01-17"
+}
+
+### Guardar IDs de prescripciones
+@prescription_1_id = {{create_prescription_1.response.body.prescription.prescription_id}}
+@prescription_2_id = {{create_prescription_2.response.body.prescription.prescription_id}}
+@prescription_3_id = {{create_prescription_3.response.body.prescription.prescription_id}}
+
+### 8. CREAR MEDICAMENTOS EN PRESCRIPCIONES
+### Medicamentos para Prescripción 1
+POST http://localhost:3001/api/prescriptions/{{prescription_1_id}}/medications
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "medication_name": "Aspirina 100mg",
+  "dose": "1 comprimido cada 8 horas",
+  "instructions": "Tomar con las comidas"
+}
+
+POST http://localhost:3001/api/prescriptions/{{prescription_1_id}}/medications
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "medication_name": "Omeprazol 20mg",
+  "dose": "1 cápsula al día",
+  "instructions": "Tomar en ayunas"
+}
+
+### Medicamentos para Prescripción 2
+POST http://localhost:3001/api/prescriptions/{{prescription_2_id}}/medications
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "medication_name": "Nitroglicerina",
+  "dose": "1 comprimido sublingual cuando sea necesario",
+  "instructions": "Colocar debajo de la lengua"
+}
+
+### Medicamentos para Prescripción 3
+POST http://localhost:3001/api/prescriptions/{{prescription_3_id}}/medications
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "medication_name": "Cremas hidratantes",
+  "dose": "Aplicar 2 veces al día",
+  "instructions": "Aplicar en las zonas afectadas"
+}
+
+### 9. CREAR HISTORIAL MÉDICO
+### Historial 1 - Juan García
+# @name create_medical_history_1
+POST http://localhost:3001/api/medical-history
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "patient_id": 1,
+  "date": "2024-01-15",
+  "attending_doctor_id": 1,
+  "diagnosis": "Hipertensión arterial controlada",
+  "treatment": "Mantener medicación actual y dieta baja en sal",
+  "observations": "Paciente responde bien al tratamiento"
+}
+
+### Historial 2 - María López
+# @name create_medical_history_2
+POST http://localhost:3001/api/medical-history
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "patient_id": 2,
+  "date": "2024-01-16",
+  "attending_doctor_id": 1,
+  "diagnosis": "Angina de pecho",
+  "treatment": "Nitroglicerina de rescate y control estricto",
+  "observations": "Requiere seguimiento cercano"
+}
+
+### Historial 3 - Ana Rodríguez
+# @name create_medical_history_3
+POST http://localhost:3001/api/medical-history
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "patient_id": 4,
+  "date": "2024-01-17",
+  "attending_doctor_id": 2,
+  "diagnosis": "Dermatitis atópica",
+  "treatment": "Cremas hidratantes y evitar irritantes",
+  "observations": "Mejora significativa con el tratamiento"
+}
+
+### Guardar IDs de historial médico
+@medical_history_1_id = {{create_medical_history_1.response.body.record.record_id}}
+@medical_history_2_id = {{create_medical_history_2.response.body.record.record_id}}
+@medical_history_3_id = {{create_medical_history_3.response.body.record.record_id}}
+
+### 10. CREAR MEDICAMENTOS EN HISTORIAL MÉDICO
+### Medicamentos para Historial 1
+POST http://localhost:3001/api/medical-history/{{medical_history_1_id}}/medications
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "medication_name": "Enalapril 10mg",
+  "dose": "1 comprimido al día",
+  "instructions": "Tomar por la mañana"
+}
+
+### Medicamentos para Historial 2
+POST http://localhost:3001/api/medical-history/{{medical_history_2_id}}/medications
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "medication_name": "Nitroglicerina",
+  "dose": "1 comprimido sublingual",
+  "instructions": "Usar solo en caso de dolor en el pecho"
+}
+
+### Medicamentos para Historial 3
+POST http://localhost:3001/api/medical-history/{{medical_history_3_id}}/medications
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "medication_name": "Betametasona tópica",
+  "dose": "Aplicar 2 veces al día",
+  "instructions": "Aplicar en las lesiones activas"
+}
+
+### 11. CREAR ACTIVIDADES DE SECRETARIAS
+### Actividades Secretaria 1
+POST http://localhost:3001/api/secretary-activities
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "secretary_id": {{secretary_1_id}},
+  "date": "2024-01-15",
+  "time": "08:00:00",
+  "activity_type": "inicio_turno",
+  "detail": "Inicio de turno matutino"
+}
+
+POST http://localhost:3001/api/secretary-activities
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "secretary_id": {{secretary_1_id}},
+  "date": "2024-01-15",
+  "time": "10:00:00",
+  "activity_type": "cita_creada",
+  "detail": "Cita creada para Juan García con Dr. Hernández"
+}
+
+POST http://localhost:3001/api/secretary-activities
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "secretary_id": {{secretary_1_id}},
+  "date": "2024-01-15",
+  "time": "16:00:00",
+  "activity_type": "fin_turno",
+  "detail": "Fin de turno matutino"
+}
+
+### Actividades Secretaria 2
+POST http://localhost:3001/api/secretary-activities
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "secretary_id": {{secretary_2_id}},
+  "date": "2024-01-15",
+  "time": "16:00:00",
+  "activity_type": "inicio_turno",
+  "detail": "Inicio de turno vespertino"
+}
+
+POST http://localhost:3001/api/secretary-activities
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "secretary_id": {{secretary_2_id}},
+  "date": "2024-01-15",
+  "time": "17:30:00",
+  "activity_type": "prescripción_creada",
+  "detail": "Prescripción creada para Ana Rodríguez"
+}
+
+### 12. CREAR PAGOS DE INSTALACIONES
+### Pago instalación Doctor 1
+POST http://localhost:3001/api/facility-payments
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "doctor_id": 1,
+  "payment_date": "2024-01-31",
+  "payment_period": "Enero 2024",
+  "hours_used": 40.00,
+  "hourly_rate": 15.00,
+  "total_amount": 600.00,
+  "recorded_by_secretary_id": {{secretary_1_id}}
+}
+
+### Pago instalación Doctor 2
+POST http://localhost:3001/api/facility-payments
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "doctor_id": 2,
+  "payment_date": "2024-01-31",
+  "payment_period": "Enero 2024",
+  "hours_used": 32.00,
+  "hourly_rate": 15.00,
+  "total_amount": 480.00,
+  "recorded_by_secretary_id": {{secretary_2_id}}
+}
+
+### 13. CREAR RELACIONES DOCTOR-OBRA SOCIAL
+### Relaciones para Doctor 1
+POST http://localhost:3001/api/doctor-health-insurances
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "doctor_id": 1,
+  "insurance_id": 1,
+  "is_active": true
+}
+
+POST http://localhost:3001/api/doctor-health-insurances
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "doctor_id": 1,
+  "insurance_id": 2,
+  "is_active": true
+}
+
+### Relaciones para Doctor 2
+POST http://localhost:3001/api/doctor-health-insurances
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "doctor_id": 2,
+  "insurance_id": 1,
+  "is_active": true
+}
+
+POST http://localhost:3001/api/doctor-health-insurances
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "doctor_id": 2,
+  "insurance_id": 3,
+  "is_active": true
+}
+
+### 14. VERIFICAR DATOS CREADOS
+### Verificar conteos
+GET http://localhost:3001/api/secretaries
+Authorization: Bearer {{token_admin}}
+
+###
+GET http://localhost:3001/api/appointments
+Authorization: Bearer {{token_admin}}
+
+###
+GET http://localhost:3001/api/prescriptions
+Authorization: Bearer {{token_admin}}
+
+###
+GET http://localhost:3001/api/medical-history
+Authorization: Bearer {{token_admin}}
+
+###
+GET http://localhost:3001/api/secretary-activities
+Authorization: Bearer {{token_admin}}
+
+###
+GET http://localhost:3001/api/facility-payments
+Authorization: Bearer {{token_admin}}
+
+###
+GET http://localhost:3001/api/doctor-health-insurances
+Authorization: Bearer {{token_admin}}
+
+### 15. PROBAR RELACIONES PACIENTE-DOCTOR
+### Ver doctores de un paciente
+GET http://localhost:3001/api/patients/1/doctors
+Authorization: Bearer {{token_admin}}
+
+###
+### Ver pacientes de un doctor
+GET http://localhost:3001/api/doctors/1/patients
+Authorization: Bearer {{token_admin}}
+
+###
+### Ver todas las relaciones
+GET http://localhost:3001/api/patient-doctors
+Authorization: Bearer {{token_admin}}
+
+### ========================================
+### FIN DEL SCRIPT DE POBLAMIENTO
+### ======================================== 

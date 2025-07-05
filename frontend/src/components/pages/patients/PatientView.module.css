@@ -13,11 +13,27 @@
   border-bottom: 1px solid var(--border-color);
 }
 
+.titleSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .title {
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
+}
+
+.dni {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  background: var(--surface-secondary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+  width: fit-content;
 }
 
 .actions {
@@ -38,10 +54,17 @@
   border: 1px solid var(--border-color);
 }
 
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
 .sectionTitle {
   font-size: 1.25rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin: 0;
   color: var(--text-primary);
 }
 
@@ -74,6 +97,25 @@
   margin: 0;
 }
 
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+  color: var(--text-secondary);
+}
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .patientView {
@@ -89,6 +131,12 @@
   .actions {
     width: 100%;
     justify-content: stretch;
+  }
+  
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
   
   .infoGrid {

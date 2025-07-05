@@ -18,15 +18,11 @@ const LoginForm = React.memo(({ onSubmit, isLoading, serverError }) => {
     setError('');
 
     try {
-      console.log('Intentando login con:', { username, password });
-      
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
       });
-
-      console.log('Respuesta del servidor:', res.status);
 
       if (!res.ok) {
         const errorData = await res.json();
@@ -34,7 +30,6 @@ const LoginForm = React.memo(({ onSubmit, isLoading, serverError }) => {
       }
 
       const data = await res.json();
-      console.log('Login exitoso:', data);
 
       // Guardar token y rol
       localStorage.setItem('token', data.token);
@@ -57,7 +52,6 @@ const LoginForm = React.memo(({ onSubmit, isLoading, serverError }) => {
           navigate('/dashboard');
       }
     } catch (error) {
-      console.error('Error en login:', error);
       setError(error.message || 'Error al iniciar sesión');
     } finally {
       setIsSubmitting(false);
@@ -68,16 +62,7 @@ const LoginForm = React.memo(({ onSubmit, isLoading, serverError }) => {
     <div className={styles.loginForm}>
       <h2 className={styles.title}>Iniciar Sesión</h2>
       
-      {/* Input de prueba temporal */}
-      <div style={{ marginBottom: '20px', padding: '10px', border: '1px solid #ccc' }}>
-        <h4>Input de prueba:</h4>
-        <input 
-          type="text" 
-          placeholder="Escribe aquí para probar"
-          style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
-        />
-        <p>Si puedes escribir aquí, el problema está en el sistema de formularios</p>
-      </div>
+
       
       <form onSubmit={handleSubmit} className={styles.form}>
         <div style={{ marginBottom: '15px' }}>

@@ -10,6 +10,8 @@ async function getAllPatients() {
 
 async function findPatientsWithFilters(query) {
   const { sql, params } = buildPersonFilters(query);
+  
+  // Consulta normal - DNI ahora está en la tabla patients
   let fullQuery = `SELECT * FROM patients ${sql}`;
   // Paginación y ordenamiento
   const { sql: pagSql, params: pagParams } = buildPaginationAndOrder(

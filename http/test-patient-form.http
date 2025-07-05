@@ -1,0 +1,49 @@
+### Login como admin
+# @name login_admin
+POST http://localhost:3001/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "Admin1234"
+}
+
+### Guardar token
+@token_admin = {{login_admin.response.body.token}}
+
+### Crear un nuevo paciente
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "first_name": "Juan Carlos",
+  "last_name": "González",
+  "email": "juan.gonzalez@email.com",
+  "phone": "1234567890",
+  "dni": "12345678",
+  "date_of_birth": "1990-05-15",
+  "address": "Av. San Martín 123, Buenos Aires",
+  "preferred_payment_methods": "efectivo, tarjeta",
+  "health_insurance_id": 1,
+  "doctor_ids": [1, 2],
+  "reference_person": {
+    "name": "María",
+    "last_name": "González",
+    "phone": "0987654321",
+    "relationship": "Esposa",
+    "address": "Av. San Martín 123, Buenos Aires"
+  }
+}
+
+### Obtener todos los pacientes
+GET http://localhost:3001/api/patients
+Authorization: Bearer {{token_admin}}
+
+### Obtener doctores disponibles
+GET http://localhost:3001/api/doctors
+Authorization: Bearer {{token_admin}}
+
+### Obtener obras sociales disponibles
+GET http://localhost:3001/api/health-insurances
+Authorization: Bearer {{token_admin}} 

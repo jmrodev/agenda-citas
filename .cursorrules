@@ -1,0 +1,38 @@
+# Reglas de Cursor para Agenda de Citas
+# =====================================
+
+## CREDENCIALES DE BASE DE DATOS
+- Usuario MySQL: jmro
+- Contraseña MySQL: jmro1975
+- Base de datos: agenda_citas
+- Host: localhost
+- Puerto: 3306
+
+## CREDENCIALES DE USUARIO ADMIN
+- Usuario: admin
+- Contraseña: Admin1234
+- Email: admin@mail.com
+- Rol: admin
+
+## CONFIGURACIÓN DEL PROYECTO
+- Backend: http://localhost:3001
+- Frontend: http://localhost:3000
+- Script de inicio: ./start-app.sh
+- Package manager: pnpm
+
+## COMANDOS ÚTILES
+- Iniciar aplicación: ./start-app.sh
+- Conectar a MySQL: mysql -u jmro -pjmro1975 agenda_citas
+- Probar login admin: curl -X POST http://localhost:3001/api/auth/login -H "Content-Type: application/json" -d '{"username":"admin","password":"Admin1234"}'
+
+## ESTRUCTURA DE ARCHIVOS
+- Backend: ./backend/
+- Frontend: ./frontend/
+- Base de datos: ./BBDD/main.sql
+- Pruebas HTTP: ./http/
+
+## NOTAS IMPORTANTES
+- Siempre usar las credenciales correctas: jmro/jmro1975 para MySQL
+- El usuario admin tiene contraseña Admin1234 (cumple requisitos de validación)
+- La base de datos está poblada con datos de prueba reales
+- Las relaciones paciente-doctor están implementadas y funcionando 

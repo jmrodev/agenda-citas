@@ -1,0 +1,40 @@
+### Test de Inputs del Formulario de Pacientes
+
+### 1. Verificar que el backend esté funcionando
+GET http://localhost:3001/api/health
+
+### 2. Login como admin para obtener token
+# @name login_admin
+POST http://localhost:3001/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "Admin1234"
+}
+
+### 3. Guardar token
+@token_admin = {{login_admin.response.body.token}}
+
+### 4. Verificar que se pueden obtener doctores
+GET http://localhost:3001/api/doctors
+Authorization: Bearer {{token_admin}}
+
+### 5. Verificar que se pueden obtener obras sociales
+GET http://localhost:3001/api/health-insurances
+Authorization: Bearer {{token_admin}}
+
+### 6. Crear un paciente de prueba con datos mínimos
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+Authorization: Bearer {{token_admin}}
+
+{
+  "first_name": "Test",
+  "last_name": "Usuario",
+  "doctor_ids": [1]
+}
+
+### 7. Verificar que el paciente se creó
+GET http://localhost:3001/api/patients
+Authorization: Bearer {{token_admin}} 

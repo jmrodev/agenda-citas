@@ -2,6 +2,8 @@ import { useState, useCallback, useMemo } from 'react';
 import { validate, SCHEMAS } from '../utils/validation';
 import { sanitizeForAPI } from '../utils/sanitization';
 
+
+
 /**
  * Hook personalizado para manejo de formularios
  * @param {Object} initialValues - Valores iniciales del formulario
@@ -21,6 +23,13 @@ export const useForm = (initialValues = {}, validationSchema = {}) => {
     return Object.keys(validationErrors).length === 0;
   }, [values, validationSchema]);
 
+  // Validar formulario completo y actualizar errores
+  const validateAndUpdateErrors = useCallback(() => {
+    const validationErrors = validate(values, validationSchema);
+    setErrors(validationErrors);
+    return validationErrors;
+  }, [values, validationSchema]);
+
   // Validar campo individual
   const validateField = useCallback((name, value) => {
     if (!validationSchema[name]) return null;
@@ -33,7 +42,7 @@ export const useForm = (initialValues = {}, validationSchema = {}) => {
   const handleChange = useCallback((name, value) => {
     setValues(prev => ({ ...prev, [name]: value }));
     
-    // Solo validar si el campo ya fue tocado
+    // Validar el campo inmediatamente si ya fue tocado
     if (touched[name]) {
       const fieldError = validateField(name, value);
       setErrors(prev => ({
@@ -95,20 +104,18 @@ export const useForm = (initialValues = {}, validationSchema = {}) => {
     }
   }, [values, validateForm]);
 
-  // Verificar si el formulario es válido (solo si todos los campos requeridos están llenos)
+  // Verificar si el formulario es válido
   const isValid = useMemo(() => {
-    // Verificar que todos los campos requeridos tengan valor
-    const requiredFields = Object.keys(validationSchema);
-    const hasRequiredValues = requiredFields.every(field => {
-      const value = values[field];
-      return value !== null && value !== undefined && value !== '';
-    });
+    // Validar el formulario completo
+    const validationErrors = validate(values, validationSchema);
+    
+
     
     // Verificar que no hay errores
-    const hasNoErrors = Object.keys(errors).length === 0;
+    const hasNoErrors = Object.keys(validationErrors).length === 0;
     
-    return hasRequiredValues && hasNoErrors;
-  }, [values, errors, validationSchema]);
+    return hasNoErrors;
+  }, [values, validationSchema]);
 
   // Verificar si el formulario ha sido modificado
   const isDirty = useMemo(() => {
@@ -131,7 +138,8 @@ export const useForm = (initialValues = {}, validationSchema = {}) => {
     reset,
     setValues,
     setErrors,
-    validateForm
+    validateForm,
+    validateAndUpdateErrors
   };
 };
 

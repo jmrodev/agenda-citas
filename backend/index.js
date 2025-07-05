@@ -1,6 +1,15 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Configuración de CORS
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:3002', 'http://127.0.0.1:3000', 'http://127.0.0.1:3002'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 app.use(express.json());
 
@@ -43,6 +52,10 @@ app.use('/api/facility-payments', facilityPaymentRoutes);
 
 const calendarRoutes = require('./routes/calendarRoutes');
 app.use('/api/calendar', calendarRoutes);
+
+// Nuevas rutas para relaciones paciente-doctor
+const patientDoctorRoutes = require('./routes/patientDoctorRoutes');
+app.use('/api/patient-doctors', patientDoctorRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });

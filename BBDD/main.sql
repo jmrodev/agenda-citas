@@ -15,6 +15,7 @@ CREATE TABLE patients (
     preferred_payment_methods VARCHAR(255),
     health_insurance_id INT(6) UNSIGNED,
     doctor_id INT(6) UNSIGNED,
+    dni VARCHAR(20) UNIQUE,
     reference_name VARCHAR(100),
     reference_last_name VARCHAR(100),
     reference_address VARCHAR(255),
@@ -202,6 +203,7 @@ CREATE TABLE user_config (
 SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE INDEX idx_patients_health_insurance_id ON patients (health_insurance_id);
+CREATE INDEX idx_patients_dni ON patients (dni);
 CREATE INDEX idx_appointments_patient_id ON appointments (patient_id);
 CREATE INDEX idx_appointments_doctor_id ON appointments (doctor_id);
 CREATE INDEX idx_appointments_recorded_by_secretary_id ON appointments (recorded_by_secretary_id);
@@ -227,7 +229,61 @@ CREATE INDEX idx_appointments_status ON appointments (status);
 CREATE INDEX idx_prescriptions_date ON prescriptions (date);
 CREATE INDEX idx_medical_history_records_date ON medical_history_records (date);
 
+-- Poblar datos de prueba para obras sociales
+INSERT INTO health_insurances (name, address, phone, email) VALUES
+('Sanitas', 'Calle de la Salud 1, Madrid', '+34 900 123 456', 'info@sanitas.es'),
+('Adeslas', 'Avenida de la Medicina 2, Barcelona', '+34 900 234 567', 'contacto@adeslas.es'),
+('DKV', 'Plaza de la Seguridad 3, Valencia', '+34 900 345 678', 'atencion@dkv.es');
+
+-- Poblar datos de prueba para doctores
+INSERT INTO doctors (first_name, last_name, specialty, license_number, phone, email, consultation_fee, prescription_fee) VALUES
+('Dr. Roberto', 'Hernández', 'Cardiología', 'MED001', '+34 600 111 111', 'roberto.hernandez@clinic.com', 80.00, 25.00),
+('Dra. Laura', 'Díaz', 'Dermatología', 'MED002', '+34 600 222 222', 'laura.diaz@clinic.com', 75.00, 20.00),
+('Dr. Francisco', 'Ruiz', 'Ortopedia', 'MED003', '+34 600 333 333', 'francisco.ruiz@clinic.com', 85.00, 30.00),
+('Dra. Patricia', 'Vega', 'Ginecología', 'MED004', '+34 600 444 444', 'patricia.vega@clinic.com', 90.00, 25.00),
+('Dr. Manuel', 'Torres', 'Neurología', 'MED005', '+34 600 555 555', 'manuel.torres@clinic.com', 95.00, 35.00);
+
+-- Poblar datos de prueba para pacientes
+INSERT INTO patients (first_name, last_name, date_of_birth, address, phone, email, preferred_payment_methods, health_insurance_id, dni) VALUES
+('Juan', 'García', '1990-05-15', 'Calle Mayor 123, Madrid', '+34 600 123 456', 'juan.garcia@email.com', 'efectivo, tarjeta', 1, '12345678A'),
+('María', 'López', '1985-08-22', 'Avenida Principal 45, Barcelona', '+34 600 234 567', 'maria.lopez@email.com', 'transferencia', 2, '23456789B'),
+('Carlos', 'Martínez', '1992-03-10', 'Plaza España 67, Valencia', '+34 600 345 678', 'carlos.martinez@email.com', 'efectivo', 1, '34567890C'),
+('Ana', 'Rodríguez', '1988-11-30', 'Calle Real 89, Sevilla', '+34 600 456 789', 'ana.rodriguez@email.com', 'tarjeta', 3, '45678901D'),
+('Luis', 'Fernández', '1995-07-12', 'Gran Vía 12, Bilbao', '+34 600 567 890', 'luis.fernandez@email.com', 'efectivo, transferencia', 2, '56789012E'),
+('Carmen', 'González', '1983-12-05', 'Calle Nueva 34, Málaga', '+34 600 678 901', 'carmen.gonzalez@email.com', 'tarjeta', 1, '67890123F'),
+('Pedro', 'Pérez', '1991-04-18', 'Avenida Central 56, Zaragoza', '+34 600 789 012', 'pedro.perez@email.com', 'efectivo', 3, '78901234G'),
+('Isabel', 'Sánchez', '1987-09-25', 'Plaza Mayor 78, Granada', '+34 600 890 123', 'isabel.sanchez@email.com', 'transferencia', 2, '89012345H'),
+('Miguel', 'Jiménez', '1993-01-08', 'Calle Ancha 90, Alicante', '+34 600 901 234', 'miguel.jimenez@email.com', 'efectivo, tarjeta', 1, '90123456I'),
+('Elena', 'Moreno', '1986-06-14', 'Avenida del Mar 23, Cádiz', '+34 600 012 345', 'elena.moreno@email.com', 'tarjeta', 3, '01234567J');
+
+-- Asignar doctores a pacientes (relación muchos a muchos)
+INSERT INTO patient_doctors (patient_id, doctor_id) VALUES
+(1, 1), (1, 2),           -- Juan García tiene 2 doctores
+(2, 1),                   -- María López tiene 1 doctor
+(3, 3), (3, 4),           -- Carlos Martínez tiene 2 doctores
+(4, 2),                   -- Ana Rodríguez tiene 1 doctor
+(5, 1), (5, 3), (5, 5),   -- Luis Fernández tiene 3 doctores
+(6, 4),                   -- Carmen González tiene 1 doctor
+(7, 5),                   -- Pedro Pérez tiene 1 doctor
+(8, 1), (8, 2),           -- Isabel Sánchez tiene 2 doctores
+(9, 3),                   -- Miguel Jiménez tiene 1 doctor
+(10, 4), (10, 5);         -- Elena Moreno tiene 2 doctores
+
+-- Poblar datos de prueba para referencias de pacientes
+INSERT INTO patient_references (patient_id, dni, name, last_name, address, phone, relationship) VALUES
+(1, 'REF001', 'Antonio', 'García', 'Calle Mayor 123, Madrid', '+34 600 111 001', 'Padre'),
+(2, 'REF002', 'Carmen', 'López', 'Avenida Principal 45, Barcelona', '+34 600 111 002', 'Madre'),
+(3, 'REF003', 'Roberto', 'Martínez', 'Plaza España 67, Valencia', '+34 600 111 003', 'Hermano'),
+(4, 'REF004', 'Isabel', 'Rodríguez', 'Calle Real 89, Sevilla', '+34 600 111 004', 'Hermana'),
+(5, 'REF005', 'Francisco', 'Fernández', 'Gran Vía 12, Bilbao', '+34 600 111 005', 'Padre'),
+(6, 'REF006', 'Ana', 'González', 'Calle Nueva 34, Málaga', '+34 600 111 006', 'Madre'),
+(7, 'REF007', 'Miguel', 'Pérez', 'Avenida Central 56, Zaragoza', '+34 600 111 007', 'Hermano'),
+(8, 'REF008', 'Elena', 'Sánchez', 'Plaza Mayor 78, Granada', '+34 600 111 008', 'Hermana'),
+(9, 'REF009', 'Carlos', 'Jiménez', 'Calle Ancha 90, Alicante', '+34 600 111 009', 'Padre'),
+(10, 'REF010', 'Patricia', 'Moreno', 'Avenida del Mar 23, Cádiz', '+34 600 111 010', 'Madre');
+
 -- Usuario admin inicial para autenticación (password: 123456)
+-- MANTENER ESTA CONTRASEÑA HASHEDA - NO CAMBIAR
 INSERT INTO users (username, email, password, role, entity_id) VALUES
   ('admin', 'admin@mail.com', '$2b$10$4SK82qr1w/lcuE/hibBGdOZuV2td0KKrmCXMLsGs/RKSJGPSB3VoK', 'admin', NULL);
 

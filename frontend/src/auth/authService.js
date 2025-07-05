@@ -1,43 +1,52 @@
 import { setSession, clearSession, getRefreshToken, setRefreshToken, clearRefreshToken } from './session.js';
+import { handleAuthResponse } from './authUtils.js';
 
 export async function login({ username, password }) {
   console.log('authService.login - Datos a enviar:', { username, password });
+  
   const res = await fetch('/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password })
   });
+  
   console.log('authService.login - Status:', res.status, res.statusText);
-  if (!res.ok) {
-    const data = await res.json();
-    console.log('authService.login - Error response:', data);
-    throw new Error(data.message || 'Credenciales incorrectas');
-  }
-  const data = await res.json();
+  
+  const data = await handleAuthResponse(res);
   console.log('authService.login - Success response:', data);
+  
   setSession(data.token, data.user.role);
   if (data.refresh_token) {
     setRefreshToken(data.refresh_token);
   }
+  
   return data;
 }
 
 export async function refreshAccessToken() {
   const refreshToken = getRefreshToken();
-  if (!refreshToken) throw new Error('No hay refresh token');
+  if (!refreshToken) {
+    throw new Error('No hay refresh token disponible');
+  }
+  
   const res = await fetch('/api/auth/refresh', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refresh_token: refreshToken })
   });
+  
   if (!res.ok) {
     clearSession();
     clearRefreshToken();
-    throw new Error('No se pudo renovar el token');
+    throw new Error('No se pudo renovar el token de acceso');
   }
-  const data = await res.json();
+  
+  const data = await handleAuthResponse(res);
   setSession(data.token, data.user.role);
-  if (data.refresh_token) setRefreshToken(data.refresh_token);
+  if (data.refresh_token) {
+    setRefreshToken(data.refresh_token);
+  }
+  
   return data.token;
 }
 

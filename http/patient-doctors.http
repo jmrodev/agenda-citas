@@ -1,0 +1,116 @@
+### Login como admin
+# @name login_admin
+POST http://localhost:3001/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@mail.com",
+  "password": "123456"
+}
+
+### guardar en variable el token
+@token_admin = {{login_admin.response.body.token}}
+
+### ========================================
+### RELACIONES PACIENTE-DOCTOR
+### ========================================
+
+### Obtener doctores de un paciente
+GET http://localhost:3001/api/patient-doctors/patient/1/doctors
+Authorization: Bearer {{token_admin}}
+
+### Obtener pacientes de un doctor
+GET http://localhost:3001/api/patient-doctors/doctor/1/patients
+Authorization: Bearer {{token_admin}}
+
+### Asignar múltiples doctores a un paciente (reemplaza todos)
+PUT http://localhost:3001/api/patient-doctors/patient/1/doctors
+Authorization: Bearer {{token_admin}}
+Content-Type: application/json
+
+{
+  "doctor_ids": [1, 2, 3]
+}
+
+### Asignar múltiples pacientes a un doctor (reemplaza todos)
+PUT http://localhost:3001/api/patient-doctors/doctor/1/patients
+Authorization: Bearer {{token_admin}}
+Content-Type: application/json
+
+{
+  "patient_ids": [1, 2, 3, 4, 5]
+}
+
+### Agregar un doctor específico a un paciente
+POST http://localhost:3001/api/patient-doctors/patient/1/doctors/4
+Authorization: Bearer {{token_admin}}
+
+### Agregar un paciente específico a un doctor
+POST http://localhost:3001/api/patient-doctors/doctor/1/patients/6
+Authorization: Bearer {{token_admin}}
+
+### Eliminar un doctor específico de un paciente
+DELETE http://localhost:3001/api/patient-doctors/patient/1/doctors/3
+Authorization: Bearer {{token_admin}}
+
+### Eliminar un paciente específico de un doctor
+DELETE http://localhost:3001/api/patient-doctors/doctor/1/patients/5
+Authorization: Bearer {{token_admin}}
+
+### Obtener estadísticas de relaciones
+GET http://localhost:3001/api/patient-doctors/stats
+Authorization: Bearer {{token_admin}}
+
+### Buscar pacientes por doctor con filtros
+GET http://localhost:3001/api/patient-doctors/doctor/1/patients/search?search=garcia
+Authorization: Bearer {{token_admin}}
+
+### Buscar doctores por paciente con filtros
+GET http://localhost:3001/api/patient-doctors/patient/1/doctors/search?search=cardio
+Authorization: Bearer {{token_admin}}
+
+### ========================================
+### ENDPOINTS EXISTENTES MEJORADOS
+### ========================================
+
+### Obtener paciente con doctores incluidos
+GET http://localhost:3001/api/patients/1
+Authorization: Bearer {{token_admin}}
+
+### Obtener lista de pacientes con doctores
+GET http://localhost:3001/api/patients
+Authorization: Bearer {{token_admin}}
+
+### Obtener doctores con conteo de pacientes
+GET http://localhost:3001/api/doctors
+Authorization: Bearer {{token_admin}}
+
+### ========================================
+### PRUEBAS DE VALIDACIÓN
+### ========================================
+
+### Intentar agregar doctor que ya existe (debe fallar)
+POST http://localhost:3001/api/patient-doctors/patient/1/doctors/1
+Authorization: Bearer {{token_admin}}
+
+### Intentar agregar paciente que ya existe (debe fallar)
+POST http://localhost:3001/api/patient-doctors/doctor/1/patients/1
+Authorization: Bearer {{token_admin}}
+
+### Intentar asignar doctores inválidos
+PUT http://localhost:3001/api/patient-doctors/patient/1/doctors
+Authorization: Bearer {{token_admin}}
+Content-Type: application/json
+
+{
+  "doctor_ids": [999, 1000]
+}
+
+### Intentar asignar pacientes inválidos
+PUT http://localhost:3001/api/patient-doctors/doctor/1/patients
+Authorization: Bearer {{token_admin}}
+Content-Type: application/json
+
+{
+  "patient_ids": [999, 1000]
+} 

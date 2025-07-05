@@ -219,12 +219,29 @@ export const SCHEMAS = {
   },
 
   PATIENT: {
-    first_name: ['required', 'onlyLetters', (value) => value.length >= 2 ? null : 'Mínimo 2 caracteres'],
-    last_name: ['required', 'onlyLetters', (value) => value.length >= 2 ? null : 'Mínimo 2 caracteres'],
+    first_name: ['required', 'onlyLetters', (value) => value && value.length >= 2 ? null : 'Mínimo 2 caracteres'],
+    last_name: ['required', 'onlyLetters', (value) => value && value.length >= 2 ? null : 'Mínimo 2 caracteres'],
     email: ['email'],
     phone: ['phone'],
-    dni: ['dni'],
-    date_of_birth: ['date']
+    dni: ['required', 'dni'],
+    date_of_birth: ['required', 'date'],
+    address: [(value) => !value || value.length <= 255 ? null : 'Máximo 255 caracteres'],
+    preferred_payment_methods: [(value) => {
+      if (!value || value.trim() === '') return 'Debe seleccionar al menos un método de pago';
+      const methods = value.split(',').filter(m => m.trim());
+      if (methods.length === 0) return 'Debe seleccionar al menos un método de pago';
+      return null;
+    }],
+    health_insurance_id: [(value) => !value || !isNaN(value) ? null : 'ID de obra social inválido'],
+    doctor_ids: [(value) => !value || Array.isArray(value) ? null : 'Debe ser un array de IDs de doctores'],
+    reference_person: [(value) => {
+      if (!value) return null;
+      if (typeof value !== 'object') return 'Debe ser un objeto';
+      if (value.name && !PATTERNS.ONLY_LETTERS.test(value.name)) return 'Nombre de referencia solo puede contener letras';
+      if (value.last_name && !PATTERNS.ONLY_LETTERS.test(value.last_name)) return 'Apellido de referencia solo puede contener letras';
+      if (value.phone && !PATTERNS.PHONE.test(value.phone)) return 'Teléfono de referencia inválido';
+      return null;
+    }]
   },
 
   APPOINTMENT: {

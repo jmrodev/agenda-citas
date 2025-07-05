@@ -25,6 +25,13 @@ router.get('/:id', authenticateToken, authorizeRoles('admin', 'secretary', 'doct
 router.put('/:id/doctors', authenticateToken, authorizeRoles('admin', 'secretary'), patientController.updatePatientDoctors);
 
 /**
+ * POST /patients/:id/doctors/:doctor_id
+ * Agrega un doctor específico a un paciente.
+ * Solo accesible para admin y secretaria.
+ */
+router.post('/:id/doctors/:doctor_id', authenticateToken, authorizeRoles('admin', 'secretary'), patientController.addDoctorToPatient);
+
+/**
  * DELETE /patients/:id/doctors/:doctor_id
  * Elimina la relación específica entre un paciente y un doctor.
  * Solo accesible para admin y secretaria.
@@ -32,5 +39,11 @@ router.put('/:id/doctors', authenticateToken, authorizeRoles('admin', 'secretary
 router.delete('/:id/doctors/:doctor_id', authenticateToken, authorizeRoles('admin', 'secretary'), patientController.removeDoctorFromPatient);
 
 router.get('/dashboard-stats', authenticateToken, authorizeRoles('admin', 'secretary'), patientController.getDashboardStats);
+
+// Nuevos endpoints para búsqueda avanzada
+router.get('/search/stats', authenticateToken, authorizeRoles('admin', 'secretary'), patientController.getSearchStats);
+router.get('/search/options', authenticateToken, authorizeRoles('admin', 'secretary'), patientController.getFilterOptions);
+router.get('/by-doctor/:doctor_id', authenticateToken, authorizeRoles('admin', 'secretary', 'doctor'), patientController.getPatientsByDoctor);
+router.get('/by-insurance/:insurance_id', authenticateToken, authorizeRoles('admin', 'secretary'), patientController.getPatientsByHealthInsurance);
 
 module.exports = router; 

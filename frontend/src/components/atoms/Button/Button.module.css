@@ -50,6 +50,17 @@
   background: #159c5b;
 }
 
+.outline {
+  background: transparent;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+}
+.outline:hover,
+.outline:focus {
+  background: var(--primary-color);
+  color: #fff;
+}
+
 .sm {
   padding: 0.25rem 0.75rem;
   font-size: 0.875rem;

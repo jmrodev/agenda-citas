@@ -1,18 +1,12 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import RequireAuth from './auth/RequireAuth'; // Importación directa
+import RequireAuth from './auth/RequireAuth';
 import RoleBasedRedirect from './auth/RoleBasedRedirect';
 import Loader from '../atoms/Loader/Loader';
 
 // Lazy loading de todas las páginas
 const Login = lazy(() => import('./auth/Login'));
 const Register = lazy(() => import('./auth/Register'));
-
-// Dashboard pages
-const DashboardAdmin = lazy(() => import('./dashboard/DashboardAdmin'));
-const SecretaryDashboard = lazy(() => import('./dashboard/SecretaryDashboard'));
-const DoctorDashboard = lazy(() => import('./dashboard/DoctorDashboard')); // Corregido
-const PaymentStats = lazy(() => import('./dashboard/PaymentStats'));
 
 // Patient pages
 const PatientList = lazy(() => import('./patients/PatientsList'));
@@ -69,40 +63,29 @@ const AppRouter = () => {
           
           {/* Rutas protegidas */}
           <Route element={<RequireAuth />}>
-            {/* Dashboard routes */}
-            {/* Se necesita una ruta base para /dashboard o asegurar que todas las subrutas de dashboard estén definidas */}
-            {/* Si RoleBasedRedirect ya dirige a /dashboard/admin, /dashboard/secretary, etc.,
-                quizás /dashboard como ruta genérica no sea necesaria o deba ser un layout.
-                Por ahora, se asume que DashboardAdmin puede ser una vista genérica o de admin. */}
-            <Route path="/dashboard" element={<DashboardAdmin />} />
-            <Route path="/dashboard/admin" element={<DashboardAdmin />} />
-            <Route path="/dashboard/secretary" element={<SecretaryDashboard />} />
-            <Route path="/dashboard/doctor" element={<DoctorDashboard />} />
-            <Route path="/dashboard/payments" element={<PaymentStats />} />
+            {/* Desktop route - Nueva página principal para todos los usuarios */}
+            <Route path="/desktop" element={<DesktopAppPage />}>
+              {/* Rutas anidadas dentro de desktop - deben ser relativas */}
+              <Route path="patients" element={<PatientList />} />
+              <Route path="patients/new" element={<PatientForm />} />
+              <Route path="patients/:id" element={<PatientView />} />
+              <Route path="calendar" element={<CalendarPage />} />
+              <Route path="health-insurances" element={<HealthInsurancesPage />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
             
-            {/* Patient routes */}
-            <Route path="/patients" element={<PatientList />} />
-            <Route path="/patients/new" element={<PatientForm />} />
-            <Route path="/patients/:id" element={<PatientView />} />
-            
-            {/* Calendar route */}
-            <Route path="/calendar" element={<CalendarPage />} />
-            
-            {/* Health insurance route */}
-            <Route path="/health-insurances" element={<HealthInsurancesPage />} />
-            
-            {/* Desktop route */}
-            <Route path="/desktop" element={<DesktopAppPage />} />
-            
-            {/* Settings route */}
-            <Route path="/settings" element={<Settings />} />
+            {/* Rutas legacy - redirigir a desktop */}
+            <Route path="/dashboard/*" element={<Navigate to="/desktop" replace />} />
+            <Route path="/patients" element={<Navigate to="/desktop/patients" replace />} />
+            <Route path="/patients/new" element={<Navigate to="/desktop/patients/new" replace />} />
+            <Route path="/patients/:id" element={<Navigate to="/desktop/patients/:id" replace />} />
+            <Route path="/calendar" element={<Navigate to="/desktop/calendar" replace />} />
+            <Route path="/health-insurances" element={<Navigate to="/desktop/health-insurances" replace />} />
+            <Route path="/settings" element={<Navigate to="/desktop/settings" replace />} />
             
             {/* Dev route */}
             <Route path="/dev" element={<DevPage />} />
           </Route>
-          
-          {/* Ruta 404 - redirigir a login */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Suspense>
     </Router>
