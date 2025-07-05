@@ -5,37 +5,37 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--app-bg, #f9fafb);
+  background: var(--background-color); /* Updated */
 }
 
 .form {
-  min-width: 320px;
+  min-width: 320px; /* Consider var(--min-width) if appropriate */
   max-width: 360px;
   width: 100%;
-  background: var(--surface, #fff);
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  padding: 2.5rem 2rem;
+  background: var(--card-bg); /* Updated for form containers */
+  border-radius: var(--card-radius); /* Updated */
+  box-shadow: var(--card-shadow); /* Updated */
+  padding: var(--spacing-xl) var(--spacing-lg); /* Adjusted padding: approx 2rem 1.5rem */
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--spacing-lg); /* Updated */
 }
 
 .titleContainer {
   text-align: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-sm); /* Updated */
 }
 
 .appTitle {
-  font-weight: 700;
-  font-size: 1.3rem;
-  color: var(--primary, #2563eb);
+  font-weight: 700; /* Keep specific font-weights unless defined in variables */
+  font-size: var(--font-size-lg); /* Updated, adjust if 1.3rem is very specific */
+  color: var(--primary-color); /* Updated */
 }
 
 .formTitle {
   text-align: center;
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: var(--font-size-md); /* Updated, adjust if 1.1rem is specific */
   margin: 0;
 }
 
@@ -45,11 +45,11 @@
 
 .forgotPasswordContainer {
   text-align: center;
-  font-size: 0.97em;
-  margin-top: 0.5rem;
+  font-size: var(--font-size-sm); /* Updated, 0.97em is close to 0.875rem */
+  margin-top: var(--spacing-sm); /* Updated */
 }
 
 .forgotPasswordLink {
-  color: var(--primary, #2563eb);
+  color: var(--primary-color); /* Updated */
   text-decoration: underline;
 }
