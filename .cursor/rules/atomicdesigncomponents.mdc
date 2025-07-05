@@ -47,3 +47,4 @@ Listado completo de componentes Atomic Design disponibles en el proyecto:
 - Variables CSS: var(--primary-color), var(--secondary-color), etc.
 - Mobile First como selección de media
 - Estructura: Componente/Componente.jsx + Componente.module.css
+- No usar ,mientras se pueda ,la carpeta utils para funciones que pueden tener su carpeta y archivo estructurado con mas sentido.De preferencia utils no debe ser la carpeta para todo.

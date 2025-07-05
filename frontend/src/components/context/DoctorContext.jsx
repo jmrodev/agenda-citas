@@ -1,27 +1,40 @@
-import React, { createContext, useState } from 'react';
-import { authFetch } from '../../auth/authFetch';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 
-export const DoctorContext = createContext();
+// Contexto separado
+const DoctorContext = createContext();
 
-const defaultDoctor = { id: 1, name: 'Dr. Juan Pérez' };
-
+// Provider component
 export const DoctorProvider = ({ children }) => {
-  const [doctor, setDoctor] = useState(null);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const setDoctorById = async (id) => {
-    try {
-      const res = await authFetch(`/api/doctors/${id}`);
-      if (!res || !res.ok) throw new Error('No se pudo obtener el doctor');
-      const data = await res.json();
-      setDoctor(data);
-    } catch {
-      setDoctor(defaultDoctor);
-    }
+  const selectDoctor = useCallback((doctor) => {
+    setSelectedDoctor(doctor);
+  }, []);
+
+  const updateDoctors = useCallback((newDoctors) => {
+    setDoctors(newDoctors);
+  }, []);
+
+  const setLoadingState = useCallback((isLoading) => {
+    setLoading(isLoading);
+  }, []);
+
+  const value = {
+    selectedDoctor,
+    doctors,
+    loading,
+    selectDoctor,
+    updateDoctors,
+    setLoadingState
   };
 
   return (
-    <DoctorContext.Provider value={{ doctor, setDoctor, setDoctorById }}>
+    <DoctorContext.Provider value={value}>
       {children}
     </DoctorContext.Provider>
   );
-}; 
+};
+
+export default DoctorContext; 

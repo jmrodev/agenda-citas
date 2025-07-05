@@ -1,130 +1,101 @@
-import React from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import Login from './auth/Login';
-import Register from './auth/Register';
-import AdminDashboard from './dashboard/DashboardAdmin';
-import DoctorDashboard from './dashboard/DoctorDashboard';
-import SecretaryDashboard from './dashboard/SecretaryDashboard';
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import RequireAuth from './auth/RequireAuth';
-import Settings from './Settings';
-import DashboardAdmin from './dashboard/DashboardAdmin';
-import PaymentStats from './dashboard/PaymentStats.jsx';
-import PatientsList from './patients/PatientsList.jsx';
-import CalendarPage from './calendar/CalendarPage';
-import DesktopAppPage from './desktop/DesktopAppPage';
-import HealthInsurancesPage from './healthinsurances/HealthInsurancesPage';
 import Loader from '../atoms/Loader/Loader';
 
-// Componente que redirige según el rol del usuario
-const HomePage = () => {
-  const navigate = useNavigate();
-  const token = localStorage.getItem('token');
-  
-  React.useEffect(() => {
-    if (!token) {
-      navigate('/login', { replace: true });
-      return;
-    }
-    
-    try {
-      // Decodificar el token para obtener el rol
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const userRole = payload.role;
-      
-      switch (userRole) {
-        case 'admin':
-          navigate('/admin', { replace: true });
-          break;
-        case 'doctor':
-          navigate('/doctor', { replace: true });
-          break;
-        case 'secretary':
-          navigate('/secretary', { replace: true });
-          break;
-        default:
-          // Si el rol no es válido, limpiar y redirigir a login
-          localStorage.removeItem('token');
-          localStorage.removeItem('role');
-          navigate('/login', { replace: true });
-          break;
-      }
-    } catch (error) {
-      // Si hay error al decodificar el token, limpiar y ir a login
-      localStorage.removeItem('token');
-      localStorage.removeItem('role');
-      navigate('/login', { replace: true });
-    }
-  }, [navigate, token]);
+// Lazy loading de todas las páginas
+const Login = lazy(() => import('./auth/Login'));
+const Register = lazy(() => import('./auth/Register'));
 
-  // Mostrar un loading mientras redirige
+// Dashboard pages
+const DashboardAdmin = lazy(() => import('./dashboard/DashboardAdmin'));
+const SecretaryDashboard = lazy(() => import('./dashboard/SecretaryDashboard'));
+const DoctorDashboard = lazy(() => import('./dashboard/DashboardAdmin'));
+const PaymentStats = lazy(() => import('./dashboard/PaymentStats'));
+
+// Patient pages
+const PatientList = lazy(() => import('./patients/PatientsList'));
+const PatientForm = lazy(() => import('./patients/PatientForm'));
+const PatientView = lazy(() => import('./patients/PatientView'));
+
+// Calendar pages
+const CalendarPage = lazy(() => import('./calendar/CalendarPage'));
+
+// Health insurance pages
+const HealthInsurancesPage = lazy(() => import('./healthinsurances/HealthInsurancesPage'));
+
+// Desktop pages
+const DesktopAppPage = lazy(() => import('./desktop/DesktopAppPage'));
+
+// Settings page
+const Settings = lazy(() => import('./Settings'));
+
+// Dev page
+const DevPage = lazy(() => import('./dev/DevPage'));
+
+// Componente de fallback para lazy loading
+const PageLoader = () => (
+  <div style={{ 
+    display: 'flex', 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    height: '100vh',
+    flexDirection: 'column',
+    gap: '1rem'
+  }}>
+    <Loader size="large" text="Cargando página..." />
+  </div>
+);
+
+const AppRouter = () => {
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      height: '100vh',
-      background: 'var(--app-bg, #f9fafb)'
-    }}>
-      <Loader size="large" text="Redirigiendo..." />
-    </div>
+    <Router>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          {/* Rutas públicas */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          
+          {/* Ruta por defecto - redirigir a login */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          
+          {/* Rutas protegidas */}
+          <Route element={<RequireAuth />}>
+            {/* Dashboard routes */}
+            <Route path="/dashboard" element={<DashboardAdmin />} />
+            <Route path="/dashboard/admin" element={<DashboardAdmin />} />
+            <Route path="/dashboard/secretary" element={<SecretaryDashboard />} />
+            <Route path="/dashboard/doctor" element={<DoctorDashboard />} />
+            <Route path="/dashboard/payments" element={<PaymentStats />} />
+            
+            {/* Patient routes */}
+            <Route path="/patients" element={<PatientList />} />
+            <Route path="/patients/new" element={<PatientForm />} />
+            <Route path="/patients/:id" element={<PatientView />} />
+            
+            {/* Calendar route */}
+            <Route path="/calendar" element={<CalendarPage />} />
+            
+            {/* Health insurance route */}
+            <Route path="/health-insurances" element={<HealthInsurancesPage />} />
+            
+            {/* Desktop route */}
+            <Route path="/desktop" element={<DesktopAppPage />} />
+            
+            {/* Settings route */}
+            <Route path="/settings" element={<Settings />} />
+            
+            {/* Dev route */}
+            <Route path="/dev" element={<DevPage />} />
+          </Route>
+          
+          {/* Ruta 404 - redirigir a login */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </Suspense>
+    </Router>
   );
 };
 
-export default function AppRouter() {
-    return (
-        <>
-            <Routes>
-                <Route path='/login' element={<Login />} />
-                <Route path='/register' element={<Register />} />
-                <Route path='/' element={<HomePage />} />
-                <Route path='/admin' element={
-                    <RequireAuth allowedRoles={['admin']}>
-                        <DashboardAdmin />
-                    </RequireAuth>
-                } />
-                <Route path='/doctor' element={
-                    <RequireAuth allowedRoles={['doctor']}>
-                        <DoctorDashboard />
-                    </RequireAuth>
-                } />
-                <Route path='/secretary' element={
-                    <RequireAuth allowedRoles={['secretary']}>
-                        <DesktopAppPage />
-                    </RequireAuth>
-                } />
-                <Route path='/secretary/payment-stats' element={
-                    <RequireAuth allowedRoles={['secretary']}>
-                        <PaymentStats />
-                    </RequireAuth>
-                } />
-                <Route path='/settings' element={
-                  <RequireAuth allowedRoles={['admin', 'secretary']}>
-                    <Settings />
-                  </RequireAuth>
-                } />
-                <Route path='/patients' element={
-                  <RequireAuth allowedRoles={['admin', 'secretary']}>
-                    <PatientsList />
-                  </RequireAuth>
-                } />
-                <Route path='/calendar' element={
-                  <RequireAuth allowedRoles={['admin', 'secretary']}>
-                    <CalendarPage />
-                  </RequireAuth>
-                } />
-                <Route path='/register-doctor' element={
-                  <RequireAuth allowedRoles={['admin', 'secretary']}>
-                    <Register defaultRole='doctor' />
-                  </RequireAuth>
-                } />
-                <Route path='/health-insurances' element={
-                  <RequireAuth allowedRoles={['admin', 'secretary']}>
-                    <HealthInsurancesPage />
-                  </RequireAuth>
-                } />
-                <Route path='*' element={<Navigate to='/' />} />
-            </Routes>
-        </>
-    );
-}
+export default AppRouter;
 

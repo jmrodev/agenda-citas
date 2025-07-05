@@ -1,4 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
+
+const INACTIVITY_LIMIT_MS = 15 * 60 * 1000; // 15 minutos
 
 const handleLogout = () => {
   localStorage.removeItem('token');
@@ -6,24 +8,23 @@ const handleLogout = () => {
   window.location.href = '/login';
 };
 
-const INACTIVITY_LIMIT_MS = 15 * 60 * 1000; // 15 minutos
-
 function InactivityHandler({ children }) {
   const timerRef = useRef();
 
+  const resetTimer = useCallback(() => {
+    clearTimeout(timerRef.current);
+    // Solo configurar el timer si hay un token
+    const token = localStorage.getItem('token');
+    if (token) {
+      timerRef.current = setTimeout(() => {
+        handleLogout();
+      }, INACTIVITY_LIMIT_MS);
+    }
+  }, []);
+
   useEffect(() => {
-    const resetTimer = () => {
-      clearTimeout(timerRef.current);
-      // Solo configurar el timer si hay un token
-      const token = localStorage.getItem('token');
-      if (token) {
-        timerRef.current = setTimeout(() => {
-          handleLogout();
-        }, INACTIVITY_LIMIT_MS);
-      }
-    };
-    
     const events = ['mousemove', 'keydown', 'mousedown', 'scroll', 'touchstart'];
+    
     events.forEach(event => window.addEventListener(event, resetTimer));
     resetTimer();
     
@@ -31,7 +32,7 @@ function InactivityHandler({ children }) {
       clearTimeout(timerRef.current);
       events.forEach(event => window.removeEventListener(event, resetTimer));
     };
-  }, []);
+  }, [resetTimer]);
 
   return children;
 }

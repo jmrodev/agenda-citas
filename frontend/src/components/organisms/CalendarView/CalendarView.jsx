@@ -35,6 +35,15 @@ const CalendarView = React.memo(({
     return { daysInMonth, firstDay, today };
   }, [month, year]);
 
+  // Callbacks para handlers
+  const handleDayClick = useCallback((dateKey) => {
+    setSelectedDay(parseInt(dateKey.split('-')[2]));
+    if (onDayClick) {
+      logger.log('Click en día:', dateKey);
+      onDayClick(dateKey);
+    }
+  }, [onDayClick, logger]);
+
   // Memoizar array de días para evitar recálculos
   const days = useMemo(() => {
     const days = [];
@@ -67,7 +76,7 @@ const CalendarView = React.memo(({
       days.push({ day: i, isDisabled: true });
     }
     return days;
-  }, [month, year, daysInMonth, firstDay, today, selectedDay, events]);
+  }, [month, year, daysInMonth, firstDay, today, selectedDay, events, handleDayClick]);
 
   // Memoizar eventos del día seleccionado
   const dayEvents = useMemo(() => {
@@ -76,15 +85,6 @@ const CalendarView = React.memo(({
       : null;
     return selectedDateKey && events[selectedDateKey] ? events[selectedDateKey] : [];
   }, [selectedDay, year, month, events]);
-
-  // Callbacks para handlers
-  const handleDayClick = useCallback((dateKey) => {
-    setSelectedDay(parseInt(dateKey.split('-')[2]));
-    if (onDayClick) {
-      logger.log('Click en día:', dateKey);
-      onDayClick(dateKey);
-    }
-  }, [onDayClick, logger]);
 
   const handlePrev = useCallback(() => {
     if (month === 0) {
