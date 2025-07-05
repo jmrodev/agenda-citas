@@ -223,6 +223,60 @@ const PatientFormFields = React.memo(({
           {!loading && healthInsurances.length === 0 && (
             <span className={styles.warning}>No hay obras sociales disponibles</span>
           )}
+          
+          {/* Campo para número de socio */}
+          {values.health_insurance_id && (
+            <FormField
+              label="Número de Socio"
+              name="health_insurance_member_number"
+              type="text"
+              value={values.health_insurance_member_number || ''}
+              onChange={handleFieldChange}
+              onBlur={handleFieldBlur}
+              error={touched.health_insurance_member_number && errors.health_insurance_member_number ? errors.health_insurance_member_number : ''}
+              placeholder="Ingrese el número de socio/carnet"
+              validationRules={['maxLength:50']}
+              sanitizeType="text"
+              className={styles.field}
+            />
+          )}
+
+          {/* Mostrar información completa de la obra social seleccionada */}
+          {values.health_insurance_id && !loading && (
+            (() => {
+              const selectedInsurance = healthInsurances.find(
+                insurance => insurance.insurance_id === values.health_insurance_id
+              );
+              if (selectedInsurance) {
+                return (
+                  <div className={styles.insuranceInfo}>
+                    <h4 className={styles.insuranceTitle}>Información de la Obra Social</h4>
+                    <div className={styles.insuranceDetails}>
+                      <div className={styles.insuranceField}>
+                        <strong>Nombre:</strong> {selectedInsurance.name}
+                      </div>
+                      {selectedInsurance.address && (
+                        <div className={styles.insuranceField}>
+                          <strong>Dirección:</strong> {selectedInsurance.address}
+                        </div>
+                      )}
+                      {selectedInsurance.phone && (
+                        <div className={styles.insuranceField}>
+                          <strong>Teléfono:</strong> {selectedInsurance.phone}
+                        </div>
+                      )}
+                      {selectedInsurance.email && (
+                        <div className={styles.insuranceField}>
+                          <strong>Email:</strong> {selectedInsurance.email}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              }
+              return null;
+            })()
+          )}
         </div>
 
         <div className={styles.field}>

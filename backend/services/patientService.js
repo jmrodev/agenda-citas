@@ -101,12 +101,12 @@ async function getPatientWithReferences(id) {
   const patient = await patientModel.getPatientById(id);
   if (!patient) return null;
   
-  // Obtener información de la obra social
+  // Obtener información completa de la obra social
   let healthInsurance = null;
   if (patient.health_insurance_id) {
     try {
       const [rows] = await pool.query(
-        'SELECT insurance_id, name FROM health_insurances WHERE insurance_id = ?',
+        'SELECT insurance_id, name, address, phone, email FROM health_insurances WHERE insurance_id = ?',
         [patient.health_insurance_id]
       );
       if (rows.length > 0) {
@@ -124,7 +124,8 @@ async function getPatientWithReferences(id) {
     ...patient, 
     reference_persons: references, 
     doctors,
-    health_insurance_name: healthInsurance?.name || null
+    health_insurance_name: healthInsurance?.name || null,
+    health_insurance: healthInsurance || null
   };
 }
 

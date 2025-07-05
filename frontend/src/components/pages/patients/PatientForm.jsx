@@ -1,14 +1,23 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { usePatientForm } from '../../../hooks/useForm';
 import PatientFormFields from '../../molecules/PatientFormFields/PatientFormFields';
 import Button from '../../atoms/Button/Button';
 import Alert from '../../atoms/Alert/Alert';
+import Spinner from '../../atoms/Spinner/Spinner';
 import { patientService } from '../../../services/patientService';
 import FormDebug from '../../debug/FormDebug';
 import styles from './PatientForm.module.css';
 
 const PatientForm = React.memo(({ onSuccess }) => {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' });
+  const [loading, setLoading] = useState(false);
+  const [patient, setPatient] = useState(null);
+  const [error, setError] = useState('');
+
+  const isEditing = Boolean(id);
 
   const {
     values,
@@ -20,6 +29,7 @@ const PatientForm = React.memo(({ onSuccess }) => {
     handleBlur,
     handleSubmit,
     reset,
+    setValues,
     validateAndUpdateErrors
   } = usePatientForm({
     first_name: '',
@@ -31,6 +41,7 @@ const PatientForm = React.memo(({ onSuccess }) => {
     address: '',
     preferred_payment_methods: 'efectivo,débito',
     health_insurance_id: '',
+    health_insurance_member_number: '',
     doctor_ids: [],
     reference_person: {
       name: '',

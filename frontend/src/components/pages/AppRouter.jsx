@@ -69,6 +69,7 @@ const AppRouter = () => {
               <Route path="patients" element={<PatientList />} />
               <Route path="patients/new" element={<PatientForm />} />
               <Route path="patients/:id" element={<PatientView />} />
+              <Route path="patients/edit/:id" element={<PatientForm />} />
               <Route path="calendar" element={<CalendarPage />} />
               <Route path="health-insurances" element={<HealthInsurancesPage />} />
               <Route path="settings" element={<Settings />} />

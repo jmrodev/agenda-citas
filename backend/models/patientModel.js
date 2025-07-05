@@ -24,10 +24,10 @@ async function findPatientsWithFilters(query) {
 }
 
 async function createPatient(data) {
-  const { first_name, last_name, date_of_birth, address, phone, email, preferred_payment_methods, health_insurance_id, reference_person } = data;
+  const { first_name, last_name, date_of_birth, address, phone, email, preferred_payment_methods, health_insurance_id, health_insurance_member_number, reference_person } = data;
   const [result] = await pool.query(
-    'INSERT INTO patients (first_name, last_name, date_of_birth, address, phone, email, preferred_payment_methods, health_insurance_id, reference_name, reference_last_name, reference_address, reference_phone, reference_relationship) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-    [first_name, last_name, date_of_birth, address, phone, email, preferred_payment_methods, health_insurance_id,
+    'INSERT INTO patients (first_name, last_name, date_of_birth, address, phone, email, preferred_payment_methods, health_insurance_id, health_insurance_member_number, reference_name, reference_last_name, reference_address, reference_phone, reference_relationship) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    [first_name, last_name, date_of_birth, address, phone, email, preferred_payment_methods, health_insurance_id, health_insurance_member_number,
       reference_person?.name || null,
       reference_person?.last_name || null,
       reference_person?.address || null,
@@ -39,10 +39,10 @@ async function createPatient(data) {
 }
 
 async function updatePatient(id, data) {
-  const { first_name, last_name, date_of_birth, address, phone, email, preferred_payment_methods, health_insurance_id, reference_person } = data;
+  const { first_name, last_name, date_of_birth, address, phone, email, preferred_payment_methods, health_insurance_id, health_insurance_member_number, reference_person } = data;
   await pool.query(
-    'UPDATE patients SET first_name=?, last_name=?, date_of_birth=?, address=?, phone=?, email=?, preferred_payment_methods=?, health_insurance_id=?, reference_name=?, reference_last_name=?, reference_address=?, reference_phone=?, reference_relationship=? WHERE patient_id=?',
-    [first_name, last_name, date_of_birth, address, phone, email, preferred_payment_methods, health_insurance_id,
+    'UPDATE patients SET first_name=?, last_name=?, date_of_birth=?, address=?, phone=?, email=?, preferred_payment_methods=?, health_insurance_id=?, health_insurance_member_number=?, reference_name=?, reference_last_name=?, reference_address=?, reference_phone=?, reference_relationship=? WHERE patient_id=?',
+    [first_name, last_name, date_of_birth, address, phone, email, preferred_payment_methods, health_insurance_id, health_insurance_member_number,
       reference_person?.name || null,
       reference_person?.last_name || null,
       reference_person?.address || null,

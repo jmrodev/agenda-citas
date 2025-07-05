@@ -233,6 +233,7 @@ export const SCHEMAS = {
       return null;
     }],
     health_insurance_id: [(value) => !value || !isNaN(value) ? null : 'ID de obra social inválido'],
+    health_insurance_member_number: [(value) => !value || value.length <= 50 ? null : 'Máximo 50 caracteres'],
     doctor_ids: [(value) => !value || Array.isArray(value) ? null : 'Debe ser un array de IDs de doctores'],
     reference_person: [(value) => {
       if (!value) return null;

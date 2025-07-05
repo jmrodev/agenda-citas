@@ -127,6 +127,42 @@
   background-color: var(--primary-color-dark);
 }
 
+/* Información de Obra Social */
+.insuranceInfo {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: var(--background-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  border-left: 4px solid var(--primary-color);
+}
+
+.insuranceTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin: 0 0 0.75rem 0;
+}
+
+.insuranceDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.insuranceField {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.insuranceField strong {
+  color: var(--text-secondary);
+  font-weight: 500;
+  min-width: 80px;
+  display: inline-block;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .row {
@@ -140,5 +176,18 @@
   
   .sectionTitle {
     font-size: 1.1rem;
+  }
+  
+  .insuranceInfo {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+  }
+  
+  .insuranceTitle {
+    font-size: 0.95rem;
+  }
+  
+  .insuranceField {
+    font-size: 0.85rem;
   }
 } 

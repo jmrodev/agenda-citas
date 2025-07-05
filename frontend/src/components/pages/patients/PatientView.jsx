@@ -191,6 +191,30 @@ const PatientView = React.memo(() => {
                   {patient.health_insurance_name || `ID: ${patient.health_insurance_id}`}
                 </span>
               </div>
+              {patient.health_insurance?.address && (
+                <div className={styles.infoItem}>
+                  <span className={styles.label}>Dirección:</span>
+                  <span className={styles.value}>{patient.health_insurance.address}</span>
+                </div>
+              )}
+              {patient.health_insurance?.phone && (
+                <div className={styles.infoItem}>
+                  <span className={styles.label}>Teléfono:</span>
+                  <span className={styles.value}>{patient.health_insurance.phone}</span>
+                </div>
+              )}
+              {patient.health_insurance?.email && (
+                <div className={styles.infoItem}>
+                  <span className={styles.label}>Email:</span>
+                  <span className={styles.value}>{patient.health_insurance.email}</span>
+                </div>
+              )}
+              {patient.health_insurance_member_number && (
+                <div className={styles.infoItem}>
+                  <span className={styles.label}>Número de Socio:</span>
+                  <span className={styles.value}>{patient.health_insurance_member_number}</span>
+                </div>
+              )}
             </div>
           </div>
         )}
