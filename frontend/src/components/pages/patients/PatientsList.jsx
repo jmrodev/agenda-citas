@@ -234,7 +234,7 @@ const PatientsList = () => {
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1rem' }}>
           <SearchBar
             placeholder="Búsqueda rápida por nombre, apellido, email, teléfono, dirección o DNI..."
-            value={inputValue} {/* Use inputValue for the text field */}
+            value={inputValue} /* Use inputValue for the text field */
             onChange={handleSearchChange}
             style={{ flex: 1 }}
           />
