@@ -5,17 +5,30 @@ const { buildPersonFilters } = require('../filters/sql/personFilters');
 const pool = require('../config/db');
 
 function mapReferencePerson(row) {
+  // Si row es null o undefined, o no es un objeto, devolver una estructura base.
+  if (!row || typeof row !== 'object') {
+    return {
+      // Devuelve un objeto que represente a un "paciente vacío" en términos de esta función,
+      // es decir, sin datos de paciente y con reference_person nulo.
+      reference_person: {
+        name: null, last_name: null, address: null, phone: null, relationship: null
+      }
+      // No incluir ...rest aquí porque no hay 'rest' de un 'row' nulo.
+    };
+  }
+
   const {
     reference_name,
     reference_last_name,
     reference_address,
     reference_phone,
     reference_relationship,
-    ...rest
-  } = row;
+    ...rest // El resto de los campos de la fila 'patient'
+  } = row; // Ahora esto es seguro.
+
   return {
-    ...rest,
-    reference_person: {
+    ...rest, // Esparce los campos del paciente que no son de referencia_person
+    reference_person: { // Anida los campos de referencia_person
       name: reference_name,
       last_name: reference_last_name,
       address: reference_address,
@@ -25,52 +38,12 @@ function mapReferencePerson(row) {
   };
 }
 
-async function listPatients(query, user) {
-  // Si se pasa doctor_id por query, filtrar por ese doctor
-  if (query.doctor_id) {
-    const rows = await patientModel.getAllPatients();
-    const patients = [];
-    for (const row of rows) {
-      const doctorIds = await patientModel.getDoctorsByPatientId(row.patient_id);
-      if (doctorIds.includes(Number(query.doctor_id))) {
-        const references = await patientReferenceModel.getReferencesByPatientId(row.patient_id);
-        const doctors = await getDoctorsForPatient(row.patient_id);
-        patients.push({ ...row, reference_persons: references, doctors });
-      }
-    }
-    return patients;
-  }
-  // Si es doctor autenticado, filtrar por su propio id
-  if (user && user.role === 'doctor') {
-    const rows = await patientModel.getAllPatients();
-    const patients = [];
-    for (const row of rows) {
-      const doctorIds = await patientModel.getDoctorsByPatientId(row.patient_id);
-      if (doctorIds.includes(user.entity_id)) {
-        const references = await patientReferenceModel.getReferencesByPatientId(row.patient_id);
-        const doctors = await getDoctorsForPatient(row.patient_id);
-        patients.push({ ...row, reference_persons: references, doctors });
-      }
-    }
-    return patients;
-  }
-  // Secretaria/admin: todos los pacientes
-  const rows = await patientModel.getAllPatients();
-  const patients = await Promise.all(rows.map(async (row) => {
-    const references = await patientReferenceModel.getReferencesByPatientId(row.patient_id);
-    const doctors = await getDoctorsForPatient(row.patient_id);
-    // ...patient, // Ya no necesitamos esparcir patient aquí si mapReferencePerson lo hace
-    ...mapReferencePerson(patient), // Asegurarse que la referencia_person anidada esté
-    reference_persons: referencesByPatientId[patient.patient_id] || [], // Lista de otras referencias
-    doctors: doctorsByPatientId[patient.patient_id] || []
-  }));
-}
-
-
+// Versión CORRECTA y refactorizada de listPatients
 async function listPatients(query, user) {
   let effectiveQuery = { ...query };
 
   // Lógica de roles para modificar la query
+  // Si es un doctor y no se pide un doctor_id específico, filtrar por su propio id.
   if (user && user.role === 'doctor' && !effectiveQuery.doctor_id) {
     // Si es un doctor y no se pide un doctor_id específico, filtrar por su propio id.
     // Este filtro 'assigned_doctor_id' necesitaría ser manejado por findPatientsWithFilters/buildPersonFilters
@@ -87,6 +60,7 @@ async function listPatients(query, user) {
   return enrichPatientsDetails(basePatients);
 }
 
+// Versión CORRECTA y refactorizada de listPatientsWithFilters
 async function listPatientsWithFilters(query) {
   // Esta función ahora es la principal para cualquier listado filtrado.
   // La lógica de roles (como la de un doctor viendo solo sus pacientes)
@@ -101,18 +75,30 @@ async function enrichPatientsDetails(basePatients) {
   if (!basePatients || basePatients.length === 0) {
     return [];
   }
-  const patientIds = basePatients.map(p => p.patient_id);
+  // Filtrar IDs nulos o undefined que podrían venir de basePatients si hubo algún problema
+  const patientIds = basePatients.map(p => p.patient_id).filter(id => id != null);
+
+  // Si no hay IDs válidos después de filtrar, simplemente procesar basePatients con mapReferencePerson
+  // Esto evita llamar a los servicios de batch con un array vacío o de IDs inválidos.
+  if (patientIds.length === 0) {
+     return basePatients.map(patient => mapReferencePerson(patient || {})); // Asegurar que patient no sea null
+  }
 
   const [doctorsByPatientId, referencesByPatientId] = await Promise.all([
     patientModel.getDoctorsForPatientIds(patientIds),
     patientReferenceModel.getReferencesByPatientIds(patientIds)
   ]);
 
-  return basePatients.map(patient => ({
-    ...mapReferencePerson(patient), // mapReferencePerson ya incluye ...rest del paciente
-    reference_persons: referencesByPatientId[patient.patient_id] || [],
-    doctors: doctorsByPatientId[patient.patient_id] || []
-  }));
+  return basePatients.map(patient => {
+    // Si patient es null o undefined, mapReferencePerson lo manejará y devolverá { reference_person: null }
+    const mappedPatientData = mapReferencePerson(patient);
+
+    // Usar Object.assign para fusionar, evitando el error de sintaxis con spread operator
+    return Object.assign({}, mappedPatientData, {
+      reference_persons: patient && patient.patient_id ? (referencesByPatientId[patient.patient_id] || []) : [],
+      doctors: patient && patient.patient_id ? (doctorsByPatientId[patient.patient_id] || []) : []
+    });
+  });
 }
 
 async function createPatient(data) {
