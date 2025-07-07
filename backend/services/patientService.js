@@ -59,19 +59,60 @@ async function listPatients(query, user) {
   const patients = await Promise.all(rows.map(async (row) => {
     const references = await patientReferenceModel.getReferencesByPatientId(row.patient_id);
     const doctors = await getDoctorsForPatient(row.patient_id);
-    return { ...row, reference_persons: references, doctors };
+    // ...patient, // Ya no necesitamos esparcir patient aquí si mapReferencePerson lo hace
+    ...mapReferencePerson(patient), // Asegurarse que la referencia_person anidada esté
+    reference_persons: referencesByPatientId[patient.patient_id] || [], // Lista de otras referencias
+    doctors: doctorsByPatientId[patient.patient_id] || []
   }));
-  return patients;
+}
+
+
+async function listPatients(query, user) {
+  let effectiveQuery = { ...query };
+
+  // Lógica de roles para modificar la query
+  if (user && user.role === 'doctor' && !effectiveQuery.doctor_id) {
+    // Si es un doctor y no se pide un doctor_id específico, filtrar por su propio id.
+    // Este filtro 'assigned_doctor_id' necesitaría ser manejado por findPatientsWithFilters/buildPersonFilters
+    effectiveQuery.assigned_doctor_id = user.entity_id;
+  } else if (effectiveQuery.doctor_id) {
+    // Si se pasa doctor_id en la query, usarlo.
+    effectiveQuery.assigned_doctor_id = effectiveQuery.doctor_id;
+    // delete effectiveQuery.doctor_id; // Opcional: limpiar para no confundir a buildPersonFilters
+  }
+
+  // Usamos findPatientsWithFilters para todas las recuperaciones de listas de pacientes.
+  // getAllPatients ya no se usa directamente para listados con detalles.
+  const basePatients = await patientModel.findPatientsWithFilters(effectiveQuery);
+  return enrichPatientsDetails(basePatients);
 }
 
 async function listPatientsWithFilters(query) {
-  const rows = await patientModel.findPatientsWithFilters(query);
-  const patients = await Promise.all(rows.map(async (row) => {
-    const references = await patientReferenceModel.getReferencesByPatientId(row.patient_id);
-    const doctors = await getDoctorsForPatient(row.patient_id);
-    return { ...row, reference_persons: references, doctors };
+  // Esta función ahora es la principal para cualquier listado filtrado.
+  // La lógica de roles (como la de un doctor viendo solo sus pacientes)
+  // se maneja en `listPatients` si se llama desde allí, o si se llama
+  // directamente desde un controlador que ya ha aplicado lógica de roles a la query.
+  const basePatients = await patientModel.findPatientsWithFilters(query);
+  return enrichPatientsDetails(basePatients);
+}
+
+// Función helper para enriquecer pacientes con doctores y referencias
+async function enrichPatientsDetails(basePatients) {
+  if (!basePatients || basePatients.length === 0) {
+    return [];
+  }
+  const patientIds = basePatients.map(p => p.patient_id);
+
+  const [doctorsByPatientId, referencesByPatientId] = await Promise.all([
+    patientModel.getDoctorsForPatientIds(patientIds),
+    patientReferenceModel.getReferencesByPatientIds(patientIds)
+  ]);
+
+  return basePatients.map(patient => ({
+    ...mapReferencePerson(patient), // mapReferencePerson ya incluye ...rest del paciente
+    reference_persons: referencesByPatientId[patient.patient_id] || [],
+    doctors: doctorsByPatientId[patient.patient_id] || []
   }));
-  return patients;
 }
 
 async function createPatient(data) {

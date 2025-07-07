@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react'; // Added useMemo
 import { authFetch } from '../../../auth/authFetch';
 import SearchBar from '../../molecules/SearchBar/SearchBar';
 import Button from '../../atoms/Button/Button';
@@ -17,7 +17,8 @@ const PatientsList = () => {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(''); // This will be the debounced term for filtering
+  const [inputValue, setInputValue] = useState(''); // This is the immediate value from the input
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [showPatientModal, setShowPatientModal] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState({
@@ -41,6 +42,18 @@ const PatientsList = () => {
     fetchHealthInsurances();
     fetchFilterOptions();
   }, []);
+
+  // Debounce for searchTerm
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setSearchTerm(inputValue); // Update the actual search term after the delay
+    }, 500); // 500ms delay
+
+    return () => {
+      clearTimeout(timerId); // Clear timeout if inputValue changes before delay is met
+    };
+  }, [inputValue]); // This effect runs whenever inputValue changes
+
 
   const fetchPatients = async (filters = {}) => {
     try {
@@ -120,7 +133,7 @@ const PatientsList = () => {
   };
 
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value || '');
+    setInputValue(e.target.value || ''); // Update inputValue immediately
   };
 
   const handleAdvancedFilterChange = (field, value) => {
@@ -156,8 +169,10 @@ const PatientsList = () => {
     fetchPatients();
   };
 
-  const filteredPatients = patients.filter(patient => {
-    if (!searchTerm) return true;
+  // filteredPatients now uses 'searchTerm' (the debounced value)
+  // and is memoized
+  const filteredPatients = useMemo(() => patients.filter(patient => {
+    if (!searchTerm) return true; // searchTerm is the debounced value
     
     const searchLower = searchTerm.toLowerCase();
     return (
@@ -168,7 +183,8 @@ const PatientsList = () => {
       (patient.address || '').toLowerCase().includes(searchLower) ||
       (patient.dni || '').toLowerCase().includes(searchLower)
     );
-  });
+  }), [patients, searchTerm]); // Dependencies: patients and the debounced searchTerm
+
 
   if (loading) {
     return (
@@ -218,7 +234,7 @@ const PatientsList = () => {
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1rem' }}>
           <SearchBar
             placeholder="Búsqueda rápida por nombre, apellido, email, teléfono, dirección o DNI..."
-            value={searchTerm}
+            value={inputValue} {/* Use inputValue for the text field */}
             onChange={handleSearchChange}
             style={{ flex: 1 }}
           />

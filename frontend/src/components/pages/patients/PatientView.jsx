@@ -5,7 +5,8 @@ import Alert from '../../atoms/Alert/Alert';
 import Spinner from '../../atoms/Spinner/Spinner';
 import PatientDoctorsList from '../../molecules/PatientDoctorsList/PatientDoctorsList';
 import AddDoctorToPatient from '../../molecules/AddDoctorToPatient/AddDoctorToPatient';
-import { authFetch } from '../../../auth/authFetch';
+// import { authFetch } from '../../../auth/authFetch'; // No longer directly used
+import { patientService } from '../../../services/patientService'; // Import patientService
 import { getRole } from '../../../auth';
 import styles from './PatientView.module.css';
 
@@ -18,25 +19,23 @@ const PatientView = React.memo(() => {
   const [showAddDoctor, setShowAddDoctor] = useState(false);
 
   useEffect(() => {
-    fetchPatient();
-  }, [id]);
-
-  const fetchPatient = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const response = await authFetch(`/api/patients/${id}`);
-      if (!response.ok) {
-        throw new Error('Error al cargar paciente');
+    const loadPatientData = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const data = await patientService.getById(id); // Use patientService
+        setPatient(data);
+      } catch (err) {
+        setError(err.message || 'Error al cargar paciente');
+      } finally {
+        setLoading(false);
       }
-      const data = await response.json();
-      setPatient(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    };
+
+    if (id) {
+      loadPatientData();
     }
-  };
+  }, [id]);
 
   const handleEdit = () => {
     navigate(`/desktop/patients/edit/${id}`);
@@ -47,7 +46,22 @@ const PatientView = React.memo(() => {
   };
 
   const handleDoctorUpdate = () => {
-    fetchPatient(); // Recargar datos del paciente
+    // Recargar datos del paciente para reflejar los cambios
+    const loadPatientData = async () => {
+      setLoading(true); // Opcional: mostrar loading brevemente
+      setError('');
+      try {
+        const data = await patientService.getById(id);
+        setPatient(data);
+      } catch (err) {
+        setError(err.message || 'Error al recargar datos del paciente');
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (id) {
+      loadPatientData();
+    }
   };
 
   const formatDate = (dateString) => {
