@@ -1,8 +1,8 @@
 import React from 'react';
-import styles from './DesktopAppLayout.module.css';
+import styles from './AppLayout.module.css';
 
-const DesktopAppLayout = ({ menuBar, sideMenu, children }) => (
-  <div className={styles.desktopAppLayout}>
+const AppLayout = ({ menuBar, sideMenu, children }) => (
+  <div className={styles.appLayout}>
     <header>{menuBar}</header>
     <div className={styles.bodyRow}>
       {sideMenu && <aside className={styles.sideMenu}>{sideMenu}</aside>}
@@ -11,4 +11,4 @@ const DesktopAppLayout = ({ menuBar, sideMenu, children }) => (
   </div>
 );
 
-export default DesktopAppLayout; 
+export default AppLayout; 

@@ -285,6 +285,10 @@ CREATE INDEX idx_doctor_health_insurances_insurance_id ON doctor_health_insuranc
 -- Índices para tabla health_insurances
 CREATE INDEX idx_health_insurances_name ON health_insurances (name);
 
+-- Índices para tabla patient_doctors (además del índice de la PK)
+CREATE INDEX idx_patient_doctors_doctor_id ON patient_doctors (doctor_id);
+-- El índice de la PK (patient_id, doctor_id) ya cubre las búsquedas por patient_id.
+
 -- ========================================
 -- POBLADO DE DATOS DE PRUEBA
 -- ========================================

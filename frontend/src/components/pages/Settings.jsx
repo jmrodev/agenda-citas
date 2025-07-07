@@ -18,7 +18,11 @@ const Settings = () => {
         const res = await authFetch('/api/auth/user/config');
         if (res.ok) {
           const data = await res.json();
-          setSettings(data);
+          setSettings({
+            notifications: data.notifications ?? true,
+            theme: data.theme ?? 'light',
+            language: data.language ?? 'es'
+          });
         }
       } catch (error) {
         console.error('Error cargando configuración:', error);

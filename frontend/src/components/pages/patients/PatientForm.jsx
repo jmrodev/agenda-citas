@@ -141,7 +141,7 @@ const PatientForm = React.memo(({ onSuccess }) => {
       // Redirigir o resetear formulario después de 2 segundos
       setTimeout(() => {
         if (isEditing) {
-          navigate(`/desktop/patients/${id}`);
+          navigate(`/app/patients/${id}`);
         } else {
           reset();
         }
@@ -177,7 +177,7 @@ const PatientForm = React.memo(({ onSuccess }) => {
     return (
       <div className={styles.errorContainer}>
         <Alert type="error">{error}</Alert>
-        <Button onClick={() => navigate('/desktop/patients')}>
+        <Button onClick={() => navigate('/app/patients')}>
           Volver a la lista
         </Button>
       </div>
@@ -194,7 +194,7 @@ const PatientForm = React.memo(({ onSuccess }) => {
           <Button
             variant="outline"
             size="medium"
-            onClick={() => navigate(`/desktop/patients/${id}`)}
+            onClick={() => navigate(`/app/patients/${id}`)}
           >
             Cancelar
           </Button>

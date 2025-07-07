@@ -15,7 +15,7 @@ const Login = () => {
     
     // Solo redirigir si hay token y rol válidos
     if (token && role && isTokenValid(token)) {
-      navigate('/desktop', { replace: true });
+      navigate('/app', { replace: true });
       return;
     }
     
@@ -30,7 +30,7 @@ const Login = () => {
     setLoading(true);
     try {
       await login(formData);
-      navigate('/desktop', { replace: true });
+      navigate('/app', { replace: true });
     } catch (err) {
       setError(err.message || 'Error de red o servidor.');
     } finally {

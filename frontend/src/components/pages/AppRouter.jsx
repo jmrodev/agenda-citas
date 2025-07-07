@@ -19,8 +19,12 @@ const CalendarPage = lazy(() => import('./calendar/CalendarPage'));
 // Health insurance pages
 const HealthInsurancesPage = lazy(() => import('./healthinsurances/HealthInsurancesPage'));
 
-// Desktop pages
-const DesktopAppPage = lazy(() => import('./desktop/DesktopAppPage'));
+// App pages
+const AppPage = lazy(() => import('./app/AppPage'));
+
+// Doctor pages
+const DoctorsList = lazy(() => import('./doctors/DoctorsList'));
+const DoctorForm = lazy(() => import('./doctors/DoctorForm'));
 
 // Secretary pages
 const SecretariesList = lazy(() => import('./secretaries/SecretariesList'));
@@ -68,15 +72,18 @@ const AppRouter = () => {
           
           {/* Rutas protegidas */}
           <Route element={<RequireAuth />}>
-            {/* Desktop route - Nueva página principal para todos los usuarios */}
-            <Route path="/desktop" element={<DesktopAppPage />}>
-              {/* Rutas anidadas dentro de desktop - deben ser relativas */}
+            {/* App route - Página principal para todos los usuarios */}
+            <Route path="/app" element={<AppPage />}>
+              {/* Rutas anidadas dentro de app - deben ser relativas */}
               <Route path="patients" element={<PatientList />} />
               <Route path="patients/new" element={<PatientForm />} />
               <Route path="patients/:id" element={<PatientView />} />
               <Route path="patients/edit/:id" element={<PatientForm />} />
               <Route path="calendar" element={<CalendarPage />} />
               <Route path="health-insurances" element={<HealthInsurancesPage />} />
+              <Route path="doctors" element={<DoctorsList />} />
+              <Route path="doctors/new" element={<DoctorForm />} />
+              <Route path="doctors/edit/:id" element={<DoctorForm />} />
               <Route path="secretaries" element={<SecretariesList />} />
               <Route path="secretaries/new" element={<SecretaryForm />} />
               <Route path="secretaries/:id" element={<SecretaryView />} />
@@ -84,14 +91,14 @@ const AppRouter = () => {
               <Route path="settings" element={<Settings />} />
             </Route>
             
-            {/* Rutas legacy - redirigir a desktop */}
-            <Route path="/dashboard/*" element={<Navigate to="/desktop" replace />} />
-            <Route path="/patients" element={<Navigate to="/desktop/patients" replace />} />
-            <Route path="/patients/new" element={<Navigate to="/desktop/patients/new" replace />} />
-            <Route path="/patients/:id" element={<Navigate to="/desktop/patients/:id" replace />} />
-            <Route path="/calendar" element={<Navigate to="/desktop/calendar" replace />} />
-            <Route path="/health-insurances" element={<Navigate to="/desktop/health-insurances" replace />} />
-            <Route path="/settings" element={<Navigate to="/desktop/settings" replace />} />
+            {/* Rutas legacy - redirigir a app */}
+            <Route path="/dashboard/*" element={<Navigate to="/app" replace />} />
+            <Route path="/patients" element={<Navigate to="/app/patients" replace />} />
+            <Route path="/patients/new" element={<Navigate to="/app/patients/new" replace />} />
+            <Route path="/patients/:id" element={<Navigate to="/app/patients/:id" replace />} />
+            <Route path="/calendar" element={<Navigate to="/app/calendar" replace />} />
+            <Route path="/health-insurances" element={<Navigate to="/app/health-insurances" replace />} />
+            <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
             
             {/* Dev route */}
             <Route path="/dev" element={<DevPage />} />

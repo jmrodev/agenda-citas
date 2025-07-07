@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import DesktopAppLayout from '../../templates/DesktopAppLayout/DesktopAppLayout';
-import DesktopMenuBar from '../../organisms/DesktopMenuBar/DesktopMenuBar';
-import DesktopSideMenu from '../../organisms/DesktopSideMenu/DesktopSideMenu';
-import DesktopContentPanel from '../../organisms/DesktopContentPanel/DesktopContentPanel';
+import AppLayout from '../../templates/AppLayout/AppLayout';
+
+
+import ContentPanel from '../../organisms/ContentPanel/ContentPanel';
 import DescriptionIcon from '@mui/icons-material/Description';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -126,30 +126,30 @@ const getMenuByRole = (role) => {
 // Acciones rápidas por rol
 const getQuickActionsByRole = (role) => {
   const baseActions = [
-    { label: 'Agendar cita', icon: <CalendarMonthIcon fontSize="small" />, onClick: () => window.location.href = '/desktop/calendar' },
-    { label: 'Nuevo paciente', icon: <PeopleIcon fontSize="small" />, onClick: () => window.location.href = '/desktop/patients/new' }
+    { label: 'Agendar cita', icon: <CalendarMonthIcon fontSize="small" />, onClick: () => window.location.href = '/app/calendar' },
+    { label: 'Nuevo paciente', icon: <PeopleIcon fontSize="small" />, onClick: () => window.location.href = '/app/patients/new' }
   ];
 
   switch (role) {
     case 'admin':
       return [
         ...baseActions,
-        { label: 'Nuevo doctor', icon: <LocalHospitalIcon fontSize="small" />, onClick: () => window.location.href = '/desktop/doctors/new' },
-        { label: 'Nueva secretaria', icon: <SupervisorAccountIcon fontSize="small" />, onClick: () => window.location.href = '/desktop/secretaries/new' }
+        { label: 'Nuevo doctor', icon: <LocalHospitalIcon fontSize="small" />, onClick: () => window.location.href = '/app/doctors/new' },
+        { label: 'Nueva secretaria', icon: <SupervisorAccountIcon fontSize="small" />, onClick: () => window.location.href = '/app/secretaries/new' }
       ];
     
     case 'doctor':
       return [
         ...baseActions,
-        { label: 'Mis citas', icon: <CalendarMonthIcon fontSize="small" />, onClick: () => window.location.href = '/desktop/calendar' },
-        { label: 'Nueva receta', icon: <MedicationIcon fontSize="small" />, onClick: () => window.location.href = '/desktop/prescriptions/new' }
+        { label: 'Mis citas', icon: <CalendarMonthIcon fontSize="small" />, onClick: () => window.location.href = '/app/calendar' },
+        { label: 'Nueva receta', icon: <MedicationIcon fontSize="small" />, onClick: () => window.location.href = '/app/prescriptions/new' }
       ];
     
     case 'secretary':
       return [
         ...baseActions,
-        { label: 'Obras sociales', icon: <AssignmentIcon fontSize="small" />, onClick: () => window.location.href = '/desktop/health-insurances' },
-        { label: 'Estadísticas', icon: <AssessmentIcon fontSize="small" />, onClick: () => window.location.href = '/desktop/stats' }
+        { label: 'Obras sociales', icon: <AssignmentIcon fontSize="small" />, onClick: () => window.location.href = '/app/health-insurances' },
+        { label: 'Estadísticas', icon: <AssessmentIcon fontSize="small" />, onClick: () => window.location.href = '/app/stats' }
       ];
     
     default:
@@ -323,7 +323,7 @@ const DesktopAppPageInner = () => {
   }, [userRole]);
 
   return (
-    <DesktopAppLayout
+    <AppLayout
       menuBar={<DesktopHeader />}
       sideMenu={
         <nav style={{ padding: 0 }}>
@@ -350,17 +350,17 @@ const DesktopAppPageInner = () => {
       }
     >
       <div style={{ padding: 24, minHeight: 400 }}>
-        {location.pathname === '/desktop' ? (
+        {location.pathname === '/app' ? (
           getDashboardContentByRole(userRole, null, stats)
         ) : (
           <Outlet />
         )}
       </div>
-    </DesktopAppLayout>
+    </AppLayout>
   );
 };
 
-const DesktopAppPage = () => (
+const AppPage = () => (
   <DoctorProvider>
     <ViewModeProvider>
       <DesktopAppPageInner />
@@ -368,4 +368,4 @@ const DesktopAppPage = () => (
   </DoctorProvider>
 );
 
-export default DesktopAppPage; 
+export default AppPage; 

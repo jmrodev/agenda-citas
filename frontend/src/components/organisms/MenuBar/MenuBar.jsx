@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import MenuBar from '../../molecules/MenuBar/MenuBar';
 import MenuDropdown from '../../molecules/MenuDropdown/MenuDropdown';
 
-const DesktopMenuBar = ({ menuItems, onMenuSelect }) => {
+const MenuBarWrapper = ({ menuItems, onMenuSelect }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [dropdownOpen, setDropdownOpen] = useState(null); // índice del menú con dropdown abierto
   const buttonRefs = useRef([]);
@@ -51,4 +51,4 @@ const DesktopMenuBar = ({ menuItems, onMenuSelect }) => {
   );
 };
 
-export default DesktopMenuBar; 
+export default MenuBarWrapper; 
