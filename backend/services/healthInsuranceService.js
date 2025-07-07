@@ -20,4 +20,8 @@ async function deleteHealthInsurance(id) {
   return await healthInsuranceModel.deleteHealthInsurance(id);
 }
 
-module.exports = { listHealthInsurances, listHealthInsurancesWithFilters, createHealthInsurance, updateHealthInsurance, deleteHealthInsurance }; 
+async function getHealthInsuranceById(id) {
+  return await healthInsuranceModel.getHealthInsuranceById(id);
+}
+
+module.exports = { listHealthInsurances, listHealthInsurancesWithFilters, createHealthInsurance, updateHealthInsurance, deleteHealthInsurance, getHealthInsuranceById };

@@ -18,6 +18,7 @@ const CalendarPage = lazy(() => import('./calendar/CalendarPage'));
 
 // Health insurance pages
 const HealthInsurancesPage = lazy(() => import('./healthinsurances/HealthInsurancesPage'));
+const HealthInsuranceDetails = lazy(() => import('./healthinsurances/HealthInsuranceDetails')); // Added import for details page
 
 // App pages
 const AppPage = lazy(() => import('./app/AppPage'));
@@ -81,6 +82,7 @@ const AppRouter = () => {
               <Route path="patients/edit/:id" element={<PatientForm />} />
               <Route path="calendar" element={<CalendarPage />} />
               <Route path="health-insurances" element={<HealthInsurancesPage />} />
+              <Route path="health-insurances/:id" element={<HealthInsuranceDetails />} /> {/* Added route for details page */}
               <Route path="doctors" element={<DoctorsList />} />
               <Route path="doctors/new" element={<DoctorForm />} />
               <Route path="doctors/edit/:id" element={<DoctorForm />} />
@@ -98,6 +100,7 @@ const AppRouter = () => {
             <Route path="/patients/:id" element={<Navigate to="/app/patients/:id" replace />} />
             <Route path="/calendar" element={<Navigate to="/app/calendar" replace />} />
             <Route path="/health-insurances" element={<Navigate to="/app/health-insurances" replace />} />
+            <Route path="/health-insurances/:id" element={<Navigate to="/app/health-insurances/:id" replace />} /> {/* Added legacy route redirect */}
             <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
             
             {/* Dev route */}

@@ -8,6 +8,7 @@ const healthInsuranceFiltersSchema = require('../filters/joi/healthInsuranceFilt
 
 router.get('/', authenticateToken, healthInsuranceController.getAll);
 router.get('/filtros', authenticateToken, validateQuery(healthInsuranceFiltersSchema), healthInsuranceController.getAllWithFilters);
+router.get('/:id', authenticateToken, healthInsuranceController.getById); // Added route for getById
 router.post('/', authenticateToken, authorizeRoles('admin', 'secretary'), healthInsuranceController.create);
 router.put('/:id', authenticateToken, authorizeRoles('admin', 'secretary'), healthInsuranceController.update);
 router.delete('/:id', authenticateToken, authorizeRoles('admin', 'secretary'), healthInsuranceController.remove);

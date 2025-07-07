@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom'; // Added Link for navigation
 import { useDoctor } from '../../../hooks/useDoctor';
 import HealthInsuranceForm from '../../molecules/HealthInsuranceForm/HealthInsuranceForm';
 import Button from '../../atoms/Button/Button';
@@ -57,8 +58,13 @@ const HealthInsurancesPage = () => {
           <li key={ins.insurance_id} style={{ marginBottom: 16, borderBottom: '1px solid #eee', paddingBottom: 8 }}>
             <strong>{ins.name}</strong> ({ins.email})<br/>
             <span style={{ color: '#666', fontSize: 14 }}>{ins.address} | {ins.phone}</span><br/>
-            <Button size="sm" onClick={() => { setSelected(ins); setShowForm(true); }}>Editar</Button>
-            <Button size="sm" variant='danger' onClick={() => handleDelete(ins.insurance_id)}>Eliminar</Button>
+            <div style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
+              <Button size="sm" onClick={() => { setSelected(ins); setShowForm(true); }}>Editar</Button>
+              <Button size="sm" variant='danger' onClick={() => handleDelete(ins.insurance_id)}>Eliminar</Button>
+              <Link to={`/health-insurances/${ins.insurance_id}`}>
+                <Button size="sm" variant="info">Ver Detalles</Button>
+              </Link>
+            </div>
           </li>
         ))}
       </ul>

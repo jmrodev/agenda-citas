@@ -30,4 +30,9 @@ async function deleteHealthInsurance(id) {
   return { insurance_id: id };
 }
 
-module.exports = { getAllHealthInsurances, createHealthInsurance, updateHealthInsurance, deleteHealthInsurance }; 
+async function getHealthInsuranceById(id) {
+  const [rows] = await pool.query('SELECT * FROM health_insurances WHERE insurance_id = ?', [id]);
+  return rows[0];
+}
+
+module.exports = { getAllHealthInsurances, createHealthInsurance, updateHealthInsurance, deleteHealthInsurance, getHealthInsuranceById };

@@ -45,4 +45,16 @@ async function remove(req, res) {
   }
 }
 
-module.exports = { getAll, getAllWithFilters, create, update, remove }; 
+async function getById(req, res) {
+  try {
+    const insurance = await healthInsuranceService.getHealthInsuranceById(req.params.id);
+    if (!insurance) {
+      return res.status(404).json({ error: 'Obra social no encontrada' });
+    }
+    res.json(insurance);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+module.exports = { getAll, getAllWithFilters, create, update, remove, getById };
