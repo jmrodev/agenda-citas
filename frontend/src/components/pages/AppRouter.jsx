@@ -22,6 +22,10 @@ const HealthInsurancesPage = lazy(() => import('./healthinsurances/HealthInsuran
 // Desktop pages
 const DesktopAppPage = lazy(() => import('./desktop/DesktopAppPage'));
 
+// Doctor pages
+const DoctorsList = lazy(() => import('./doctors/DoctorsList'));
+const DoctorForm = lazy(() => import('./doctors/DoctorForm'));
+
 // Secretary pages
 const SecretariesList = lazy(() => import('./secretaries/SecretariesList'));
 const SecretaryForm = lazy(() => import('./secretaries/SecretaryForm'));
@@ -77,6 +81,9 @@ const AppRouter = () => {
               <Route path="patients/edit/:id" element={<PatientForm />} />
               <Route path="calendar" element={<CalendarPage />} />
               <Route path="health-insurances" element={<HealthInsurancesPage />} />
+              <Route path="doctors" element={<DoctorsList />} />
+              <Route path="doctors/new" element={<DoctorForm />} />
+              <Route path="doctors/edit/:id" element={<DoctorForm />} />
               <Route path="secretaries" element={<SecretariesList />} />
               <Route path="secretaries/new" element={<SecretaryForm />} />
               <Route path="secretaries/:id" element={<SecretaryView />} />
