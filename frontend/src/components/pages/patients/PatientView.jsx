@@ -102,6 +102,14 @@ const PatientView = React.memo(() => {
     );
   }
 
+  // Determinar si hay datos válidos para la persona de referencia
+  const hasValidReferencePerson = patient && patient.reference_person &&
+                                (patient.reference_person.name ||
+                                 patient.reference_person.last_name ||
+                                 patient.reference_person.phone ||
+                                 patient.reference_person.relationship ||
+                                 patient.reference_person.address);
+
   return (
     <div className={styles.patientView}>
       <div className={styles.header}>
@@ -234,14 +242,14 @@ const PatientView = React.memo(() => {
         )}
 
         {/* Sección de Persona de Referencia */}
-        {patient.reference_person && (
+        {hasValidReferencePerson && (
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>Persona de Referencia</h3>
             <div className={styles.infoGrid}>
               <div className={styles.infoItem}>
                 <span className={styles.label}>Nombre:</span>
                 <span className={styles.value}>
-                  {patient.reference_person.name} {patient.reference_person.last_name}
+                  {`${patient.reference_person.name || ''} ${patient.reference_person.last_name || ''}`.trim() || 'N/A'}
                 </span>
               </div>
               {patient.reference_person.phone && (

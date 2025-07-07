@@ -69,6 +69,8 @@ CREATE TABLE patients (
     reference_address VARCHAR(255),
     reference_phone VARCHAR(20),
     reference_relationship VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (health_insurance_id) REFERENCES health_insurances(insurance_id),
     FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
