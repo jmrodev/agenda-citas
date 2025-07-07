@@ -4,39 +4,7 @@ const { debugPatients } = require('../utils/debug');
 const { buildPersonFilters } = require('../filters/sql/personFilters');
 const pool = require('../config/db');
 
-function mapReferencePerson(row) {
-  // Si row es null o undefined, o no es un objeto, devolver una estructura base.
-  if (!row || typeof row !== 'object') {
-    return {
-      // Devuelve un objeto que represente a un "paciente vacío" en términos de esta función,
-      // es decir, sin datos de paciente y con reference_person nulo.
-      reference_person: {
-        name: null, last_name: null, address: null, phone: null, relationship: null
-      }
-      // No incluir ...rest aquí porque no hay 'rest' de un 'row' nulo.
-    };
-  }
-
-  const {
-    reference_name,
-    reference_last_name,
-    reference_address,
-    reference_phone,
-    reference_relationship,
-    ...rest // El resto de los campos de la fila 'patient'
-  } = row; // Ahora esto es seguro.
-
-  return {
-    ...rest, // Esparce los campos del paciente que no son de referencia_person
-    reference_person: { // Anida los campos de referencia_person
-      name: reference_name,
-      last_name: reference_last_name,
-      address: reference_address,
-      phone: reference_phone,
-      relationship: reference_relationship
-    }
-  };
-}
+// mapReferencePerson ya no es necesaria, se elimina.
 
 // Versión CORRECTA y refactorizada de listPatients
 async function listPatients(query, user) {
@@ -78,10 +46,10 @@ async function enrichPatientsDetails(basePatients) {
   // Filtrar IDs nulos o undefined que podrían venir de basePatients si hubo algún problema
   const patientIds = basePatients.map(p => p.patient_id).filter(id => id != null);
 
-  // Si no hay IDs válidos después de filtrar, simplemente procesar basePatients con mapReferencePerson
-  // Esto evita llamar a los servicios de batch con un array vacío o de IDs inválidos.
+  // Si no hay IDs válidos después de filtrar, devolver los pacientes base.
+  // Ya no se aplica mapReferencePerson aquí.
   if (patientIds.length === 0) {
-     return basePatients.map(patient => mapReferencePerson(patient || {})); // Asegurar que patient no sea null
+     return basePatients;
   }
 
   const [doctorsByPatientId, referencesByPatientId] = await Promise.all([
@@ -90,11 +58,8 @@ async function enrichPatientsDetails(basePatients) {
   ]);
 
   return basePatients.map(patient => {
-    // Si patient es null o undefined, mapReferencePerson lo manejará y devolverá { reference_person: null }
-    const mappedPatientData = mapReferencePerson(patient);
-
-    // Usar Object.assign para fusionar, evitando el error de sintaxis con spread operator
-    return Object.assign({}, mappedPatientData, {
+    // patient ya es el objeto base de la tabla patients.
+    return Object.assign({}, patient, { // Usar patient directamente
       reference_persons: patient && patient.patient_id ? (referencesByPatientId[patient.patient_id] || []) : [],
       doctors: patient && patient.patient_id ? (doctorsByPatientId[patient.patient_id] || []) : []
     });
@@ -102,26 +67,33 @@ async function enrichPatientsDetails(basePatients) {
 }
 
 async function createPatient(data) {
-  const patient = await patientModel.createPatient(data);
-  const fullPatient = await patientModel.getPatientById(patient.patient_id);
-  return mapReferencePerson(fullPatient);
+  const newPatientRecord = await patientModel.createPatient(data);
+  // Devolver el paciente recién creado tal como está en la BD.
+  // No hay necesidad de mapReferencePerson.
+  const fullPatient = await patientModel.getPatientById(newPatientRecord.patient_id);
+  return fullPatient;
 }
 
 async function updatePatient(id, data) {
   await patientModel.updatePatient(id, data);
-  const fullPatient = await patientModel.getPatientById(id);
-  return mapReferencePerson(fullPatient);
+  // Devolver el paciente actualizado.
+  const updatedPatient = await patientModel.getPatientById(id);
+  return updatedPatient;
 }
 
 async function deletePatient(id) {
-  return await patientModel.deletePatient(id);
+  return await patientModel.deletePatient(id); // Sin cambios
 }
 
 async function getPatientById(id) {
-  const row = await patientModel.getPatientById(id);
-  if (!row) return null;
+  const patientRow = await patientModel.getPatientById(id);
+  if (!patientRow) return null;
+
+  // Obtener doctores y referencias por separado y añadirlos.
   const doctors = await getDoctorsForPatient(id);
-  return { ...mapReferencePerson(row), doctors };
+  const references = await patientReferenceModel.getReferencesByPatientId(id);
+
+  return { ...patientRow, doctors: doctors || [], reference_persons: references || [] };
 }
 
 async function getPatientWithReferences(id) {
@@ -147,25 +119,26 @@ async function getPatientWithReferences(id) {
   const references = await patientReferenceModel.getReferencesByPatientId(id);
   const doctors = await getDoctorsForPatient(id);
   
+  // patient ya es el objeto base. No se necesita mapReferencePerson.
   return { 
-    ...mapReferencePerson(patient), 
-    reference_persons: references, 
-    doctors,
-    health_insurance_name: healthInsurance?.name || null,
-    health_insurance: healthInsurance || null
+    ...patient,
+    reference_persons: references || [],
+    doctors: doctors || [],
+    health_insurance_name: healthInsurance?.name || null, // Mantener esto
+    health_insurance: healthInsurance || null // Mantener esto
   };
 }
 
 async function createPatientWithDoctors(data) {
-  // Crear paciente
-  const patient = await patientModel.createPatient(data);
-  // Asociar doctores
+  // patientModel.createPatient ya no maneja reference_person
+  const newPatientBase = await patientModel.createPatient(data);
+
   if (Array.isArray(data.doctor_ids) && data.doctor_ids.length > 0) {
-    await patientModel.addDoctorsToPatient(patient.patient_id, data.doctor_ids);
+    await patientModel.addDoctorsToPatient(newPatientBase.patient_id, data.doctor_ids);
   }
-  const fullPatient = await patientModel.getPatientById(patient.patient_id);
-  const doctors = await getDoctorsForPatient(patient.patient_id);
-  return { ...mapReferencePerson(fullPatient), doctors };
+
+  // Obtener el paciente completo con sus doctores y referencias para devolverlo
+  return getPatientWithReferences(newPatientBase.patient_id);
 }
 
 async function updatePatientDoctors(patient_id, doctor_ids) {

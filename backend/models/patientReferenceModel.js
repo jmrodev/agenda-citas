@@ -85,4 +85,9 @@ async function getReferencesByPatientIds(patientIds) {
   return referencesByPatientId;
 }
 
-module.exports = { getReferencesByPatientId, getReferencesByPatientIds, findReferencePersonsWithFilters, addReference, updateReference, deleteReference, referenceBelongsToPatient };
+async function getReferenceById(referenceId) {
+  const [rows] = await pool.query('SELECT * FROM patient_references WHERE reference_id = ?', [referenceId]);
+  return rows[0]; // Devuelve la primera fila o undefined si no se encuentra
+}
+
+module.exports = { getReferencesByPatientId, getReferencesByPatientIds, findReferencePersonsWithFilters, addReference, updateReference, deleteReference, referenceBelongsToPatient, getReferenceById };

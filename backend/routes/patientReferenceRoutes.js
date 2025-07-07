@@ -1,22 +1,52 @@
 const express = require('express');
-const router = express.Router();
 const patientReferenceController = require('../controllers/patientReferenceController');
 const { authenticateToken } = require('../middleware/authMiddleware');
 const { authorizeRoles } = require('../middleware/roleMiddleware');
-const validateQuery = require('../filters/validateQuery');
-const referencePersonFiltersSchema = require('../filters/joi/referencePersonFiltersSchema');
+// const validateQuery = require('../filters/validateQuery'); // No se usa en las nuevas rutas directas
+// const { listReferencePersonsSchema } = require('../filters/joi/referencePersonFiltersSchema'); // Para el GET global si se implementa
 
-// Listar referencias de un paciente
-router.get('/:patient_id', authenticateToken, authorizeRoles('admin', 'secretary', 'doctor', 'patient'), patientReferenceController.getAll);
-router.get('/filtros', authenticateToken, authorizeRoles('admin', 'secretary', 'doctor', 'patient'), validateQuery(referencePersonFiltersSchema), patientReferenceController.getAllWithFilters);
+// Router para rutas anidadas bajo /api/patients/:patientId/references
+const routerForPatient = express.Router({ mergeParams: true }); // mergeParams para acceder a :patientId
 
-// Agregar referencia
-router.post('/:patient_id', authenticateToken, authorizeRoles('admin', 'secretary', 'doctor', 'patient'), patientReferenceController.create);
+// POST /api/patients/:patientId/references - Crear una nueva referencia para un paciente
+routerForPatient.post('/',
+  authenticateToken,
+  authorizeRoles('admin', 'secretary'), // Solo admin/secretary pueden crear
+  patientReferenceController.create
+);
 
-// Actualizar referencia
-router.put('/:patient_id/:reference_id', authenticateToken, authorizeRoles('admin', 'secretary', 'doctor', 'patient'), patientReferenceController.update);
+// GET /api/patients/:patientId/references - Listar todas las referencias de un paciente específico
+routerForPatient.get('/',
+  authenticateToken,
+  authorizeRoles('admin', 'secretary', 'doctor'), // Admin, secretary, y doctor pueden ver
+  patientReferenceController.listByPatient
+);
 
-// Eliminar referencia
-router.delete('/:patient_id/:reference_id', authenticateToken, authorizeRoles('admin', 'secretary', 'doctor', 'patient'), patientReferenceController.remove);
+// Router para operaciones directas sobre una referencia específica por su ID: /api/patient-references/:id
+const singleReferenceRouter = express.Router();
 
-module.exports = router; 
+// GET /api/patient-references/:id - Obtener una referencia específica por su ID
+singleReferenceRouter.get('/:id',
+  authenticateToken,
+  authorizeRoles('admin', 'secretary', 'doctor'),
+  patientReferenceController.getById
+);
+
+// PUT /api/patient-references/:id - Actualizar una referencia específica
+singleReferenceRouter.put('/:id',
+  authenticateToken,
+  authorizeRoles('admin', 'secretary'),
+  patientReferenceController.update
+);
+
+// DELETE /api/patient-references/:id - Eliminar una referencia específica
+singleReferenceRouter.delete('/:id',
+  authenticateToken,
+  authorizeRoles('admin', 'secretary'),
+  patientReferenceController.remove
+);
+
+module.exports = {
+  routerForPatient,      // Se montará como /api/patients/:patientId/references
+  singleReferenceRouter  // Se montará como /api/patient-references
+};
