@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import ModalContainer from '../../molecules/ModalContainer/ModalContainer';
 import ModalHeader from '../../molecules/ModalHeader/ModalHeader';
 import ModalFooter from '../../molecules/ModalFooter/ModalFooter';
@@ -131,12 +130,6 @@ const ReferencePersonFormModal = ({ isOpen, onClose, patientId, referenceToEdit,
   );
 };
 
-ReferencePersonFormModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  patientId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  referenceToEdit: PropTypes.object, // Null si es para crear
-  onSuccess: PropTypes.func.isRequired,
-};
+// PropTypes temporarily removed due to import resolution issue
 
 export default ReferencePersonFormModal;
