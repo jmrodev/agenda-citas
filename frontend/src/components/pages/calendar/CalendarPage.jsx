@@ -57,7 +57,7 @@ const CalendarPage = () => {
       
       <div style={{ marginBottom: '2rem' }}>
         <Button 
-          onClick={() => navigate('/desktop/calendar/new')}
+          onClick={() => navigate('/app/calendar/new')}
         >
           Nueva Cita
         </Button>
@@ -66,7 +66,7 @@ const CalendarPage = () => {
       <CalendarView 
         appointments={appointments}
         onAppointmentClick={(appointment) => {
-          navigate(`/desktop/appointments/${appointment.appointment_id}`);
+          navigate(`/app/appointments/${appointment.appointment_id}`);
         }}
       />
     </div>

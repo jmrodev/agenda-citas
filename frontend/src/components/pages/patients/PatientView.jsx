@@ -52,11 +52,11 @@ const PatientView = React.memo(() => {
   }, [patientId]);
 
   const handleEdit = () => {
-    navigate(`/desktop/patients/edit/${patientId}`);
+    navigate(`/app/patients/edit/${patientId}`);
   };
 
   const handleNewAppointment = () => {
-    navigate(`/desktop/calendar?patient_id=${patientId}`);
+    navigate(`/app/calendar?patient_id=${patientId}`);
   };
 
   // Esta función se llamará cuando se actualicen doctores o referencias
@@ -85,7 +85,7 @@ const PatientView = React.memo(() => {
     return (
       <div className={styles.errorContainer}>
         <Alert type="error">{error}</Alert>
-        <Button onClick={() => navigate('/desktop/patients')}>
+        <Button onClick={() => navigate('/app/patients')}>
           Volver a la lista
         </Button>
       </div>
@@ -96,7 +96,7 @@ const PatientView = React.memo(() => {
     return (
       <div className={styles.errorContainer}>
         <Alert type="error">Paciente no encontrado</Alert>
-        <Button onClick={() => navigate('/desktop/patients')}>
+        <Button onClick={() => navigate('/app/patients')}>
           Volver a la lista
         </Button>
       </div>
@@ -121,7 +121,7 @@ const PatientView = React.memo(() => {
           )}
         </div>
         <div className={styles.actions}>
-          <Button variant="outline" size="medium" onClick={() => navigate('/desktop/patients')}>
+          <Button variant="outline" size="medium" onClick={() => navigate('/app/patients')}>
             Volver a la Lista
           </Button>
           {(userRole === 'admin' || userRole === 'secretary') && (

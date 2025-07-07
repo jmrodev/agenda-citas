@@ -63,7 +63,7 @@ const SecretaryView = () => {
         throw new Error('Error al eliminar la secretaria');
       }
 
-      navigate('/desktop/secretaries');
+      navigate('/app/secretaries');
     } catch (err) {
       setError(err.message);
     }
@@ -86,7 +86,7 @@ const SecretaryView = () => {
         </Alert>
         <Button
           variant="secondary"
-          onClick={() => navigate('/desktop/secretaries')}
+          onClick={() => navigate('/app/secretaries')}
         >
           Volver a la lista
         </Button>
@@ -102,7 +102,7 @@ const SecretaryView = () => {
         </Alert>
         <Button
           variant="secondary"
-          onClick={() => navigate('/desktop/secretaries')}
+          onClick={() => navigate('/app/secretaries')}
         >
           Volver a la lista
         </Button>
@@ -117,13 +117,13 @@ const SecretaryView = () => {
         <div className={styles.actions}>
           <Button
             variant="secondary"
-            onClick={() => navigate('/desktop/secretaries')}
+            onClick={() => navigate('/app/secretaries')}
           >
             Volver
           </Button>
           <Button
             variant="primary"
-            onClick={() => navigate(`/desktop/secretaries/edit/${id}`)}
+            onClick={() => navigate(`/app/secretaries/edit/${id}`)}
           >
             Editar
           </Button>

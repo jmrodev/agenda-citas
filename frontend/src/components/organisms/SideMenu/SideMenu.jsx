@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import SideMenu from '../../molecules/SideMenu/SideMenu';
 
-const DesktopSideMenu = ({ menuItems, onMenuSelect }) => {
+const SideMenuWrapper = ({ menuItems, onMenuSelect }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -25,4 +25,4 @@ const DesktopSideMenu = ({ menuItems, onMenuSelect }) => {
   );
 };
 
-export default DesktopSideMenu; 
+export default SideMenuWrapper; 

@@ -88,7 +88,7 @@ const SecretariesList = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <CardTitle>Secretarias</CardTitle>
-        <Link to="/desktop/secretaries/new">
+        <Link to="/app/secretaries/new">
           <Button variant="primary">
             Nueva Secretaria
           </Button>
@@ -129,11 +129,11 @@ const SecretariesList = () => {
                 actions={[
                   {
                     label: 'Ver',
-                    onClick: () => window.location.href = `/desktop/secretaries/${secretary.secretary_id}`
+                    onClick: () => window.location.href = `/app/secretaries/${secretary.secretary_id}`
                   },
                   {
                     label: 'Editar',
-                    onClick: () => window.location.href = `/desktop/secretaries/edit/${secretary.secretary_id}`
+                    onClick: () => window.location.href = `/app/secretaries/edit/${secretary.secretary_id}`
                   },
                   {
                     label: 'Eliminar',

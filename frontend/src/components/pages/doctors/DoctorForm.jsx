@@ -43,7 +43,7 @@ const DoctorForm = () => {
       } else {
         await doctorService.create(formData);
       }
-      navigate('/desktop/doctors');
+      navigate('/app/doctors');
     } catch (err) {
       setError('Error al guardar el doctor: ' + err.message);
     }
@@ -51,7 +51,7 @@ const DoctorForm = () => {
 
   const handleClose = () => {
     setIsModalOpen(false);
-    navigate('/desktop/doctors');
+    navigate('/app/doctors');
   };
 
   if (loading) {

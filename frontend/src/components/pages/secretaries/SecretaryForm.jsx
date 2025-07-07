@@ -135,7 +135,7 @@ const SecretaryForm = () => {
         throw new Error(errorData.error?.message || 'Error al guardar la secretaria');
       }
 
-      navigate('/desktop/secretaries');
+      navigate('/app/secretaries');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -262,7 +262,7 @@ const SecretaryForm = () => {
             <Button
               type="button"
               variant="secondary"
-              onClick={() => navigate('/desktop/secretaries')}
+              onClick={() => navigate('/app/secretaries')}
               disabled={saving}
             >
               Cancelar

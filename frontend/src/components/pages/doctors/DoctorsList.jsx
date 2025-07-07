@@ -47,7 +47,7 @@ const DoctorsList = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1>Gestión de Doctores</h1>
-        <Link to="/desktop/doctors/new">
+        <Link to="/app/doctors/new">
           <Button variant="primary">
             Nuevo Doctor
           </Button>
@@ -63,7 +63,7 @@ const DoctorsList = () => {
       <DoctorTable 
         doctors={doctors} 
         onDelete={handleDelete}
-        onEdit={(doctorId) => window.location.href = `/desktop/doctors/edit/${doctorId}`}
+        onEdit={(doctorId) => window.location.href = `/app/doctors/edit/${doctorId}`}
       />
     </div>
   );

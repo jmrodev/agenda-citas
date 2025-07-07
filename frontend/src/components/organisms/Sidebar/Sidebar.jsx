@@ -42,11 +42,11 @@ const Sidebar = () => {
           {/* Accesos adicionales según rol */}
           {userRole === 'admin' && (
             <>
-              <li><Link to='/patients'>Pacientes</Link></li>
-              <li><Link to='/doctors'>Doctores</Link></li>
-              <li><Link to='/calendar'>Calendario</Link></li>
-              <li><Link to='/reports'>Reportes</Link></li>
-              <li><Link to='/register'>Agregar usuario</Link></li>
+              <li><Link to='/app/patients'>Pacientes</Link></li>
+              <li><Link to='/app/doctors'>Doctores</Link></li>
+              <li><Link to='/app/calendar'>Calendario</Link></li>
+              <li><Link to='/app/reports'>Reportes</Link></li>
+              <li><Link to='/app/register'>Agregar usuario</Link></li>
             </>
           )}
           {userRole === 'secretary' && (

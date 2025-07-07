@@ -383,7 +383,7 @@ const PatientsList = () => {
           <CardBase
             key={patient.patient_id}
             style={{ cursor: 'pointer' }}
-            onClick={() => window.location.href = `/desktop/patients/${patient.patient_id}`}
+                          onClick={() => window.location.href = `/app/patients/${patient.patient_id}`}
           >
             <CardContent>
               <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--primary-color)' }}>
