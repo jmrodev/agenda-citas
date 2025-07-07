@@ -54,10 +54,56 @@ const PatientForm = React.memo(({ onSuccess }) => {
 
 
 
+  // Cargar datos del paciente si estamos editando
+  useEffect(() => {
+    if (isEditing) {
+      fetchPatient();
+    }
+  }, [id]);
+
   // Validar formulario cuando cambien los valores
   useEffect(() => {
     validateAndUpdateErrors();
   }, [values, validateAndUpdateErrors]);
+
+  const fetchPatient = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const data = await patientService.getById(id);
+      setPatient(data);
+      
+      // Convertir datos para el formulario
+      const formData = {
+        first_name: data.first_name || '',
+        last_name: data.last_name || '',
+        email: data.email || '',
+        phone: data.phone || '',
+        dni: data.dni || '',
+        date_of_birth: data.date_of_birth || '',
+        address: data.address || '',
+        preferred_payment_methods: data.preferred_payment_methods || 'efectivo,débito',
+        health_insurance_id: data.health_insurance_id || '',
+        health_insurance_member_number: data.health_insurance_member_number || '',
+        doctor_ids: data.doctors?.map(d => d.doctor_id) || [],
+        reference_person: {
+          name: data.reference_person?.name || '',
+          last_name: data.reference_person?.last_name || '',
+          phone: data.reference_person?.phone || '',
+          relationship: data.reference_person?.relationship || '',
+          address: data.reference_person?.address || ''
+        }
+      };
+      
+      setValues(formData);
+      console.log('Datos del paciente cargados:', data);
+      console.log('Datos del formulario:', formData);
+    } catch (err) {
+      setError(err.message || 'Error al cargar el paciente');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const onSubmit = async (formData) => {
     try {
@@ -72,21 +118,33 @@ const PatientForm = React.memo(({ onSuccess }) => {
         health_insurance_id: formData.health_insurance_id ? parseInt(formData.health_insurance_id) : null
       };
 
-      const result = await patientService.create(patientData);
-      
-      setSubmitStatus({
-        type: 'success',
-        message: `Paciente ${result.patient?.first_name} ${result.patient?.last_name} creado exitosamente`
-      });
+      let result;
+      if (isEditing) {
+        result = await patientService.update(id, patientData);
+        setSubmitStatus({
+          type: 'success',
+          message: `Paciente ${result.first_name} ${result.last_name} actualizado exitosamente`
+        });
+      } else {
+        result = await patientService.create(patientData);
+        setSubmitStatus({
+          type: 'success',
+          message: `Paciente ${result.patient?.first_name} ${result.patient?.last_name} creado exitosamente`
+        });
+      }
 
       // Llamar callback de éxito si existe
       if (onSuccess) {
         onSuccess(result);
       }
 
-      // Resetear formulario después de 2 segundos
+      // Redirigir o resetear formulario después de 2 segundos
       setTimeout(() => {
-        reset();
+        if (isEditing) {
+          navigate(`/desktop/patients/${id}`);
+        } else {
+          reset();
+        }
         setSubmitStatus({ type: '', message: '' });
       }, 2000);
 
@@ -95,7 +153,7 @@ const PatientForm = React.memo(({ onSuccess }) => {
       console.error('Error al guardar paciente:', error);
       setSubmitStatus({
         type: 'error',
-        message: error.message || 'Error al crear el paciente'
+        message: error.message || `Error al ${isEditing ? 'actualizar' : 'crear'} el paciente`
       });
       return false;
     }
@@ -106,9 +164,42 @@ const PatientForm = React.memo(({ onSuccess }) => {
     await handleSubmit(onSubmit);
   };
 
+  if (loading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <Spinner size={32} />
+        <p>Cargando paciente...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.errorContainer}>
+        <Alert type="error">{error}</Alert>
+        <Button onClick={() => navigate('/desktop/patients')}>
+          Volver a la lista
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.patientForm}>
-      <h2 className={styles.title}>Nuevo Paciente</h2>
+      <div className={styles.header}>
+        <h2 className={styles.title}>
+          {isEditing ? 'Editar Paciente' : 'Nuevo Paciente'}
+        </h2>
+        {isEditing && (
+          <Button
+            variant="outline"
+            size="medium"
+            onClick={() => navigate(`/desktop/patients/${id}`)}
+          >
+            Cancelar
+          </Button>
+        )}
+      </div>
       
       <form onSubmit={handleFormSubmit} className={styles.form}>
         <PatientFormFields
@@ -127,7 +218,7 @@ const PatientForm = React.memo(({ onSuccess }) => {
             disabled={!isValid || isSubmitting}
             loading={isSubmitting}
           >
-            {isSubmitting ? 'Guardando...' : 'Guardar Paciente'}
+            {isSubmitting ? 'Guardando...' : (isEditing ? 'Actualizar Paciente' : 'Guardar Paciente')}
           </Button>
         </div>
       </form>

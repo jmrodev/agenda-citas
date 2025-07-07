@@ -121,7 +121,7 @@ async function getPatientWithReferences(id) {
   const doctors = await getDoctorsForPatient(id);
   
   return { 
-    ...patient, 
+    ...mapReferencePerson(patient), 
     reference_persons: references, 
     doctors,
     health_insurance_name: healthInsurance?.name || null,

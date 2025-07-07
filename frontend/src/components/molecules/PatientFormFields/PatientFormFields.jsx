@@ -13,6 +13,8 @@ const PatientFormFields = React.memo(({
   onChange,
   onBlur
 }) => {
+  // Debug temporal
+  console.log('PatientFormFields recibió valores:', values);
   // Componente de campos del formulario de pacientes - Versión actualizada
   const [doctors, setDoctors] = useState([]);
   const [healthInsurances, setHealthInsurances] = useState([]);
