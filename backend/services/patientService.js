@@ -4,97 +4,96 @@ const { debugPatients } = require('../utils/debug');
 const { buildPersonFilters } = require('../filters/sql/personFilters');
 const pool = require('../config/db');
 
-function mapReferencePerson(row) {
-  const {
-    reference_name,
-    reference_last_name,
-    reference_address,
-    reference_phone,
-    reference_relationship,
-    ...rest
-  } = row;
-  return {
-    ...rest,
-    reference_person: {
-      name: reference_name,
-      last_name: reference_last_name,
-      address: reference_address,
-      phone: reference_phone,
-      relationship: reference_relationship
-    }
-  };
-}
+// mapReferencePerson ya no es necesaria, se elimina.
 
+// Versión CORRECTA y refactorizada de listPatients
 async function listPatients(query, user) {
-  // Si se pasa doctor_id por query, filtrar por ese doctor
-  if (query.doctor_id) {
-    const rows = await patientModel.getAllPatients();
-    const patients = [];
-    for (const row of rows) {
-      const doctorIds = await patientModel.getDoctorsByPatientId(row.patient_id);
-      if (doctorIds.includes(Number(query.doctor_id))) {
-        const references = await patientReferenceModel.getReferencesByPatientId(row.patient_id);
-        const doctors = await getDoctorsForPatient(row.patient_id);
-        patients.push({ ...row, reference_persons: references, doctors });
-      }
-    }
-    return patients;
+  let effectiveQuery = { ...query };
+
+  // Lógica de roles para modificar la query
+  // Si es un doctor y no se pide un doctor_id específico, filtrar por su propio id.
+  if (user && user.role === 'doctor' && !effectiveQuery.doctor_id) {
+    // Si es un doctor y no se pide un doctor_id específico, filtrar por su propio id.
+    // Este filtro 'assigned_doctor_id' necesitaría ser manejado por findPatientsWithFilters/buildPersonFilters
+    effectiveQuery.assigned_doctor_id = user.entity_id;
+  } else if (effectiveQuery.doctor_id) {
+    // Si se pasa doctor_id en la query, usarlo.
+    effectiveQuery.assigned_doctor_id = effectiveQuery.doctor_id;
+    // delete effectiveQuery.doctor_id; // Opcional: limpiar para no confundir a buildPersonFilters
   }
-  // Si es doctor autenticado, filtrar por su propio id
-  if (user && user.role === 'doctor') {
-    const rows = await patientModel.getAllPatients();
-    const patients = [];
-    for (const row of rows) {
-      const doctorIds = await patientModel.getDoctorsByPatientId(row.patient_id);
-      if (doctorIds.includes(user.entity_id)) {
-        const references = await patientReferenceModel.getReferencesByPatientId(row.patient_id);
-        const doctors = await getDoctorsForPatient(row.patient_id);
-        patients.push({ ...row, reference_persons: references, doctors });
-      }
-    }
-    return patients;
-  }
-  // Secretaria/admin: todos los pacientes
-  const rows = await patientModel.getAllPatients();
-  const patients = await Promise.all(rows.map(async (row) => {
-    const references = await patientReferenceModel.getReferencesByPatientId(row.patient_id);
-    const doctors = await getDoctorsForPatient(row.patient_id);
-    return { ...row, reference_persons: references, doctors };
-  }));
-  return patients;
+
+  // Usamos findPatientsWithFilters para todas las recuperaciones de listas de pacientes.
+  // getAllPatients ya no se usa directamente para listados con detalles.
+  const basePatients = await patientModel.findPatientsWithFilters(effectiveQuery);
+  return enrichPatientsDetails(basePatients);
 }
 
+// Versión CORRECTA y refactorizada de listPatientsWithFilters
 async function listPatientsWithFilters(query) {
-  const rows = await patientModel.findPatientsWithFilters(query);
-  const patients = await Promise.all(rows.map(async (row) => {
-    const references = await patientReferenceModel.getReferencesByPatientId(row.patient_id);
-    const doctors = await getDoctorsForPatient(row.patient_id);
-    return { ...row, reference_persons: references, doctors };
-  }));
-  return patients;
+  // Esta función ahora es la principal para cualquier listado filtrado.
+  // La lógica de roles (como la de un doctor viendo solo sus pacientes)
+  // se maneja en `listPatients` si se llama desde allí, o si se llama
+  // directamente desde un controlador que ya ha aplicado lógica de roles a la query.
+  const basePatients = await patientModel.findPatientsWithFilters(query);
+  return enrichPatientsDetails(basePatients);
+}
+
+// Función helper para enriquecer pacientes con doctores y referencias
+async function enrichPatientsDetails(basePatients) {
+  if (!basePatients || basePatients.length === 0) {
+    return [];
+  }
+  // Filtrar IDs nulos o undefined que podrían venir de basePatients si hubo algún problema
+  const patientIds = basePatients.map(p => p.patient_id).filter(id => id != null);
+
+  // Si no hay IDs válidos después de filtrar, devolver los pacientes base.
+  // Ya no se aplica mapReferencePerson aquí.
+  if (patientIds.length === 0) {
+     return basePatients;
+  }
+
+  const [doctorsByPatientId, referencesByPatientId] = await Promise.all([
+    patientModel.getDoctorsForPatientIds(patientIds),
+    patientReferenceModel.getReferencesByPatientIds(patientIds)
+  ]);
+
+  return basePatients.map(patient => {
+    // patient ya es el objeto base de la tabla patients.
+    return Object.assign({}, patient, { // Usar patient directamente
+      reference_persons: patient && patient.patient_id ? (referencesByPatientId[patient.patient_id] || []) : [],
+      doctors: patient && patient.patient_id ? (doctorsByPatientId[patient.patient_id] || []) : []
+    });
+  });
 }
 
 async function createPatient(data) {
-  const patient = await patientModel.createPatient(data);
-  const fullPatient = await patientModel.getPatientById(patient.patient_id);
-  return mapReferencePerson(fullPatient);
+  const newPatientRecord = await patientModel.createPatient(data);
+  // Devolver el paciente recién creado tal como está en la BD.
+  // No hay necesidad de mapReferencePerson.
+  const fullPatient = await patientModel.getPatientById(newPatientRecord.patient_id);
+  return fullPatient;
 }
 
 async function updatePatient(id, data) {
   await patientModel.updatePatient(id, data);
-  const fullPatient = await patientModel.getPatientById(id);
-  return mapReferencePerson(fullPatient);
+  // Devolver el paciente actualizado.
+  const updatedPatient = await patientModel.getPatientById(id);
+  return updatedPatient;
 }
 
 async function deletePatient(id) {
-  return await patientModel.deletePatient(id);
+  return await patientModel.deletePatient(id); // Sin cambios
 }
 
 async function getPatientById(id) {
-  const row = await patientModel.getPatientById(id);
-  if (!row) return null;
+  const patientRow = await patientModel.getPatientById(id);
+  if (!patientRow) return null;
+
+  // Obtener doctores y referencias por separado y añadirlos.
   const doctors = await getDoctorsForPatient(id);
-  return { ...mapReferencePerson(row), doctors };
+  const references = await patientReferenceModel.getReferencesByPatientId(id);
+
+  return { ...patientRow, doctors: doctors || [], reference_persons: references || [] };
 }
 
 async function getPatientWithReferences(id) {
@@ -120,25 +119,26 @@ async function getPatientWithReferences(id) {
   const references = await patientReferenceModel.getReferencesByPatientId(id);
   const doctors = await getDoctorsForPatient(id);
   
+  // patient ya es el objeto base. No se necesita mapReferencePerson.
   return { 
-    ...mapReferencePerson(patient), 
-    reference_persons: references, 
-    doctors,
-    health_insurance_name: healthInsurance?.name || null,
-    health_insurance: healthInsurance || null
+    ...patient,
+    reference_persons: references || [],
+    doctors: doctors || [],
+    health_insurance_name: healthInsurance?.name || null, // Mantener esto
+    health_insurance: healthInsurance || null // Mantener esto
   };
 }
 
 async function createPatientWithDoctors(data) {
-  // Crear paciente
-  const patient = await patientModel.createPatient(data);
-  // Asociar doctores
+  // patientModel.createPatient ya no maneja reference_person
+  const newPatientBase = await patientModel.createPatient(data);
+
   if (Array.isArray(data.doctor_ids) && data.doctor_ids.length > 0) {
-    await patientModel.addDoctorsToPatient(patient.patient_id, data.doctor_ids);
+    await patientModel.addDoctorsToPatient(newPatientBase.patient_id, data.doctor_ids);
   }
-  const fullPatient = await patientModel.getPatientById(patient.patient_id);
-  const doctors = await getDoctorsForPatient(patient.patient_id);
-  return { ...mapReferencePerson(fullPatient), doctors };
+
+  // Obtener el paciente completo con sus doctores y referencias para devolverlo
+  return getPatientWithReferences(newPatientBase.patient_id);
 }
 
 async function updatePatientDoctors(patient_id, doctor_ids) {

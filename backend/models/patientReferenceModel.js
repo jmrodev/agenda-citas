@@ -62,4 +62,32 @@ async function referenceBelongsToPatient(patient_id, reference_id) {
   return rows.length > 0;
 }
 
-module.exports = { getReferencesByPatientId, findReferencePersonsWithFilters, addReference, updateReference, deleteReference, referenceBelongsToPatient }; 
+async function getReferencesByPatientIds(patientIds) {
+  if (!patientIds || patientIds.length === 0) {
+    return {}; // Devuelve un objeto vacío si no hay IDs
+  }
+  const query = `
+    SELECT *
+    FROM patient_references
+    WHERE patient_id IN (?)
+    ORDER BY patient_id, last_name, name;
+  `;
+  const [rows] = await pool.query(query, [patientIds]);
+
+  // Agrupar referencias por patient_id
+  const referencesByPatientId = {};
+  rows.forEach(row => {
+    if (!referencesByPatientId[row.patient_id]) {
+      referencesByPatientId[row.patient_id] = [];
+    }
+    referencesByPatientId[row.patient_id].push(row);
+  });
+  return referencesByPatientId;
+}
+
+async function getReferenceById(referenceId) {
+  const [rows] = await pool.query('SELECT * FROM patient_references WHERE reference_id = ?', [referenceId]);
+  return rows[0]; // Devuelve la primera fila o undefined si no se encuentra
+}
+
+module.exports = { getReferencesByPatientId, getReferencesByPatientIds, findReferencePersonsWithFilters, addReference, updateReference, deleteReference, referenceBelongsToPatient, getReferenceById };

@@ -41,8 +41,10 @@ const { authenticateToken } = require('./middleware/authMiddleware');
 const doctorConsultationHourRoutes = require('./routes/doctorConsultationHourRoutes');
 app.use('/api/doctor-consultation-hours', doctorConsultationHourRoutes);
 
-const patientReferenceRoutes = require('./routes/patientReferenceRoutes');
-app.use('/api/patient-references', patientReferenceRoutes);
+// Ajuste para importar y usar los routers de patientReferenceRoutes correctamente
+const { singleReferenceRouter } = require('./routes/patientReferenceRoutes');
+// routerForPatient ya está anidado dentro de patientRoutes
+app.use('/api/patient-references', singleReferenceRouter);
 
 const secretaryRoutes = require('./routes/secretaryRoutes');
 app.use('/api/secretaries', secretaryRoutes);

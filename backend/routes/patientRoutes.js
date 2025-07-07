@@ -6,6 +6,15 @@ const { authorizeRoles } = require('../middleware/roleMiddleware');
 const validateQuery = require('../filters/validateQuery');
 const patientFiltersSchema = require('../filters/joi/patientFiltersSchema');
 
+// Importar el router anidado para referencias de paciente
+const { routerForPatient: patientReferenceNestedRouter } = require('./patientReferenceRoutes'); // Renombrado para claridad
+
+// Anidar las rutas de referencias bajo /:patientId/references
+// Es importante que :patientId coincida con el nombre del parámetro esperado en patientReferenceRouter si usa mergeParams.
+router.use('/:patientId/references', patientReferenceNestedRouter);
+
+
+// Rutas existentes de pacientes
 router.get('/', authenticateToken, patientController.getAll);
 router.get('/filtros', authenticateToken, validateQuery(patientFiltersSchema), patientController.getAllWithFilters);
 router.post('/', authenticateToken, authorizeRoles('secretary', 'admin'), patientController.create);

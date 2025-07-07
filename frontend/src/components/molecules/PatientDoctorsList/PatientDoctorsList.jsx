@@ -99,7 +99,7 @@ const PatientDoctorsList = ({ patientId, onUpdate }) => {
             <div key={doctor.doctor_id} className={styles.doctorItem}>
               <div className={styles.doctorInfo}>
                 <div className={styles.doctorName}>
-                  Dr. {doctor.first_name} {doctor.last_name}
+                  {doctor.first_name} {doctor.last_name} {/* No añadir "Dr." aquí, ya viene en los datos */}
                 </div>
                 <div className={styles.doctorDetails}>
                   {doctor.specialty && (

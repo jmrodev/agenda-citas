@@ -62,13 +62,11 @@ CREATE TABLE patients (
     preferred_payment_methods VARCHAR(255),
     health_insurance_id INT(6) UNSIGNED,
     health_insurance_member_number VARCHAR(50), -- Número de socio/carnet de la obra social
-    doctor_id INT(6) UNSIGNED,
+    doctor_id INT(6) UNSIGNED, -- Este campo podría ser para un 'médico de cabecera' o similar. Mantener por ahora.
     dni VARCHAR(20) UNIQUE,
-    reference_name VARCHAR(100),
-    reference_last_name VARCHAR(100),
-    reference_address VARCHAR(255),
-    reference_phone VARCHAR(20),
-    reference_relationship VARCHAR(50),
+    -- Campos de referencia principal eliminados, se usarán exclusivamente desde patient_references
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (health_insurance_id) REFERENCES health_insurances(insurance_id),
     FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

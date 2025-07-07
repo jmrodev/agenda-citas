@@ -73,6 +73,13 @@ function buildPersonFilters(query) {
     sql += ' AND reference_relationship LIKE ?';
     params.push(`%${query.relacion_referencia}%`);
   }
+
+  // Filtro por doctor asignado
+  // Esto asume que la consulta principal hará un JOIN con patient_doctors (alias pd)
+  if (query.assigned_doctor_id) {
+    sql += ' AND pd.doctor_id = ?';
+    params.push(query.assigned_doctor_id);
+  }
   
   return { sql, params };
 }

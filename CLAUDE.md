@@ -1,3 +1,34 @@
+# CLAUDE - AGENDA DE CITAS
+
+## ⚠️ IMPORTANTE - NUNCA EJECUTAR START-APP.SH ⚠️
+
+**NUNCA, NUNCA, NUNCA ejecutes el comando:**
+```bash
+./start-app.sh
+```
+
+**Razones:**
+- Los scripts de frontend y backend ya tienen **autorestart** configurado
+- El backend usa `node --watch` que reinicia automáticamente con cada cambio
+- El frontend (Vite) tiene hot reload automático
+- Ejecutar start-app.sh **estorba más que ayudar** porque:
+  - Mata procesos innecesariamente
+  - Abre terminales adicionales innecesarias
+  - Interrumpe el flujo de desarrollo
+  - Puede causar conflictos de puertos
+
+**En su lugar, simplemente:**
+1. Ejecuta `pnpm dev` en la carpeta `backend/` para el servidor
+2. Ejecuta `pnpm dev` en la carpeta `frontend/` para el cliente
+3. Ambos se autoreiniciarán automáticamente con cada cambio
+
+**El script start-app.sh solo debe usarse para:**
+- Configuración inicial del proyecto
+- Solución de problemas específicos de puertos
+- Limpieza de procesos cuando hay conflictos
+
+---
+
 # CodeViz Research Context
 
 > **Note**: This file contains research context from CodeViz. Most recent contexts are at the bottom.

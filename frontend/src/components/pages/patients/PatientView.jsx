@@ -5,50 +5,65 @@ import Alert from '../../atoms/Alert/Alert';
 import Spinner from '../../atoms/Spinner/Spinner';
 import PatientDoctorsList from '../../molecules/PatientDoctorsList/PatientDoctorsList';
 import AddDoctorToPatient from '../../molecules/AddDoctorToPatient/AddDoctorToPatient';
-import { authFetch } from '../../../auth/authFetch';
+// import { authFetch } from '../../../auth/authFetch'; // No longer directly used
+import { patientService } from '../../../services/patientService'; // Import patientService
 import { getRole } from '../../../auth';
 import styles from './PatientView.module.css';
 
+// Importar los nuevos componentes
+import PatientReferencesList from '../../molecules/PatientReferencesList/PatientReferencesList';
+// Descomentar la importación del modal
+import ReferencePersonFormModal from '../../organisms/ReferencePersonFormModal/ReferencePersonFormModal';
+// patientReferenceService no se usa directamente aquí si el modal lo maneja todo.
+
+
 const PatientView = React.memo(() => {
-  const { id } = useParams();
+  const { id: patientId } = useParams(); // Renombrar id a patientId para claridad
   const navigate = useNavigate();
   const [patient, setPatient] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showAddDoctor, setShowAddDoctor] = useState(false);
 
-  useEffect(() => {
-    fetchPatient();
-  }, [id]);
+  // Estado para el modal de agregar persona de referencia
+  const [showReferenceFormModal, setShowReferenceFormModal] = useState(false);
+  // Estado para pasar una referencia a editar (null si es para crear)
+  const [editingReference, setEditingReference] = useState(null);
 
-  const fetchPatient = async () => {
+
+  const loadPatientData = async () => {
     setLoading(true);
     setError('');
     try {
-      const response = await authFetch(`/api/patients/${id}`);
-      if (!response.ok) {
-        throw new Error('Error al cargar paciente');
-      }
-      const data = await response.json();
+      // patientService.getById ahora debería devolver `reference_persons` como un array
+      const data = await patientService.getById(patientId);
       setPatient(data);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Error al cargar paciente');
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    if (patientId) {
+      loadPatientData();
+    }
+  }, [patientId]);
+
   const handleEdit = () => {
-    navigate(`/desktop/patients/edit/${id}`);
+    navigate(`/desktop/patients/edit/${patientId}`);
   };
 
   const handleNewAppointment = () => {
-    navigate(`/desktop/calendar?patient_id=${id}`);
+    navigate(`/desktop/calendar?patient_id=${patientId}`);
   };
 
-  const handleDoctorUpdate = () => {
-    fetchPatient(); // Recargar datos del paciente
+  // Esta función se llamará cuando se actualicen doctores o referencias
+  const handleDataUpdate = () => {
+    loadPatientData(); // Recargar todos los datos del paciente
   };
+
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
@@ -88,8 +103,14 @@ const PatientView = React.memo(() => {
     );
   }
 
+  const canManageReferences = userRole === 'admin' || userRole === 'secretary';
+
+  // Se elimina hasValidReferencePerson ya que ahora mostraremos una lista o un mensaje.
+  // const hasValidReferencePerson = ...;
+
   return (
     <div className={styles.patientView}>
+      {/* Header del paciente: Título y Acciones */}
       <div className={styles.header}>
         <div className={styles.titleSection}>
           <h2 className={styles.title}>
@@ -115,6 +136,7 @@ const PatientView = React.memo(() => {
       </div>
 
       <div className={styles.content}>
+        {/* Sección Información Personal */}
         <div className={styles.section}>
           <h3 className={styles.sectionTitle}>Información Personal</h3>
           <div className={styles.infoGrid}>
@@ -151,7 +173,7 @@ const PatientView = React.memo(() => {
           </div>
         </div>
 
-        {/* Sección de Doctores */}
+        {/* Sección de Doctores Asignados */}
         <div className={styles.section}>
           <div className={styles.sectionHeader}>
             <h3 className={styles.sectionTitle}>Doctores Asignados</h3>
@@ -165,18 +187,16 @@ const PatientView = React.memo(() => {
               </Button>
             )}
           </div>
-
           {showAddDoctor && (userRole === 'admin' || userRole === 'secretary') && (
             <AddDoctorToPatient
               patientId={patient.patient_id}
               currentDoctors={patient.doctors || []}
-              onDoctorAdded={handleDoctorUpdate}
+              onDoctorAdded={handleDataUpdate} // Cambiado a handleDataUpdate
             />
           )}
-
           <PatientDoctorsList
             patientId={patient.patient_id}
-            onUpdate={handleDoctorUpdate}
+            onUpdate={handleDataUpdate} // Cambiado a handleDataUpdate
           />
         </div>
 
@@ -219,38 +239,36 @@ const PatientView = React.memo(() => {
           </div>
         )}
 
-        {/* Sección de Persona de Referencia */}
-        {patient.reference_person && (
-          <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>Persona de Referencia</h3>
-            <div className={styles.infoGrid}>
-              <div className={styles.infoItem}>
-                <span className={styles.label}>Nombre:</span>
-                <span className={styles.value}>
-                  {patient.reference_person.name} {patient.reference_person.last_name}
-                </span>
-              </div>
-              {patient.reference_person.phone && (
-                <div className={styles.infoItem}>
-                  <span className={styles.label}>Teléfono:</span>
-                  <span className={styles.value}>{patient.reference_person.phone}</span>
-                </div>
-              )}
-              {patient.reference_person.relationship && (
-                <div className={styles.infoItem}>
-                  <span className={styles.label}>Relación:</span>
-                  <span className={styles.value}>{patient.reference_person.relationship}</span>
-                </div>
-              )}
-              {patient.reference_person.address && (
-                <div className={styles.infoItem}>
-                  <span className={styles.label}>Dirección:</span>
-                  <span className={styles.value}>{patient.reference_person.address}</span>
-                </div>
-              )}
-            </div>
+        {/* Sección de Personas de Referencia MODIFICADA */}
+        <div className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h3 className={styles.sectionTitle}>Personas de Referencia</h3>
+            {canManageReferences && (
+              <Button
+                size="sm"
+                variant="primary" // Cambiado a primary para destacar
+                onClick={() => {
+                  setEditingReference(null); // Asegurar que es para crear una nueva referencia
+                  setShowReferenceFormModal(true);
+                }}
+              >
+                Agregar Referencia
+              </Button>
+            )}
           </div>
-        )}
+
+          {/* Integrar PatientReferencesList */}
+          <PatientReferencesList
+               references={patient.reference_persons || []}
+               patientId={patient.patient_id} // Asegurarse que patient.patient_id exista
+               onUpdate={handleDataUpdate}
+               onEditRequest={(reference) => { // Cambiado onEdit a onEditRequest para claridad
+                 setEditingReference(reference);
+                 setShowReferenceFormModal(true);
+               }}
+          />
+          {/* Eliminar el placeholder anterior */}
+        </div>
 
         {/* Sección de Información Adicional */}
         <div className={styles.section}>
@@ -273,6 +291,25 @@ const PatientView = React.memo(() => {
           </div>
         </div>
       </div>
+
+      {/* Modal para agregar/editar persona de referencia */}
+      {/* Descomentar y activar el modal */}
+      {showReferenceFormModal && patient && ( // Asegurar que patient no sea null para pasar patient.patient_id
+        <ReferencePersonFormModal
+          isOpen={showReferenceFormModal}
+          onClose={() => {
+            setShowReferenceFormModal(false);
+            setEditingReference(null); // Limpiar referencia en edición al cerrar
+          }}
+          patientId={patient.patient_id} // Pasar el ID del paciente actual
+          referenceToEdit={editingReference} // Pasar la referencia a editar (null si es nueva)
+          onSuccess={() => {
+            setShowReferenceFormModal(false);
+            setEditingReference(null); // Limpiar
+            handleDataUpdate(); // Recargar datos del paciente para ver la nueva/referencia actualizada
+          }}
+        />
+      )}
     </div>
   );
 });
