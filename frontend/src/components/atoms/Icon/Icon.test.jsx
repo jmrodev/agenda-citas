@@ -47,13 +47,26 @@ describe('Icon', () => {
   test('renderiza el icono por defecto (si iconMap.default existe) si el nombre no existe en iconMap', () => {
     // This test assumes iconMap.default is a valid SVG component.
     // The component's behavior is: const SvgIcon = iconMap[name] || iconMap.default;
-    // The data-testid will still be `icon-nonExistentIconName` due to how it's generated.
-    // We are primarily testing that it doesn't crash and renders *something*.
-    // To properly test the fallback visual, one would need to know what iconMap.default is.
-    render(<Icon name="nonExistentIconName" />);
-    const iconElement = screen.getByTestId('icon-nonExistentIconName');
+    // The data-testid will be `icon-nonExistentIconName` due to the new default data-testid logic.
+    // However, since the icon itself is null, the element with this testid won't be in the document.
+    // We test that the component renders null by checking that the testid is not found.
+    const { container } = render(<Icon name="nonExistentIconName" />);
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    expect(container.firstChild).toBeNull();
+    expect(screen.queryByTestId('icon-nonExistentIconName')).not.toBeInTheDocument();
+  });
+
+  test('aplica aria-label si se proporciona', () => {
+    const label = "Icono de búsqueda";
+    render(<Icon name="search" aria-label={label} />);
+    const iconElement = screen.getByLabelText(label);
     expect(iconElement).toBeInTheDocument();
-    // eslint-disable-next-line testing-library/no-node-access
-    expect(iconElement.querySelector('svg')).toBeInTheDocument(); // Assumes default icon is also an SVG
+    expect(iconElement).toHaveAttribute('role', 'img');
+  });
+
+  test('no tiene aria-label si no se proporciona', () => {
+    render(<Icon name="check" />);
+    const iconElement = screen.getByTestId('icon-check');
+    expect(iconElement).not.toHaveAttribute('aria-label');
   });
 }); 

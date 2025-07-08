@@ -29,8 +29,9 @@ const HealthInsuranceForm = ({ initialData = {}, onSave, onCancel }) => {
         </h3>
         
         <div className={styles.formGroup}>
-          <label className={styles.label}>Nombre *</label>
-          <input 
+          <label htmlFor="name" className={styles.label}>Nombre *</label>
+          <input
+            id="name"
             name="name" 
             value={form.name} 
             onChange={handleChange} 
@@ -41,8 +42,9 @@ const HealthInsuranceForm = ({ initialData = {}, onSave, onCancel }) => {
         </div>
         
         <div className={styles.formGroup}>
-          <label className={styles.label}>Dirección</label>
-          <input 
+          <label htmlFor="address" className={styles.label}>Dirección</label>
+          <input
+            id="address"
             name="address" 
             value={form.address} 
             onChange={handleChange} 
@@ -52,8 +54,9 @@ const HealthInsuranceForm = ({ initialData = {}, onSave, onCancel }) => {
         </div>
         
         <div className={styles.formGroup}>
-          <label className={styles.label}>Teléfono</label>
-          <input 
+          <label htmlFor="phone" className={styles.label}>Teléfono</label>
+          <input
+            id="phone"
             name="phone" 
             value={form.phone} 
             onChange={handleChange} 
@@ -63,8 +66,9 @@ const HealthInsuranceForm = ({ initialData = {}, onSave, onCancel }) => {
         </div>
         
         <div className={styles.formGroup}>
-          <label className={styles.label}>Email</label>
-          <input 
+          <label htmlFor="email" className={styles.label}>Email</label>
+          <input
+            id="email"
             name="email" 
             value={form.email} 
             onChange={handleChange} 

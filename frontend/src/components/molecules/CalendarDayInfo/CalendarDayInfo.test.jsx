@@ -2,43 +2,113 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import CalendarDayInfo from './CalendarDayInfo';
 
-test('renderiza la información del día del calendario y maneja el click', () => {
+// Mockear CalendarDot para facilitar la prueba de su existencia condicional
+vi.mock('../../atoms/CalendarDot/CalendarDot', () => ({
+  default: ({ className }) => <span data-testid="mock-calendar-dot" className={className} />,
+}));
+
+
+describe('CalendarDayInfo Component', () => {
   const mockOnClick = vi.fn();
-  const testProps = {
+  const defaultProps = {
     day: 15,
-    isToday: false,
-    isSelected: false,
-    isDisabled: false,
-    hasEvent: true,
-    badge: '3',
-    chip: 'Evento', // Changed from Fiesta to avoid potential conflict with other tests if any
-    onClick: mockOnClick
+    onClick: mockOnClick,
   };
 
-  render(<CalendarDayInfo {...testProps} />);
+  beforeEach(() => {
+    mockOnClick.mockClear();
+  });
 
-  // CalendarDay atom renders the day number
-  expect(screen.getByText(testProps.day.toString())).toBeInTheDocument();
+  test('renderiza el CalendarDay con el día y maneja el click', () => {
+    render(<CalendarDayInfo {...defaultProps} />);
+    const dayButton = screen.getByRole('button', { name: defaultProps.day.toString() });
+    expect(dayButton).toBeInTheDocument();
+    fireEvent.click(dayButton);
+    expect(mockOnClick).toHaveBeenCalledTimes(1);
+  });
 
-  // Check for badge and chip
-  expect(screen.getByText(testProps.badge)).toBeInTheDocument();
-  expect(screen.getByText(testProps.chip)).toBeInTheDocument();
+  test('renderiza Badge y Chip cuando se proporcionan las props', () => {
+    const badgeText = 'N';
+    const chipText = 'Festivo';
+    render(<CalendarDayInfo {...defaultProps} badge={badgeText} chip={chipText} />);
 
-  // Check for event dot (CalendarDot is rendered if hasEvent is true)
-  // We can check if the dot's class is present if CalendarDot adds a specific class or data-testid
-  // For now, its presence is implied if hasEvent is true and the component renders.
+    const badgeElement = screen.getByText(badgeText);
+    expect(badgeElement).toBeInTheDocument();
+    expect(badgeElement).toHaveClass('badge'); // Clase del componente Badge (asumiendo que la tiene)
 
-  // Simulate click on the CalendarDay button within CalendarDayInfo
-  // The CalendarDay component itself is a button with the day number as its accessible name (usually).
-  const dayButton = screen.getByRole('button', { name: testProps.day.toString() });
-  fireEvent.click(dayButton);
-  expect(mockOnClick).toHaveBeenCalledTimes(1);
-});
+    const chipElement = screen.getByText(chipText);
+    expect(chipElement).toBeInTheDocument();
+    expect(chipElement).toHaveClass('chip'); // Clase del componente Chip (asumiendo que la tiene)
+  });
 
-test('renderiza correctamente sin props opcionales', () => {
-  render(<CalendarDayInfo day={1} />);
-  expect(screen.getByText('1')).toBeInTheDocument();
-  // Check that badge and chip are not rendered if not provided
-  expect(screen.queryByText('3')).not.toBeInTheDocument();
-  expect(screen.queryByText('Evento')).not.toBeInTheDocument();
+  test('no renderiza Badge ni Chip si no se proporcionan sus props', () => {
+    render(<CalendarDayInfo {...defaultProps} />);
+    expect(screen.queryByText(/.+/)).not.toHaveClass('badge'); // No debería haber ningún elemento con clase badge
+    expect(screen.queryByText(/.+/)).not.toHaveClass('chip');  // No debería haber ningún elemento con clase chip
+    // Una forma más específica sería query por un texto que sabes que no estará si no hay badge/chip
+    expect(screen.queryByTestId('mock-badge')).not.toBeInTheDocument(); // Si Badge tuviera un testid
+    expect(screen.queryByTestId('mock-chip')).not.toBeInTheDocument();  // Si Chip tuviera un testid
+  });
+
+  test('renderiza CalendarDot cuando hasEvent es true y aplica clase "dot"', () => {
+    render(<CalendarDayInfo {...defaultProps} hasEvent={true} />);
+    const dotElement = screen.getByTestId('mock-calendar-dot');
+    expect(dotElement).toBeInTheDocument();
+    expect(dotElement).toHaveClass('dot'); // Clase aplicada por CalendarDayInfo al CalendarDot
+  });
+
+  test('no renderiza CalendarDot cuando hasEvent es false', () => {
+    render(<CalendarDayInfo {...defaultProps} hasEvent={false} />);
+    expect(screen.queryByTestId('mock-calendar-dot')).not.toBeInTheDocument();
+  });
+
+  test('pasa props isToday, isSelected, isDisabled a CalendarDay', () => {
+    render(
+      <CalendarDayInfo
+        {...defaultProps}
+        isToday={true}
+        isSelected={true}
+        isDisabled={true}
+      />
+    );
+    const dayButton = screen.getByRole('button', { name: defaultProps.day.toString() });
+    // CalendarDay aplica clases basadas en estas props.
+    // Asumimos que CalendarDay.test.jsx ya verifica esto a fondo.
+    // Aquí solo verificamos que las clases esperadas (si se conocen) se aplican.
+    expect(dayButton).toHaveClass('today');   // Clase aplicada por CalendarDay
+    expect(dayButton).toHaveClass('selected'); // Clase aplicada por CalendarDay
+    expect(dayButton).toBeDisabled();        // Atributo aplicado por CalendarDay
+  });
+
+  test('aplica className, style y otras props al div contenedor principal', () => {
+    const customClass = "mi-dia-info";
+    const customStyle = { border: '1px solid red' };
+    render(
+      <CalendarDayInfo
+        {...defaultProps}
+        className={customClass}
+        style={customStyle}
+        data-custom="valor-extra"
+      />
+    );
+    // El elemento que contiene todo, incluyendo el botón del día
+    const dayButton = screen.getByRole('button', { name: defaultProps.day.toString() });
+    // eslint-disable-next-line testing-library/no-node-access
+    const mainContainer = dayButton.closest(`.${'calendarDayInfo'}`);
+
+    expect(mainContainer).toHaveClass('calendarDayInfo', customClass);
+    expect(mainContainer).toHaveStyle('border: 1px solid red');
+    expect(mainContainer).toHaveAttribute('data-custom', 'valor-extra');
+  });
+
+  test('el div wrapper principal y el dayWrapper tienen sus clases CSS', () => {
+    render(<CalendarDayInfo {...defaultProps} />);
+    const dayButton = screen.getByRole('button', { name: defaultProps.day.toString() });
+    // eslint-disable-next-line testing-library/no-node-access
+    const mainContainer = dayButton.closest('div[class*="calendarDayInfo"]');
+    expect(mainContainer).toHaveClass('calendarDayInfo');
+    // eslint-disable-next-line testing-library/no-node-access
+    const dayWrapper = dayButton.parentElement; // Asumiendo que CalendarDay está directamente en dayWrapper
+    expect(dayWrapper).toHaveClass('dayWrapper');
+  });
 }); 

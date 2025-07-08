@@ -153,4 +153,23 @@ describe('PatientDoctorsList', () => {
     // onUpdate no debería ser llamado
     expect(onUpdateMock).not.toHaveBeenCalled();
   });
+
+  test('does not fetch doctors if patientId is not provided', () => {
+    render(<PatientDoctorsList patientId={null} />);
+    // authFetch (para obtener doctores) no debería haber sido llamado
+    expect(authFetch.mock.calls.filter(call => call[0].includes('/api/patient-doctors/patient/')).length).toBe(0);
+    // El componente mostrará el estado de carga inicial ya que fetchDoctors no se llama para poner loading a false.
+    expect(screen.getByText('Cargando doctores...')).toBeInTheDocument();
+  });
+
+  test('displays doctor email if available', async () => {
+    authFetch.mockResolvedValueOnce({ ok: true, json: async () => [mockDoctors[0]] }); // Solo el primer doctor que tiene email
+    render(<PatientDoctorsList patientId={1} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Juan Perez')).toBeInTheDocument();
+      expect(screen.getByText('Cardiología')).toBeInTheDocument();
+      expect(screen.getByText(mockDoctors[0].email)).toBeInTheDocument();
+    });
+  });
 });

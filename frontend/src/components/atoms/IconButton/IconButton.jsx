@@ -21,7 +21,7 @@ const IconButton = ({
       disabled={disabled}
       {...rest}
     >
-      <Icon name={icon} size={size} color={`var(--${color}-color)`} aria-label={ariaLabel} />
+      <Icon name={icon} size={size} color={`var(--${color}-color)`} />
     </button>
   );
 };

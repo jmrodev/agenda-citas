@@ -8,6 +8,7 @@ const Select = ({
   disabled = false,
   error = false,
   className = '',
+  label, // Prop para la etiqueta visual o aria-label de fallback
   'aria-label': ariaLabel,
   'aria-describedby': ariaDescribedby,
   ...rest
@@ -17,7 +18,7 @@ const Select = ({
       value={value}
       onChange={onChange}
       disabled={disabled}
-      aria-label={ariaLabel}
+      aria-label={ariaLabel || label} // Usar label como fallback para aria-label
       aria-describedby={ariaDescribedby}
       aria-invalid={error}
       className={[

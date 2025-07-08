@@ -1,46 +1,85 @@
+import React from 'react';
 import { render, screen } from '@testing-library/react';
 import StatusIndicator from './StatusIndicator';
+import { vi } from 'vitest';
 
-describe('StatusIndicator', () => {
-  test('renderiza el indicador de estado con el texto y testid correctos', () => {
-    const statusText = "Activo";
+// Mockear el átomo Chip
+vi.mock('../../atoms/Chip/Chip', () => ({
+  default: vi.fn(({ children, className }) => <span data-testid="mock-chip" className={className}>{children}</span>),
+}));
+
+describe('StatusIndicator Component', () => {
+  const statusText = "Activo";
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test('renderiza el texto de status con su clase y el contenedor principal con su clase', () => {
     render(<StatusIndicator status={statusText} data-testid="status-indicator-test" />);
 
     const indicatorElement = screen.getByTestId('status-indicator-test');
     expect(indicatorElement).toBeInTheDocument();
-    // The text is inside a span, check if the container has it or query the span directly
-    expect(indicatorElement).toHaveTextContent(statusText);
+    expect(indicatorElement).toHaveClass('statusIndicator'); // Clase del div principal
 
-    // More specific check for the status text itself
-    expect(screen.getByText(statusText)).toBeInTheDocument();
+    const statusSpan = screen.getByText(statusText);
+    expect(statusSpan).toBeInTheDocument();
+    expect(statusSpan.tagName).toBe('SPAN');
+    expect(statusSpan).toHaveClass('status');
   });
 
-  test('renderiza el icono cuando se proporciona', () => {
-    const statusText = "Pendiente";
-    const iconElement = <span data-testid="status-icon">⏳</span>;
-    render(<StatusIndicator status={statusText} icon={iconElement} data-testid="indicator-with-icon"/>);
+  test('renderiza el icono dentro de un span.icon cuando se proporciona', () => {
+    const iconNode = <span data-testid="status-icon-content">⏳</span>;
+    render(<StatusIndicator status="Pendiente" icon={iconNode} />);
 
-    const indicator = screen.getByTestId('indicator-with-icon');
-    expect(screen.getByTestId('status-icon')).toBeInTheDocument();
-    expect(indicator).toHaveTextContent(statusText);
+    const renderedIcon = screen.getByTestId('status-icon-content');
+    expect(renderedIcon).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-node-access
+    const iconWrapper = renderedIcon.parentElement;
+    expect(iconWrapper).toHaveClass('icon');
   });
 
-  test('renderiza el chip cuando se proporciona', () => {
-    const statusText = "Completado";
+  test('no renderiza el span.icon si no se proporciona icono', () => {
+    // eslint-disable-next-line testing-library/no-container
+    const { container } = render(<StatusIndicator status={statusText} />);
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(container.querySelector('span.icon')).not.toBeInTheDocument();
+  });
+
+  test('renderiza Chip (mock) con su clase cuando se proporciona la prop chip', () => {
     const chipText = "OK";
-    render(<StatusIndicator status={statusText} chip={chipText} data-testid="indicator-with-chip"/>);
+    render(<StatusIndicator status="Completado" chip={chipText} />);
 
-    const indicator = screen.getByTestId('indicator-with-chip');
-    // Chip component renders its children, so we can find chipText
-    // This assumes the Chip component renders its children directly or within an identifiable way.
-    expect(indicator).toHaveTextContent(chipText);
-    expect(indicator).toHaveTextContent(statusText);
-    // More robust: query for chip text specifically if Chip structure is known
-    expect(screen.getByText(chipText)).toBeInTheDocument();
+    const ChipMock = require('../../atoms/Chip/Chip').default;
+    expect(ChipMock).toHaveBeenCalledTimes(1);
+    expect(ChipMock).toHaveBeenCalledWith(expect.objectContaining({ children: chipText, className: 'chip' }), {});
+
+    const mockChipElement = screen.getByTestId('mock-chip');
+    expect(mockChipElement).toBeInTheDocument();
+    expect(mockChipElement).toHaveTextContent(chipText);
+    expect(mockChipElement).toHaveClass('chip'); // Clase aplicada por StatusIndicator al Chip
   });
 
-  test('aplica clases y estilos personalizados', () => {
-    const statusText = "Neutral";
+  test('no renderiza Chip si la prop chip es vacía o no se proporciona', () => {
+    const { rerender } = render(<StatusIndicator status={statusText} chip="" />);
+    expect(require('../../atoms/Chip/Chip').default).not.toHaveBeenCalled();
+    expect(screen.queryByTestId('mock-chip')).not.toBeInTheDocument();
+
+    rerender(<StatusIndicator status={statusText} />); // chip undefined
+    expect(require('../../atoms/Chip/Chip').default).not.toHaveBeenCalled();
+    expect(screen.queryByTestId('mock-chip')).not.toBeInTheDocument();
+  });
+
+  test('renderiza correctamente si status es una cadena vacía o null', () => {
+    const { rerender } = render(<StatusIndicator status="" />);
+    expect(screen.getByTestId('status-indicator-test').querySelector('.status')).toHaveTextContent('');
+
+    rerender(<StatusIndicator status={null} />);
+    expect(screen.getByTestId('status-indicator-test').querySelector('.status')).toHaveTextContent('');
+  });
+
+
+  test('aplica className, style y otras props al div contenedor principal', () => {
     render(
       <StatusIndicator
         status={statusText}

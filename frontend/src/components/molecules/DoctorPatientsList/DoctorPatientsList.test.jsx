@@ -92,4 +92,85 @@ describe('DoctorPatientsList', () => {
     });
   });
 
+  test('handles patient removal failure from API', async () => {
+    authFetch.mockResolvedValueOnce({ ok: true, json: async () => [...mockPatientsData] }); // Initial fetch
+    render(<DoctorPatientsList doctorId={mockDoctorId} onUpdate={mockOnUpdate} />);
+
+    await waitFor(() => expect(screen.getByText('Carlos Ruiz')).toBeInTheDocument());
+
+    authFetch.mockResolvedValueOnce({ ok: false, json: async () => ({ message: 'No se pudo eliminar' }) }); // Mock for DELETE call - failure
+
+    const removeButtons = screen.getAllByRole('button', { name: 'Eliminar' });
+    fireEvent.click(removeButtons[0]);
+
+    expect(global.confirm).toHaveBeenCalledTimes(1);
+
+    await waitFor(() => {
+      // Button should show loading, then revert
+      expect(removeButtons[0]).toBeDisabled(); // briefly disabled
+    });
+
+    await waitFor(() => {
+      // Error message should be displayed
+      expect(screen.getByText('Error al eliminar paciente')).toBeInTheDocument();
+      // Patient list should not have changed
+      expect(screen.getByText('Carlos Ruiz')).toBeInTheDocument();
+      expect(screen.getByText(`${mockPatientsData.length} pacientes`)).toBeInTheDocument(); // Badge unchanged
+      expect(mockOnUpdate).not.toHaveBeenCalled(); // onUpdate should not be called on failure
+    });
+  });
+
+  test('does not remove patient if user cancels confirmation', async () => {
+    authFetch.mockResolvedValueOnce({ ok: true, json: async () => [...mockPatientsData] });
+    global.confirm.mockReturnValueOnce(false); // User clicks "Cancel"
+
+    render(<DoctorPatientsList doctorId={mockDoctorId} onUpdate={mockOnUpdate} />);
+    await waitFor(() => expect(screen.getByText('Carlos Ruiz')).toBeInTheDocument());
+
+    const removeButtons = screen.getAllByRole('button', { name: 'Eliminar' });
+    fireEvent.click(removeButtons[0]);
+
+    expect(global.confirm).toHaveBeenCalledTimes(1);
+    // authFetch for DELETE should not have been called
+    expect(authFetch.mock.calls.filter(call => call[0].includes('/api/patient-doctors') && call[1]?.method === 'DELETE').length).toBe(0);
+
+    // List and badge remain unchanged, onUpdate not called
+    expect(screen.getByText('Carlos Ruiz')).toBeInTheDocument();
+    expect(screen.getByText(`${mockPatientsData.length} pacientes`)).toBeInTheDocument();
+    expect(mockOnUpdate).not.toHaveBeenCalled();
+  });
+
+  test('does not fetch patients if doctorId is not provided', () => {
+    render(<DoctorPatientsList doctorId={null} onUpdate={mockOnUpdate} />);
+    // The component shows "Cargando pacientes..." initially due to loading=true default state,
+    // but authFetch should not be called.
+    // We expect it to quickly render the "No hay pacientes" or an error if doctorId is essential for the title.
+    // Given the current implementation, it will show the loading state and then nothing further happens if fetchPatients is not called.
+    // Let's verify authFetch is not called for fetching patients.
+    expect(authFetch.mock.calls.filter(call => call[0].includes('/api/patient-doctors/doctor/')).length).toBe(0);
+
+    // It will remain in a loading-like state or show no patients, depending on how an empty doctorId is handled post-initial render.
+    // The component's useEffect for fetching depends on doctorId.
+    // If loading finishes without data, it shows "No hay pacientes".
+    // The initial loading state might resolve if fetchPatients is never called and setLoading(false) is not reached.
+    // To be more precise, we'd need to see how `loading` state changes if `doctorId` is null.
+    // Current component: loading is true, fetchPatients is not called if no doctorId, so it stays loading.
+    expect(screen.getByText('Cargando pacientes...')).toBeInTheDocument();
+  });
+
+  test('displays all patient details correctly', async () => {
+    authFetch.mockResolvedValueOnce({ ok: true, json: async () => [mockPatientsData[0]] }); // Only one patient for simplicity
+    const patient = mockPatientsData[0];
+    render(<DoctorPatientsList doctorId={mockDoctorId} onUpdate={mockOnUpdate} />);
+
+    await waitFor(() => {
+      expect(screen.getByText(`${patient.first_name} ${patient.last_name}`)).toBeInTheDocument();
+      expect(screen.getByText(`DNI: ${patient.dni}`)).toBeInTheDocument();
+      expect(screen.getByText(patient.email)).toBeInTheDocument();
+      expect(screen.getByText(patient.phone)).toBeInTheDocument();
+      const expectedDate = new Date(patient.date_of_birth).toLocaleDateString('es-ES');
+      expect(screen.getByText(`Nac: ${expectedDate}`)).toBeInTheDocument();
+    });
+  });
+
 }); 

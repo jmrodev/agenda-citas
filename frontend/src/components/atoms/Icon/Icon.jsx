@@ -44,6 +44,7 @@ const Icon = ({ name, size = 24, color = 'currentColor', className = '', 'aria-l
       style={{ width: size, height: size, color }}
       aria-label={ariaLabel}
       role='img'
+      data-testid={rest['data-testid'] || `icon-${name}`}
       {...rest}
     >
       {React.cloneElement(icon, { width: size, height: size, color })}

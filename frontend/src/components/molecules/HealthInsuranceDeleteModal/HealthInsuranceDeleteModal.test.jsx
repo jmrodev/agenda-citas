@@ -112,4 +112,81 @@ describe('HealthInsuranceDeleteModal', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(/Error 500: Server Error/i);
   });
 
+  test('does not render if isOpen is false', () => {
+    const { container } = render(
+      <HealthInsuranceDeleteModal
+        isOpen={false}
+        onClose={mockOnClose}
+        onConfirmDelete={mockOnConfirmDelete}
+        insurance={mockInsurance}
+      />
+    );
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    expect(container.firstChild).toBeNull();
+  });
+
+  test('calls onClose when Cancel button is clicked', async () => {
+    authFetch.mockResolvedValue({ // Mock para la carga de referencias
+      ok: true,
+      json: async () => ({ patients: [], doctors: [] }),
+    });
+    render(
+      <HealthInsuranceDeleteModal
+        isOpen={true}
+        onClose={mockOnClose}
+        onConfirmDelete={mockOnConfirmDelete}
+        insurance={mockInsurance}
+      />
+    );
+    await waitFor(() => {
+      expect(screen.queryByText('Cargando referencias...')).not.toBeInTheDocument();
+    });
+
+    const cancelButton = screen.getByRole('button', { name: 'Cancelar' });
+    fireEvent.click(cancelButton);
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
+  });
+
+  test('displays doctor references correctly', async () => {
+    authFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        patients: [],
+        doctors: [{ doctor_id: 1, first_name: 'Elena', last_name: 'Garcia', email: 'elena@test.com' }]
+      }),
+    });
+
+    render(
+      <HealthInsuranceDeleteModal
+        isOpen={true}
+        onClose={mockOnClose}
+        onConfirmDelete={mockOnConfirmDelete}
+        insurance={mockInsurance}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByText('Cargando referencias...')).not.toBeInTheDocument();
+    });
+    expect(screen.getByText('¡Atención!')).toBeInTheDocument();
+    expect(screen.getByText(/Doctores \(1\)/)).toBeInTheDocument();
+    expect(screen.getByText('Dr. Elena Garcia')).toBeInTheDocument();
+    expect(screen.getByText(/- elena@test.com/)).toBeInTheDocument();
+  });
+
+  test('delete button is disabled while loading references', () => {
+    authFetch.mockImplementation(() => new Promise(() => {})); // Simula una carga indefinida
+
+    render(
+      <HealthInsuranceDeleteModal
+        isOpen={true}
+        onClose={mockOnClose}
+        onConfirmDelete={mockOnConfirmDelete}
+        insurance={mockInsurance}
+      />
+    );
+    expect(screen.getByText('Cargando referencias...')).toBeInTheDocument();
+    const deleteButton = screen.getByRole('button', { name: 'Eliminar' }); // Asume que no hay referencias inicialmente para el texto del botón
+    expect(deleteButton).toBeDisabled();
+  });
 }); 

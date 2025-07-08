@@ -122,7 +122,81 @@ describe('DoctorSelector', () => {
       />
     );
     expect(screen.getByText('Selecciona un doctor')).toBeInTheDocument();
-    const listItems = screen.queryAllByRole('listitem'); // Assuming li elements are used
+    const listItems = screen.queryAllByRole('listitem');
     expect(listItems.length).toBe(0);
+    // Asegurar que el título sigue ahí
+    expect(screen.getByText('Selecciona un doctor')).toBeInTheDocument();
+  });
+
+  test('aplica clases CSS principales correctamente para variante modal', () => {
+    const { container } = render(
+      <DoctorSelector doctors={mockDoctors} selectedDoctor={{}} onSelect={mockOnSelect} onClose={mockOnClose} variant="modal" />
+    );
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    expect(container.firstChild).toHaveClass(styles.overlay);
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const selectorDiv = container.querySelector(`.${styles.selector}`);
+    expect(selectorDiv).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    expect(selectorDiv.querySelector(`.${styles.title}`)).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    expect(selectorDiv.querySelector(`.${styles.list}`)).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    expect(selectorDiv.querySelector(`.${styles.closeBtn}`)).toBeInTheDocument();
+  });
+
+  test('aplica clases CSS principales correctamente para variante dropdown', () => {
+    const { container } = render(
+      <DoctorSelector doctors={mockDoctors} selectedDoctor={{}} onSelect={mockOnSelect} variant="dropdown" />
+    );
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    expect(container.firstChild).toHaveClass(styles.dropdown);
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const selectorDiv = container.querySelector(`.${styles.selector}`);
+    expect(selectorDiv).toBeInTheDocument();
+  });
+
+  test('aplica clases CSS principales correctamente para variante inline', () => {
+    const { container } = render(
+      <DoctorSelector doctors={mockDoctors} selectedDoctor={{}} onSelect={mockOnSelect} variant="inline" />
+    );
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    expect(container.firstChild).toHaveClass(styles.selector); // El selector es el elemento raíz
+    expect(screen.queryByTestId('overlay')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('dropdown-wrapper')).not.toBeInTheDocument();
+  });
+
+  test('aplica la prop style al div.selector', () => {
+    const customStyle = { padding: '20px', border: '1px solid blue' };
+    render(
+      <DoctorSelector
+        doctors={mockDoctors}
+        selectedDoctor={{}}
+        onSelect={mockOnSelect}
+        variant="inline" // Más fácil de testear el style en el elemento raíz
+        style={customStyle}
+      />
+    );
+    const selectorDiv = screen.getByText('Dr. Juan Perez').closest(`.${styles.selector}`);
+    expect(selectorDiv).toHaveStyle('padding: 20px');
+    expect(selectorDiv).toHaveStyle('border: 1px solid blue');
+  });
+
+  test('utiliza doctor.id si doctor_id no está presente', () => {
+    const doctorsWithId = [
+      { id: 100, name: 'Dr. House' },
+      { id: 101, name: 'Dr. Strange' }
+    ];
+    render(
+      <DoctorSelector
+        doctors={doctorsWithId}
+        selectedDoctor={{id: 100}}
+        onSelect={mockOnSelect}
+        variant="inline"
+      />
+    );
+    expect(screen.getByText('Dr. House')).toHaveClass(styles.selected);
+    fireEvent.click(screen.getByText('Dr. Strange'));
+    expect(mockOnSelect).toHaveBeenCalledWith(101);
   });
 }); 

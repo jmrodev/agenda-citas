@@ -27,9 +27,11 @@ const CalendarHeader = ({
       {showSelectors ? (
         <>
           <select
+          <select
             value={month}
             onChange={e => onMonthChange && onMonthChange(Number(e.target.value))}
             className={styles.select}
+            aria-label="Seleccionar mes"
           >
             {months.map((m, i) => (
               <option value={i} key={m}>{m}</option>
@@ -39,6 +41,7 @@ const CalendarHeader = ({
             value={year}
             onChange={e => onYearChange && onYearChange(Number(e.target.value))}
             className={styles.select}
+            aria-label="Seleccionar año"
           >
             {Array.from({ length: 11 }, (_, i) => year - 5 + i).map(y => (
               <option value={y} key={y}>{y}</option>

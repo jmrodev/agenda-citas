@@ -148,4 +148,79 @@ describe('PatientReferencesList', () => {
     expect(mockOnUpdate).not.toHaveBeenCalled(); // No se debería llamar onUpdate si falla
   });
 
+  test('muestra todos los detalles de una referencia y clases CSS', () => {
+    const fullReference = {
+      reference_id: '3',
+      name: 'Carlos',
+      last_name: 'Soler',
+      dni: '12345678Z',
+      relationship: 'Vecino',
+      phone: '555-1234',
+      address: 'Calle Falsa 123, Ciudad'
+    };
+    const { container } = render(
+      <PatientReferencesList
+        references={[fullReference]}
+        patientId={patientId}
+        onUpdate={mockOnUpdate}
+        onEditRequest={mockOnEditRequest}
+      />
+    );
+
+    expect(screen.getByText('Carlos Soler')).toBeInTheDocument();
+    expect(screen.getByText('DNI:')).toBeInTheDocument();
+    expect(screen.getByText('12345678Z')).toBeInTheDocument();
+    expect(screen.getByText('Relación:')).toBeInTheDocument();
+    expect(screen.getByText('Vecino')).toBeInTheDocument();
+    expect(screen.getByText('Teléfono:')).toBeInTheDocument();
+    expect(screen.getByText('555-1234')).toBeInTheDocument();
+    expect(screen.getByText('Dirección:')).toBeInTheDocument();
+    expect(screen.getByText('Calle Falsa 123, Ciudad')).toBeInTheDocument();
+
+    // Verificar clases
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    expect(container.firstChild).toHaveClass('referencesListContainer');
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const itemElement = container.querySelector('.referenceItem');
+    expect(itemElement).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    expect(itemElement.querySelector('.referenceDetails')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    expect(itemElement.querySelector('.actions')).toBeInTheDocument();
+  });
+
+  test('botón Eliminar muestra estado de carga y texto "Eliminando..."', async () => {
+    const mockReferences = [{ reference_id: '1', name: 'Ana', last_name: 'García' }];
+    // Hacer que la promesa de deleteReference no se resuelva inmediatamente
+    let resolveDelete;
+    patientReferenceService.deleteReference.mockImplementationOnce(() => new Promise(resolve => { resolveDelete = resolve; }));
+
+    render(
+      <PatientReferencesList
+        references={mockReferences}
+        patientId={patientId}
+        onUpdate={mockOnUpdate}
+        onEditRequest={mockOnEditRequest}
+      />
+    );
+    const deleteButton = screen.getByRole('button', { name: 'Eliminar' });
+    fireEvent.click(deleteButton);
+
+    expect(global.confirm).toHaveBeenCalledTimes(1);
+
+    // Verificar estado de carga
+    // El texto del botón cambia a "Eliminando..." y se deshabilita
+    const deletingButton = await screen.findByRole('button', { name: 'Eliminando...' });
+    expect(deletingButton).toBeDisabled();
+    expect(deletingButton).toHaveAttribute('aria-busy', 'true'); // Asumiendo que Button pasa loading a aria-busy
+
+    // Resolver la promesa para completar el test
+    await act(async () => {
+      resolveDelete({ success: true });
+      await Promise.resolve(); // Esperar a que se procesen las actualizaciones de estado
+    });
+
+    // onUpdate debería ser llamado
+    await waitFor(() => expect(mockOnUpdate).toHaveBeenCalledTimes(1));
+  });
 }); 

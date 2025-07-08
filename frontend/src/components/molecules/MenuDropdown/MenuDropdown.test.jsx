@@ -58,6 +58,18 @@ describe('MenuDropdown', () => {
     expect(screen.getByText('Configuración')).toBeInTheDocument();
     expect(screen.getByText('Cerrar Sesión')).toBeInTheDocument();
     expect(screen.getByText('👤')).toBeInTheDocument(); // Icon for Perfil
+
+    // Verificar clases y estructura de una opción
+    const perfilButton = screen.getByRole('button', { name: 'Perfil' });
+    expect(perfilButton).toHaveClass('dropdownItem');
+    expect(perfilButton).toHaveAttribute('type', 'button');
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(perfilButton.querySelector('.icon')).toHaveTextContent('👤');
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(perfilButton.querySelector('.label')).toHaveTextContent('Perfil');
+
+    // Verificar clase del contenedor principal
+    expect(screen.getByTestId('menu-dropdown')).toHaveClass('dropdown');
   });
 
   test('llama a onOptionClick con el índice correcto cuando se hace click en una opción', () => {
@@ -86,5 +98,44 @@ describe('MenuDropdown', () => {
     // The dropdown div itself should render (it has a data-testid by default now)
     expect(screen.getByTestId('menu-dropdown')).toBeInTheDocument();
     expect(screen.queryByText('Perfil')).not.toBeInTheDocument();
+  });
+
+  test('aplica estilos de posicionamiento basados en anchorRef', () => {
+    // anchorRef mockeado en beforeEach con offsetLeft: 10, offsetTop: 20, offsetHeight: 30
+    render(
+      <MenuDropdown
+        options={mockOptions}
+        open={true}
+        anchorRef={mockAnchorElement}
+        onOptionClick={mockOnOptionClick}
+      />
+    );
+    const dropdownElement = screen.getByTestId('menu-dropdown');
+    expect(dropdownElement).toHaveStyle('left: 10px');
+    expect(dropdownElement).toHaveStyle('top: 50px'); // offsetTop (20) + offsetHeight (30)
+  });
+
+  test('maneja anchorRef nulo o sin propiedades de offset (no debería fallar, pero el estilo podría ser 0 o NaN)', () => {
+    // Si anchorRef es null o no tiene las propiedades, offsetLeft/Top/Height serán undefined.
+    // undefined + undefined = NaN. left: NaNpx no es un estilo válido y no se aplicará o será ignorado.
+    // El componente debería ser robusto a esto.
+    const { rerender } = render(
+      <MenuDropdown options={mockOptions} open={true} anchorRef={null} onOptionClick={mockOnOptionClick} />
+    );
+    let dropdownElement = screen.getByTestId('menu-dropdown');
+    // JSDOM puede no aplicar estilos si el valor es NaNpx. O puede aplicar 'left: NaNpx'.
+    // Verificamos que no tiene un estilo 'left' explícito con un número, o que es '0px' o 'auto' si es el caso.
+    // La forma más segura es verificar que no tiene un estilo problemático o que el componente no falla.
+    // En este caso, style={{left: undefined}} no aplicará el estilo 'left'.
+    expect(dropdownElement.style.left).toBe(''); // No se aplica estilo 'left' si anchorRef es null
+    expect(dropdownElement.style.top).toBe('');  // No se aplica estilo 'top'
+
+    const incompleteAnchorRef = document.createElement('div'); // No tiene offset* props
+    rerender(
+       <MenuDropdown options={mockOptions} open={true} anchorRef={incompleteAnchorRef} onOptionClick={mockOnOptionClick} />
+    );
+    dropdownElement = screen.getByTestId('menu-dropdown');
+    expect(dropdownElement.style.left).toBe('');
+    expect(dropdownElement.style.top).toBe('');
   });
 }); 
