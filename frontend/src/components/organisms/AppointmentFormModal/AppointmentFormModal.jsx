@@ -53,7 +53,7 @@ const AppointmentFormModal = ({
     if (isOpen) {
       initializeForm();
     }
-  }, [isOpen, appointment]);
+  }, [isOpen, appointment, selectedDate, selectedTime]);
 
   const fetchPatients = async () => {
     try {
