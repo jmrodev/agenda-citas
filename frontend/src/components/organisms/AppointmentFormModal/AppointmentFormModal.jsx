@@ -207,9 +207,6 @@ const AppointmentFormModal = ({
                   }))
                 ]}
               />
-              <div style={{ fontSize: '12px', color: 'red' }}>
-                Debug: Value = "{formData.patient_id}"
-              </div>
             </FormGroup>
 
             <FormGroup title="Doctor" required>
