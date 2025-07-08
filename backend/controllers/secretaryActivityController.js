@@ -60,4 +60,19 @@ async function update(req, res) {
   }
 }
 
-module.exports = { getAll, create, update }; 
+async function getSecretaryActivityReportSummary(req, res) {
+  try {
+    const { startDate, endDate, rangeKey } = req.query;
+    if (!startDate || !endDate) {
+      return res.status(400).json({ error: 'Los parámetros startDate y endDate son requeridos.' });
+    }
+
+    const reportData = await secretaryActivityService.getSecretaryActivityReportData(startDate, endDate, rangeKey);
+    res.json(reportData);
+  } catch (err) {
+    console.error('Error en getSecretaryActivityReportSummary:', err);
+    res.status(500).json({ error: 'Error al obtener el resumen del reporte de actividad de secretarias: ' + err.message });
+  }
+}
+
+module.exports = { getAll, create, update, getSecretaryActivityReportSummary };

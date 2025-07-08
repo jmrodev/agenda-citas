@@ -292,4 +292,22 @@ async function getFilterOptions(req, res) {
   }
 }
 
-module.exports = { getAll, getAllWithFilters, create, update, remove, registerPatientWithUser, getMe, updateMe, getById, updatePatientDoctors, addDoctorToPatient, removeDoctorFromPatient, getDashboardStats, getSearchStats, getPatientsByDoctor, getPatientsByHealthInsurance, getFilterOptions }; 
+async function getPatientReportSummary(req, res) {
+  try {
+    const { startDate, endDate, rangeKey } = req.query;
+    if (!startDate || !endDate) {
+      return res.status(400).json({ error: 'Los parámetros startDate y endDate son requeridos.' });
+    }
+    // Validar que startDate y endDate sean fechas válidas si es necesario,
+    // o confiar en que el modelo/DB lo maneje.
+    // Por ahora, se asume que vienen en formato YYYY-MM-DD.
+
+    const reportData = await patientService.getPatientReportData(startDate, endDate, rangeKey);
+    res.json(reportData);
+  } catch (err) {
+    debugPatients('Error en getPatientReportSummary:', err);
+    res.status(500).json({ error: 'Error al obtener el resumen del reporte de pacientes: ' + err.message });
+  }
+}
+
+module.exports = { getAll, getAllWithFilters, create, update, remove, registerPatientWithUser, getMe, updateMe, getById, updatePatientDoctors, addDoctorToPatient, removeDoctorFromPatient, getDashboardStats, getSearchStats, getPatientsByDoctor, getPatientsByHealthInsurance, getFilterOptions, getPatientReportSummary };

@@ -123,5 +123,21 @@ module.exports = {
   getAllPayments,
   getPaymentsByDateRange,
   create,
-  update
-}; 
+  update,
+  getPaymentReportSummary // Nueva función
+};
+
+async function getPaymentReportSummary(req, res) {
+  try {
+    const { startDate, endDate, rangeKey } = req.query;
+    if (!startDate || !endDate) {
+      return res.status(400).json({ error: 'Los parámetros startDate y endDate son requeridos.' });
+    }
+
+    const reportData = await facilityPaymentService.getPaymentReportData(startDate, endDate, rangeKey);
+    res.json(reportData);
+  } catch (err) {
+    console.error('Error en getPaymentReportSummary:', err);
+    res.status(500).json({ error: 'Error al obtener el resumen del reporte de pagos: ' + err.message });
+  }
+}

@@ -1,0 +1,56 @@
+.dateRangeSelector {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-medium, 16px);
+  padding: var(--spacing-small, 8px) 0; /* Espacio vertical, sin horizontal para que se alinee con otros elementos del header de la página/sección */
+  margin-bottom: var(--spacing-medium, 16px);
+  background-color: transparent; /* O un color de fondo sutil si se prefiere */
+}
+
+.selectControl {
+  min-width: 200px; /* Para que el select tenga un tamaño razonable */
+  /* Estilos adicionales para el átomo Select pueden ir aquí si no se pueden aplicar directamente en el átomo */
+}
+
+/* Estilos para la parte de rango personalizado (actualmente comentada en JSX) */
+.customRangeControls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-small, 8px);
+  margin-left: var(--spacing-medium, 16px); /* Espacio si el select está visible */
+  border-left: 1px solid var(--border-color, #e0e0e0);
+  padding-left: var(--spacing-medium, 16px);
+}
+
+/* Estilos para los inputs de fecha si se usaran */
+.customRangeControls input[type="date"] {
+  padding: var(--input-padding-vertical, 8px) var(--input-padding-horizontal, 12px); /* Asumiendo variables de input */
+  border: 1px solid var(--input-border-color, #ccc);
+  border-radius: var(--border-radius-small, 4px);
+}
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+  .dateRangeSelector {
+    flex-direction: column;
+    align-items: stretch; /* Para que el select ocupe todo el ancho */
+    gap: var(--spacing-small, 8px);
+  }
+
+  .selectControl {
+    min-width: 100%; /* Ocupa todo el ancho disponible */
+  }
+
+  .customRangeControls {
+    flex-direction: column;
+    margin-left: 0;
+    border-left: none;
+    padding-left: 0;
+    gap: var(--spacing-small, 8px);
+  }
+
+  .customRangeControls input[type="date"],
+  .customRangeControls button { /* Asumiendo que el botón también iría al 100% */
+    width: 100%;
+  }
+}

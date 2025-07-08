@@ -126,4 +126,19 @@ async function createPrescribedMed(req, res) {
   }
 }
 
-module.exports = { getAll, getAllWithFilters, create, update, remove, getMyMedicalHistory, updatePrescribedMed, removePrescribedMed, getPrescribedMeds, createPrescribedMed }; 
+async function getMedicalHistoryReportSummary(req, res) {
+  try {
+    const { startDate, endDate, rangeKey } = req.query; // rangeKey no se usa aquí pero lo mantenemos por consistencia
+    if (!startDate || !endDate) {
+      return res.status(400).json({ error: 'Los parámetros startDate y endDate son requeridos.' });
+    }
+
+    const reportData = await medicalHistoryService.getMedicalHistoryReportData(startDate, endDate);
+    res.json(reportData);
+  } catch (err) {
+    console.error('Error en getMedicalHistoryReportSummary:', err);
+    res.status(500).json({ error: 'Error al obtener el resumen del reporte de historias clínicas: ' + err.message });
+  }
+}
+
+module.exports = { getAll, getAllWithFilters, create, update, remove, getMyMedicalHistory, updatePrescribedMed, removePrescribedMed, getPrescribedMeds, createPrescribedMed, getMedicalHistoryReportSummary };

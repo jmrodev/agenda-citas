@@ -160,4 +160,84 @@ async function getDoctorsForPatientIds(patientIds) {
   return doctorsByPatientId;
 }
 
-module.exports = { getAllPatients, findPatientsWithFilters, createPatient, updatePatient, deletePatient, getPatientById, addDoctorsToPatient, getDoctorsByPatientId, getDoctorsForPatientIds, removeAllDoctorsFromPatient, removeDoctorFromPatient, countPatients };
+async function getPatientReportStats(startDate, endDate, rangeKey) {
+  const params = [startDate, endDate];
+  const today = new Date().toISOString().split('T')[0]; // Para calcular edad actual
+
+  // 1. Total de pacientes activos (todos los pacientes en la tabla)
+  const [[{ totalActivePatients }]] = await pool.query('SELECT COUNT(*) as totalActivePatients FROM patients WHERE date_of_birth IS NOT NULL');
+
+  // 2. Nuevos pacientes en el período
+  const [[{ newPatientsInPeriod }]] = await pool.query(
+    'SELECT COUNT(*) as newPatientsInPeriod FROM patients WHERE created_at >= ? AND created_at <= ?',
+    params
+  );
+
+  // 3. Conteo de nuevos pacientes agrupados por período (mes o día)
+  // Determinar el formato de agrupación basado en la duración del rango
+  const dateDiff = (new Date(endDate)).getTime() - (new Date(startDate)).getTime();
+  const diffDays = Math.ceil(dateDiff / (1000 * 3600 * 24));
+  const groupByFormat = diffDays > 60 ? '%Y-%m' : '%Y-%m-%d'; // Agrupar por mes si > 60 días, sino por día
+  const periodLabel = diffDays > 60 ? 'month' : 'day';
+
+  const [newPatientsByTimePeriodRows] = await pool.query(
+    `SELECT DATE_FORMAT(created_at, ?) as period, COUNT(*) as newPatients
+     FROM patients
+     WHERE created_at >= ? AND created_at <= ?
+     GROUP BY period
+     ORDER BY period ASC`,
+    [groupByFormat, startDate, endDate]
+  );
+  // Mapear para que coincida con la estructura esperada por el frontend (ResponsiveLineChart)
+  const newPatientsByTimePeriod = newPatientsByTimePeriodRows.map(row => ({
+    period: row.period, // 'YYYY-MM' o 'YYYY-MM-DD'
+    newPatients: row.newPatients
+  }));
+
+  // 4. Edad promedio
+  const [[{ averageAge }]] = await pool.query(
+    `SELECT AVG(TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE())) as averageAge
+     FROM patients
+     WHERE date_of_birth IS NOT NULL`
+  );
+
+  // 5. Distribución por grupo de edad
+  const ageGroupQuery = `
+    SELECT
+      SUM(CASE WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) BETWEEN 0 AND 18 THEN 1 ELSE 0 END) as '0-18',
+      SUM(CASE WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) BETWEEN 19 AND 35 THEN 1 ELSE 0 END) as '19-35',
+      SUM(CASE WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) BETWEEN 36 AND 50 THEN 1 ELSE 0 END) as '36-50',
+      SUM(CASE WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) BETWEEN 51 AND 65 THEN 1 ELSE 0 END) as '51-65',
+      SUM(CASE WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) > 65 THEN 1 ELSE 0 END) as '66+'
+    FROM patients
+    WHERE date_of_birth IS NOT NULL;
+  `;
+  const [[ageGroupCounts]] = await pool.query(ageGroupQuery);
+
+  // Convertir el objeto de ageGroupCounts a un array como lo espera el frontend para el BarChart
+  const byAgeGroup = Object.entries(ageGroupCounts).map(([ageGroup, count]) => ({
+    ageGroup,
+    count: parseInt(count, 10) || 0 // Asegurar que sea número
+  }));
+
+  return {
+    summary: {
+      totalActivePatients: totalActivePatients || 0,
+      newPatientsInPeriod: newPatientsInPeriod || 0,
+      averageAge: averageAge ? parseFloat(averageAge.toFixed(1)) : 0,
+      // growthPercentage se calculará en el servicio si es necesario
+    },
+    byTimePeriod: newPatientsByTimePeriod,
+    byAgeGroup: byAgeGroup,
+    debug: {
+        receivedStartDate: startDate,
+        receivedEndDate: endDate,
+        diffDays,
+        groupByFormatUsed: groupByFormat,
+        periodLabelUsed: periodLabel
+    }
+  };
+}
+
+
+module.exports = { getAllPatients, findPatientsWithFilters, createPatient, updatePatient, deletePatient, getPatientById, addDoctorsToPatient, getDoctorsByPatientId, getDoctorsForPatientIds, removeAllDoctorsFromPatient, removeDoctorFromPatient, countPatients, getPatientReportStats };

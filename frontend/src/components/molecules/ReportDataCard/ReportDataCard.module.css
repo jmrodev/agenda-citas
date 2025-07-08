@@ -1,0 +1,142 @@
+.reportDataCard {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-medium, 16px);
+  background-color: var(--surface-color, #ffffff);
+  border-radius: var(--border-radius-medium, 8px);
+  box-shadow: var(--shadow-small, 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24));
+  /* transition: all 0.3s cubic-bezier(.25,.8,.25,1); */ /* Descomentar para efecto hover */
+  min-width: 200px; /* Ancho mínimo para que se vea bien */
+}
+
+/* Descomentar para efecto hover */
+/* .reportDataCard:hover {
+  box-shadow: var(--shadow-medium, 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23));
+} */
+
+.iconWrapper {
+  margin-right: var(--spacing-medium, 16px);
+  font-size: var(--font-size-xxlarge, 2.5rem); /* Tamaño del icono */
+  color: var(--primary-color, #1976d2); /* Color por defecto del icono */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-small);
+  border-radius: 50%; /* Para hacer un círculo si el icono es cuadrado */
+  background-color: var(--primary-color-xlight, #e3f2fd); /* Fondo suave para el icono */
+}
+
+.textContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+.title {
+  font-size: var(--font-size-small, 0.875rem);
+  color: var(--text-secondary, #5f5f5f);
+  margin-bottom: var(--spacing-xsmall, 4px);
+  text-transform: uppercase;
+}
+
+.value {
+  font-size: var(--font-size-xlarge, 2rem);
+  font-weight: bold;
+  color: var(--text-primary, #212121);
+  line-height: 1.2;
+}
+
+.unit {
+  font-size: var(--font-size-normal, 1rem);
+  font-weight: normal;
+  margin-left: var(--spacing-xsmall, 4px);
+  color: var(--text-tertiary, #757575);
+}
+
+.trendInfo {
+  display: flex;
+  align-items: center;
+  margin-top: var(--spacing-xsmall, 4px);
+}
+
+.trendInfo .material-icons { /* Si usas Material Icons via <Icon name="icon_name" /> */
+  font-size: var(--font-size-medium, 1rem); /* Ajustar tamaño del icono de tendencia */
+  margin-right: var(--spacing-xxsmall, 2px);
+}
+
+.trendText {
+  font-size: var(--font-size-xsmall, 0.75rem);
+  color: var(--text-secondary, #5f5f5f);
+}
+
+/* Modificadores de tendencia */
+.trendInfo.up {
+  color: var(--success-color, #43a047);
+}
+.trendInfo.up .material-icons {
+  color: var(--success-color, #43a047);
+}
+
+.trendInfo.down {
+  color: var(--error-color, #d32f2f);
+}
+.trendInfo.down .material-icons {
+  color: var(--error-color, #d32f2f);
+}
+
+.trendInfo.neutral {
+  color: var(--text-tertiary, #757575);
+}
+.trendInfo.neutral .material-icons {
+  color: var(--text-tertiary, #757575);
+}
+
+
+/* Estilos predefinidos opcionales */
+.reportDataCard.primary .iconWrapper {
+  color: var(--primary-color-dark, #0d47a1);
+  background-color: var(--primary-color-light, #bbdefb);
+}
+.reportDataCard.primary .value {
+  color: var(--primary-color-dark, #0d47a1);
+}
+
+.reportDataCard.success .iconWrapper {
+  color: var(--success-color-dark, #2e7d32);
+  background-color: var(--success-color-light, #c8e6c9);
+}
+.reportDataCard.success .value {
+  color: var(--success-color-dark, #2e7d32);
+}
+
+.reportDataCard.warning .iconWrapper {
+  color: var(--warning-color-dark, #f57f17);
+  background-color: var(--warning-color-light, #fff9c4);
+}
+.reportDataCard.warning .value {
+  color: var(--warning-color-dark, #f57f17);
+}
+
+.reportDataCard.error .iconWrapper {
+  color: var(--error-color-dark, #b71c1c);
+  background-color: var(--error-color-light, #ffcdd2);
+}
+.reportDataCard.error .value {
+  color: var(--error-color-dark, #b71c1c);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .reportDataCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .iconWrapper {
+    margin-bottom: var(--spacing-small, 8px);
+    margin-right: 0;
+  }
+  .value {
+    font-size: var(--font-size-large, 1.5rem);
+  }
+}

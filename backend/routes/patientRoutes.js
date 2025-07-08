@@ -55,4 +55,9 @@ router.get('/search/options', authenticateToken, authorizeRoles('admin', 'secret
 router.get('/by-doctor/:doctor_id', authenticateToken, authorizeRoles('admin', 'secretary', 'doctor'), patientController.getPatientsByDoctor);
 router.get('/by-insurance/:insurance_id', authenticateToken, authorizeRoles('admin', 'secretary'), patientController.getPatientsByHealthInsurance);
 
+// Endpoint para el reporte de pacientes
+router.get('/reports/summary', authenticateToken, authorizeRoles('admin', 'secretary', 'doctor'), patientController.getPatientReportSummary);
+// Nota: El path es '/reports/summary'. En el frontend se llama como '/api/patients/reports/summary'.
+// El '/api/patients' es el prefijo general de estas rutas, definido en index.js del backend.
+
 module.exports = router; 

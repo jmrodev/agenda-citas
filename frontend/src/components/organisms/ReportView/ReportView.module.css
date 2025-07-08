@@ -1,0 +1,101 @@
+.reportViewContainer {
+  padding: var(--spacing-small, 8px); /* Un poco de padding interno si no lo da la página padre */
+}
+
+.controlsHeader {
+  display: flex;
+  justify-content: flex-start; /* Alinea el selector de fecha a la izquierda */
+  align-items: center;
+  margin-bottom: var(--spacing-large, 24px);
+  padding: var(--spacing-medium, 16px);
+  background-color: var(--surface-color-light, #f9f9f9); /* Un fondo sutil para la barra de controles */
+  border-radius: var(--border-radius-medium, 8px);
+  box-shadow: var(--shadow-xsmall, 0 1px 2px rgba(0,0,0,0.05));
+}
+
+.sectionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Grid responsivo para las secciones */
+  gap: var(--spacing-large, 24px);
+}
+
+/* Estilos para el contenido dentro de una sección, si es necesario un layout específico */
+.sectionContentGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Para las ReportDataCard */
+  gap: var(--spacing-medium, 16px);
+  margin-bottom: var(--spacing-medium, 16px); /* Espacio antes de tablas o gráficos */
+}
+
+.chartsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Ajustar minmax según necesidad */
+  gap: var(--spacing-large, 24px);
+  margin-top: var(--spacing-medium, 16px);
+}
+
+.chartContainer {
+  background-color: var(--surface-color, #fff);
+  padding: var(--spacing-medium, 16px);
+  border-radius: var(--border-radius-medium, 8px);
+  box-shadow: var(--shadow-xsmall, 0 1px 2px rgba(0,0,0,0.05));
+  /* min-height: 300px; */ /* Para asegurar altura para el gráfico */
+}
+
+.chartContainer h4 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-medium, 16px);
+  color: var(--text-secondary, #5f5f5f);
+  font-size: var(--font-size-medium, 1.1rem);
+  border-bottom: 1px solid var(--border-color-light, #eee);
+  padding-bottom: var(--spacing-small, 8px);
+}
+
+.chartPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px; /* Altura mínima para el placeholder */
+  border: 2px dashed var(--border-color, #e0e0e0);
+  border-radius: var(--border-radius-small, 4px);
+  color: var(--text-disabled, #9e9e9e);
+  background-color: var(--background-color-secondary, #f7f7f7);
+  font-size: var(--font-size-small, 0.9rem);
+  text-align: center;
+  padding: var(--spacing-small);
+}
+
+.chartPlaceholder pre {
+  font-size: 0.75rem;
+  white-space: pre-wrap;
+  word-break: break-all;
+  background-color: var(--surface-color-dark, #eee);
+  padding: var(--spacing-xsmall);
+  border-radius: var(--border-radius-small);
+  margin-top: var(--spacing-xsmall);
+  max-height: 100px;
+  overflow-y: auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .controlsHeader {
+    flex-direction: column;
+    align-items: stretch; /* El DateRangeSelector ya se ajusta al 100% */
+    padding: var(--spacing-small, 12px);
+  }
+
+  .sectionsGrid {
+    grid-template-columns: 1fr; /* Una columna en móviles */
+    gap: var(--spacing-medium, 16px);
+  }
+
+  .sectionContentGrid {
+    grid-template-columns: 1fr; /* Una columna para las cards en móviles */
+    gap: var(--spacing-small, 8px);
+  }
+}

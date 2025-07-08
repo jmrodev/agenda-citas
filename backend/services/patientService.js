@@ -281,5 +281,35 @@ module.exports = {
   getSearchStats, 
   getPatientsByDoctor, 
   getPatientsByHealthInsurance, 
-  getFilterOptions 
-}; 
+  getFilterOptions,
+  getPatientReportData // Nueva función exportada
+};
+
+async function getPatientReportData(startDate, endDate, rangeKey) {
+  const reportStats = await patientModel.getPatientReportStats(startDate, endDate, rangeKey);
+
+  // Calcular growthPercentage
+  // (newPatientsInPeriod / (totalActivePatientsAtStartOfPeriod)) * 100
+  // totalActivePatientsAtStartOfPeriod = totalActivePatients (actual) - newPatientsInPeriod
+  // Evitar división por cero si no había pacientes antes o si no hay nuevos pacientes.
+  let growthPercentage = 0;
+  const activeAtStart = reportStats.summary.totalActivePatients - reportStats.summary.newPatientsInPeriod;
+  if (activeAtStart > 0 && reportStats.summary.newPatientsInPeriod > 0) {
+    growthPercentage = (reportStats.summary.newPatientsInPeriod / activeAtStart) * 100;
+  } else if (reportStats.summary.newPatientsInPeriod > 0) {
+    // Si no había pacientes antes, pero hay nuevos, se considera un crecimiento "infinito" o 100% desde 0.
+    // Para evitar 'Infinity', podemos mostrar 100% o un valor alto, o simplemente el número de nuevos.
+    // El frontend espera un número para el trend, así que un 100% puede ser razonable.
+    growthPercentage = 100;
+  }
+
+  return {
+    summary: {
+      ...reportStats.summary,
+      growthPercentage: parseFloat(growthPercentage.toFixed(1))
+    },
+    byTimePeriod: reportStats.byTimePeriod,
+    byAgeGroup: reportStats.byAgeGroup,
+    // debug: reportStats.debug // Descomentar si se necesita debug en el frontend
+  };
+}

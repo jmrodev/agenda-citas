@@ -68,4 +68,40 @@ async function getDashboardStats() {
   return { citasHoy: citasHoy.length };
 }
 
-module.exports = { listAppointments, listAppointmentsWithFilters, createAppointment, updateAppointment, deleteAppointment, getDashboardStats }; 
+async function getAppointmentReportData(startDate, endDate, rangeKey) {
+  const reportStats = await appointmentModel.getAppointmentReportStats(startDate, endDate, rangeKey);
+
+  let cancellationRate = 0;
+  let noShowRate = 0;
+  const totalAppointments = reportStats.summary.totalAppointmentsInPeriod;
+
+  if (totalAppointments > 0) {
+    cancellationRate = (reportStats.rawCounts.cancelledCount / totalAppointments) * 100;
+    // Definir noShowRate sobre el total de citas que no fueron canceladas previamente.
+    // O sobre el total de citas del período. Usaremos la segunda para simplicidad y consistencia con lo que espera el frontend.
+    noShowRate = (reportStats.rawCounts.absentCount / totalAppointments) * 100;
+  }
+
+  // Asegurarse de que todos los estados posibles estén presentes en byStatus, incluso con 0.
+  // Esto depende de los estados reales que maneja la aplicación.
+  // Ejemplo: const allStatuses = ['PENDIENTE', 'CONFIRMADA', 'COMPLETADA', 'CANCELADA', 'AUSENTE'];
+  // const completeByStatus = { ...allStatuses.reduce((acc, s) => ({...acc, [s]:0}), {}), ...reportStats.byStatus};
+
+
+  return {
+    summary: reportStats.summary,
+    rates: {
+      cancellationRate: parseFloat(cancellationRate.toFixed(1)),
+      noShowRate: parseFloat(noShowRate.toFixed(1)),
+      // Podríamos añadir completionRate también
+      // completionRate: totalAppointments > 0 ? (reportStats.rawCounts.completedCount / totalAppointments) * 100 : 0
+    },
+    byStatus: reportStats.byStatus, // O completeByStatus si se implementa
+    byDoctor: reportStats.byDoctor,
+    byType: reportStats.byType,
+    byTimePeriod: reportStats.byTimePeriod,
+    // debug: reportStats.debug // Si el modelo lo tuviera
+  };
+}
+
+module.exports = { listAppointments, listAppointmentsWithFilters, createAppointment, updateAppointment, deleteAppointment, getDashboardStats, getAppointmentReportData };

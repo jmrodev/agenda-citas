@@ -69,4 +69,69 @@ async function createSecretaryActivity(data) {
   return { activity_id: result.insertId, ...data };
 }
 
-module.exports = { getAllSecretaryActivities, createSecretaryActivity }; 
+async function getSecretaryActivityReportStats(startDate, endDate, rangeKey) {
+  const params = [startDate, endDate];
+
+  // 1. Total de actividades en el período
+  const [[{ totalActivitiesInPeriod }]] = await pool.query(
+    'SELECT COUNT(*) as totalActivities FROM secretary_activities WHERE date >= ? AND date <= ?',
+    params
+  );
+
+  // 2. Conteo de actividades por activity_type
+  const [byTypeRows] = await pool.query(
+    'SELECT activity_type, COUNT(*) as count FROM secretary_activities WHERE date >= ? AND date <= ? GROUP BY activity_type',
+    params
+  );
+  const activitiesByType = byTypeRows.reduce((acc, row) => {
+    acc[row.activity_type] = row.count;
+    return acc;
+  }, {});
+
+  // 3. Conteo de actividades por secretary_id (y obtener nombre de secretaria)
+  const [bySecretaryRows] = await pool.query(
+    `SELECT sa.secretary_id, CONCAT(s.first_name, ' ', s.last_name) as secretaryName, COUNT(*) as total_actions
+     FROM secretary_activities sa
+     JOIN secretaries s ON sa.secretary_id = s.secretary_id
+     WHERE sa.date >= ? AND sa.date <= ?
+     GROUP BY sa.secretary_id, secretaryName
+     ORDER BY total_actions DESC`,
+    params
+  );
+   // Frontend espera: [{ secretaryName: 'Ana', total_actions: N }]
+  const activitiesBySecretary = bySecretaryRows.map(row => ({
+    secretaryId: row.secretary_id,
+    secretaryName: row.secretaryName,
+    total_actions: row.total_actions
+  }));
+
+
+  // 4. Conteo de actividades agrupadas por período (mes o día)
+  const dateDiff = (new Date(endDate)).getTime() - (new Date(startDate)).getTime();
+  const diffDays = Math.ceil(dateDiff / (1000 * 3600 * 24));
+  const groupByFormat = diffDays > 60 ? '%Y-%m' : '%Y-%m-%d';
+
+  const [activityCountOverTimeRows] = await pool.query(
+    `SELECT DATE_FORMAT(date, ?) as period, COUNT(*) as count
+     FROM secretary_activities
+     WHERE date >= ? AND date <= ?
+     GROUP BY period
+     ORDER BY period ASC`,
+    [groupByFormat, startDate, endDate]
+  );
+  const activityCountOverTime = activityCountOverTimeRows.map(row => ({
+    date: row.period,
+    count: row.count
+  }));
+
+  return {
+    summary: {
+      totalActivitiesInPeriod: totalActivitiesInPeriod || 0,
+    },
+    activitiesByType,
+    activitiesBySecretary,
+    activityCountOverTime,
+  };
+}
+
+module.exports = { getAllSecretaryActivities, createSecretaryActivity, getSecretaryActivityReportStats };

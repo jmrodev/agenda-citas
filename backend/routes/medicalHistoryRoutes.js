@@ -17,4 +17,8 @@ router.delete('/:record_id/prescribed-meds/:med_id', authenticateToken, authoriz
 router.get('/:record_id/prescribed-meds', authenticateToken, authorizeRoles('admin', 'doctor', 'secretary'), medicalHistoryController.getPrescribedMeds);
 router.post('/:record_id/prescribed-meds', authenticateToken, authorizeRoles('doctor', 'secretary'), medicalHistoryController.createPrescribedMed);
 
+// Endpoint para el reporte de historias clínicas
+// Roles: admin, doctor. Quizás secretary si pueden ver estadísticas agregadas.
+router.get('/reports/summary', authenticateToken, authorizeRoles('admin', 'doctor', 'secretary'), medicalHistoryController.getMedicalHistoryReportSummary);
+
 module.exports = router; 

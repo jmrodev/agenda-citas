@@ -24,4 +24,10 @@ async function deleteMedicalHistory(id) {
   return await medicalHistoryModel.deleteMedicalHistory(id);
 }
 
-module.exports = { listMedicalHistories, listMedicalHistoriesWithFilters, listMedicalHistory, createMedicalHistory, updateMedicalHistory, deleteMedicalHistory }; 
+async function getMedicalHistoryReportData(startDate, endDate) {
+  // Por ahora, simplemente llama al modelo.
+  // Se podrían añadir validaciones o transformaciones adicionales aquí si fuera necesario.
+  return await medicalHistoryModel.getMedicalHistoryReportStats(startDate, endDate);
+}
+
+module.exports = { listMedicalHistories, listMedicalHistoriesWithFilters, listMedicalHistory, createMedicalHistory, updateMedicalHistory, deleteMedicalHistory, getMedicalHistoryReportData };

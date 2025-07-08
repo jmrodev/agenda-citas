@@ -13,4 +13,8 @@ router.get('/', authMiddleware.authenticateToken, authorizeRoles('admin', 'secre
 // POST /api/secretary-activities
 router.post('/', authMiddleware.authenticateToken, authorizeRoles('admin', 'secretary'), secretaryActivityController.create);
 
+// Endpoint para el reporte de actividad de secretarias
+// Roles: admin y quizás secretary si se considera que pueden ver estadísticas generales de actividad.
+router.get('/reports/summary', authMiddleware.authenticateToken, authorizeRoles('admin', 'secretary'), secretaryActivityController.getSecretaryActivityReportSummary);
+
 module.exports = router; 

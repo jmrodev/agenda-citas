@@ -38,6 +38,9 @@ const Settings = lazy(() => import('./Settings'));
 // Dev page
 const DevPage = lazy(() => import('./dev/DevPage'));
 
+// Reports page
+const ReportsPage = lazy(() => import('./reports/ReportsPage'));
+
 // Componente de fallback para lazy loading
 const PageLoader = () => (
   <div style={{ 
@@ -91,6 +94,7 @@ const AppRouter = () => {
               <Route path="secretaries/:id" element={<SecretaryView />} />
               <Route path="secretaries/edit/:id" element={<SecretaryForm />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="reports" element={<ReportsPage />} />
             </Route>
             
             {/* Rutas legacy - redirigir a app */}

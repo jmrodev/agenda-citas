@@ -20,4 +20,10 @@ router.put('/:doctor_id/payments/:payment_id', authenticateToken, authorizeRoles
 // Eliminar pago de doctor
 router.delete('/:doctor_id/payments/:payment_id', authenticateToken, authorizeRoles('admin', 'secretary'), facilityPaymentController.removePayment);
 
+
+// Endpoint para el reporte de pagos
+// Roles: admin y secretary deberían tener acceso a este tipo de reportes financieros. Doctores podrían tener acceso a *sus* pagos, pero este es un summary general.
+router.get('/reports/summary', authenticateToken, authorizeRoles('admin', 'secretary'), facilityPaymentController.getPaymentReportSummary);
+
+
 module.exports = router; 

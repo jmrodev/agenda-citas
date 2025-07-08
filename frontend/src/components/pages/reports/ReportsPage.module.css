@@ -1,0 +1,50 @@
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--spacing-large); /* Usando variables CSS globales si existen */
+  background-color: var(--background-color, #f4f6f8); /* Fallback color */
+}
+
+.header {
+  margin-bottom: var(--spacing-medium);
+  padding-bottom: var(--spacing-medium);
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+/* Se usa el átomo Title, así que el estilo directo a h1 no es necesario,
+   pero podemos mantener un estilo para el componente Title si es específico aquí. */
+.pageTitle { /* Clase aplicada al componente Title */
+  color: var(--text-primary, #333);
+  /* El tamaño y otros estilos vendrán del átomo Title y sus props,
+     a menos que necesitemos anularlos específicamente aquí. */
+  /* font-size: var(--font-size-xlarge, 2rem); */
+}
+
+.content {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.placeholder {
+  margin-top: var(--spacing-xlarge);
+  padding: var(--spacing-large);
+  border: 2px dashed var(--primary-color-light, #a9d5ff);
+  background-color: var(--background-light, #e9f5ff);
+  border-radius: var(--border-radius-medium, 8px);
+  text-align: center;
+  color: var(--primary-color-dark, #0d47a1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: var(--spacing-medium);
+  }
+
+  /* .header h1 ya no aplica, .pageTitle heredará responsividad de Title atom si está bien hecho */
+  /* Si se necesita un ajuste específico para .pageTitle en móviles: */
+  /* .pageTitle {
+    font-size: var(--font-size-large, 1.5rem);
+  } */
+}

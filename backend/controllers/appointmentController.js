@@ -103,4 +103,21 @@ async function getDashboardStats(req, res) {
   }
 }
 
-module.exports = { getAll, getAllWithFilters, create, update, remove, getMyAppointments, getDashboardStats }; 
+async function getAppointmentReportSummary(req, res) {
+  try {
+    const { startDate, endDate, rangeKey } = req.query;
+    if (!startDate || !endDate) {
+      return res.status(400).json({ error: 'Los parámetros startDate y endDate son requeridos.' });
+    }
+    // Aquí también se podrían añadir validaciones para el formato de fecha.
+
+    const reportData = await appointmentService.getAppointmentReportData(startDate, endDate, rangeKey);
+    res.json(reportData);
+  } catch (err) {
+    // Considerar un logging más específico o un error más genérico para el cliente.
+    console.error('Error en getAppointmentReportSummary:', err); // Loguear el error completo en servidor
+    res.status(500).json({ error: 'Error al obtener el resumen del reporte de citas: ' + err.message });
+  }
+}
+
+module.exports = { getAll, getAllWithFilters, create, update, remove, getMyAppointments, getDashboardStats, getAppointmentReportSummary };

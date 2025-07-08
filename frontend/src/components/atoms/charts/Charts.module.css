@@ -1,0 +1,55 @@
+/* Define some default chart colors using CSS variables for easy theming */
+/* Estos pueden ser sobreescritos o extendidos en las variables globales del proyecto si es necesario */
+:root {
+  --chart-color-1: #26a69a; /* Teal */
+  --chart-color-2: #42a5f5; /* Blue */
+  --chart-color-3: #ffca28; /* Amber */
+  --chart-color-4: #ef5350; /* Red */
+  --chart-color-5: #66bb6a; /* Green */
+  --chart-color-6: #ab47bc; /* Purple */
+  --chart-color-7: #78909c; /* Blue Grey */
+  --chart-color-8: #ffa726; /* Orange */
+  --chart-color-9: #5c6bc0; /* Indigo */
+  --chart-color-10: #ec407a; /* Pink */
+
+  /* Colores específicos para tendencias o estados */
+  --chart-trend-up: var(--success-color, #43a047);
+  --chart-trend-down: var(--error-color, #d32f2f);
+  --chart-trend-neutral: var(--text-tertiary, #757575);
+}
+
+.chartWrapper {
+  width: 100%;
+  height: 300px; /* Altura por defecto, puede ser ajustada por el contenedor padre */
+  position: relative; /* Para posicionar elementos internos si es necesario */
+}
+
+.noDataMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 150px; /* Mínima altura para que el mensaje sea visible */
+  color: var(--text-disabled, #9e9e9e);
+  font-style: italic;
+  background-color: var(--background-color-secondary, #f7f7f7);
+  border: 1px dashed var(--border-color, #e0e0e0);
+  border-radius: var(--border-radius-medium, 8px);
+  padding: var(--spacing-medium, 16px);
+  text-align: center;
+}
+
+/* Estilos para la leyenda de Recharts si se necesita personalización más allá de wrapperStyle */
+.recharts-legend-wrapper {
+  /* Ejemplo: font-size: 12px !important; */
+}
+
+/* Estilos para los tooltips de Recharts si se necesita personalización más allá de contentStyle */
+.recharts-tooltip-wrapper {
+  /* Ejemplo: box-shadow: var(--shadow-medium) !important; */
+}
+
+/* Estilos para los ejes */
+.recharts-cartesian-axis-tick-value {
+  /* font-family: 'Roboto', sans-serif;  Ejemplo de fuente */
+}

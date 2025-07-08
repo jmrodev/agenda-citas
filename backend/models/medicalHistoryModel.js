@@ -48,4 +48,40 @@ async function deleteMedicalHistory(id) {
   return { record_id: id };
 }
 
-module.exports = { getAllMedicalHistories, findMedicalHistoriesWithFilters, getAllMedicalHistory, createMedicalHistory, updateMedicalHistory, deleteMedicalHistory }; 
+async function getMedicalHistoryReportStats(startDate, endDate) {
+  // Asumiendo que created_at y updated_at existen en medical_history_records
+  const params = [startDate, endDate];
+
+  let newRecordsInPeriod = 0;
+  try {
+    const [[result]] = await pool.query(
+      'SELECT COUNT(*) as count FROM medical_history_records WHERE created_at >= ? AND created_at <= ?',
+      params
+    );
+    newRecordsInPeriod = result.count || 0;
+  } catch (err) {
+    console.error("Query para newRecordsInPeriod falló. Probablemente created_at no existe. Msg:", err.message);
+    newRecordsInPeriod = 'Error (campo created_at?)';
+  }
+
+  let updatedRecordsInPeriod = 0;
+  try {
+    const [[result]] = await pool.query(
+      'SELECT COUNT(*) as count FROM medical_history_records WHERE updated_at >= ? AND updated_at <= ?',
+      params
+    );
+    updatedRecordsInPeriod = result.count || 0;
+  } catch (err) {
+    console.error("Query para updatedRecordsInPeriod falló. Probablemente updated_at no existe. Msg:", err.message);
+    updatedRecordsInPeriod = 'Error (campo updated_at?)';
+  }
+
+  return {
+    summary: {
+      newRecordsInPeriod,
+      updatedRecordsInPeriod,
+    }
+  };
+}
+
+module.exports = { getAllMedicalHistories, findMedicalHistoriesWithFilters, getAllMedicalHistory, createMedicalHistory, updateMedicalHistory, deleteMedicalHistory, getMedicalHistoryReportStats };
