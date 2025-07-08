@@ -56,9 +56,9 @@ class RouteErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className={styles.routeErrorContainer}>
-          <div className={styles.routeErrorContent}>
-            <div className={styles.routeErrorIcon}>🚧</div>
+        <section className={styles.routeErrorContainer}>
+          <article className={styles.routeErrorContent}>
+            <span className={styles.routeErrorIcon}>🚧</span>
             <h2 className={styles.routeErrorTitle}>Error en la página</h2>
             <p className={styles.routeErrorMessage}>
               Ha ocurrido un error al cargar esta página. Esto puede ser temporal.
@@ -74,7 +74,7 @@ class RouteErrorBoundary extends React.Component {
               </details>
             )}
 
-            <div className={styles.routeErrorActions}>
+            <footer className={styles.routeErrorActions}>
               <Button 
                 onClick={this.handleRetry} 
                 variant="primary"
@@ -96,9 +96,9 @@ class RouteErrorBoundary extends React.Component {
               >
                 Ir al inicio
               </Button>
-            </div>
-          </div>
-        </div>
+            </footer>
+          </article>
+        </section>
       );
     }
 

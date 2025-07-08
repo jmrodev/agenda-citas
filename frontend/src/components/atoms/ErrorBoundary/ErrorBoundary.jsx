@@ -72,9 +72,9 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className={styles.errorContainer}>
-          <div className={styles.errorContent}>
-            <div className={styles.errorIcon}>⚠️</div>
+        <section className={styles.errorContainer}>
+          <article className={styles.errorContent}>
+            <span className={styles.errorIcon}>⚠️</span>
             <h2 className={styles.errorTitle}>Algo salió mal</h2>
             <p className={styles.errorMessage}>
               Ha ocurrido un error inesperado. Por favor, intenta de nuevo.
@@ -90,7 +90,7 @@ class ErrorBoundary extends React.Component {
               </details>
             )}
 
-            <div className={styles.errorActions}>
+            <footer className={styles.errorActions}>
               <Button 
                 onClick={this.handleRetry} 
                 variant="primary"
@@ -112,9 +112,9 @@ class ErrorBoundary extends React.Component {
               >
                 Recargar página
               </Button>
-            </div>
-          </div>
-        </div>
+            </footer>
+          </article>
+        </section>
       );
     }
 

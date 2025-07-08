@@ -5,7 +5,7 @@ import styles from './Charts.module.css';
 
 const ResponsiveBarChart = ({ data, bars, xAxisKey, yAxisLabel, layout = 'horizontal', colors }) => {
   if (!data || data.length === 0) {
-    return <div className={styles.noDataMessage}>No hay datos suficientes para mostrar el gráfico.</div>;
+    return <section className={styles.noDataMessage}>No hay datos suficientes para mostrar el gráfico.</section>;
   }
 
   const defaultColors = [
@@ -19,7 +19,7 @@ const ResponsiveBarChart = ({ data, bars, xAxisKey, yAxisLabel, layout = 'horizo
   const chartColors = colors || defaultColors;
 
   return (
-    <div className={styles.chartWrapper}>
+    <section className={styles.chartWrapper}>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart
           data={data}
@@ -71,7 +71,7 @@ const ResponsiveBarChart = ({ data, bars, xAxisKey, yAxisLabel, layout = 'horizo
           ))}
         </BarChart>
       </ResponsiveContainer>
-    </div>
+    </section>
   );
 };
 

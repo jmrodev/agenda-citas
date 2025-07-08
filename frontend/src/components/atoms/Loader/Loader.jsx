@@ -6,10 +6,10 @@ const Loader = ({ size = 'medium', color = 'primary', text = 'Cargando...' }) =>
   const colorClass = styles[color] || styles.primary;
 
   return (
-    <div className={styles.loaderContainer}>
-      <div className={`${styles.spinner} ${sizeClass} ${colorClass}`}></div>
-      {text && <div className={styles.text}>{text}</div>}
-    </div>
+    <section className={styles.loaderContainer} aria-busy="true" aria-live="polite">
+      <span className={`${styles.spinner} ${sizeClass} ${colorClass}`} role="status" aria-label="Cargando"></span>
+      {text && <span className={styles.text}>{text}</span>}
+    </section>
   );
 };
 

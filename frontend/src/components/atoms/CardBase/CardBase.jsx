@@ -3,9 +3,9 @@ import styles from './CardBase.module.css';
 
 const CardBase = ({ children, className = '', style = {}, ...rest }) => {
   return (
-    <div className={[styles.cardBase, className].join(' ').trim()} style={style} {...rest}>
+    <article className={[styles.cardBase, className].join(' ').trim()} style={style} {...rest}>
       {children}
-    </div>
+    </article>
   );
 };
 

@@ -5,11 +5,11 @@ import styles from './Charts.module.css'; // Un CSS común para los gráficos
 
 const ResponsiveLineChart = ({ data, lines, xAxisKey, yAxisLabel, colors }) => {
   if (!data || data.length === 0) {
-    return <div className={styles.noDataMessage}>No hay datos suficientes para mostrar el gráfico.</div>;
+    return <section className={styles.noDataMessage}>No hay datos suficientes para mostrar el gráfico.</section>;
   }
 
   return (
-    <div className={styles.chartWrapper}>
+    <section className={styles.chartWrapper}>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}> {/* Ajuste de márgenes */}
           <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color-light, #e0e0e0)" />
@@ -48,7 +48,7 @@ const ResponsiveLineChart = ({ data, lines, xAxisKey, yAxisLabel, colors }) => {
           ))}
         </LineChart>
       </ResponsiveContainer>
-    </div>
+    </section>
   );
 };
 

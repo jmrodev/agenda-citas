@@ -5,7 +5,7 @@ import styles from './Charts.module.css';
 
 const ResponsivePieChart = ({ data, dataKey, nameKey, colors }) => {
   if (!data || data.length === 0) {
-    return <div className={styles.noDataMessage}>No hay datos suficientes para mostrar el gráfico.</div>;
+    return <section className={styles.noDataMessage}>No hay datos suficientes para mostrar el gráfico.</section>;
   }
 
   const defaultColors = [
@@ -40,7 +40,7 @@ const ResponsivePieChart = ({ data, dataKey, nameKey, colors }) => {
   };
 
   return (
-    <div className={styles.chartWrapper}>
+    <section className={styles.chartWrapper}>
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie
@@ -77,7 +77,7 @@ const ResponsivePieChart = ({ data, dataKey, nameKey, colors }) => {
           />
         </PieChart>
       </ResponsiveContainer>
-    </div>
+    </section>
   );
 };
 

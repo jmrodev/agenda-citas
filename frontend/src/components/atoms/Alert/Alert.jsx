@@ -18,7 +18,12 @@ const Alert = React.memo(({
   ...rest
 }) => {
   return (
-    <div className={[styles.alert, styles[type] || '', className].join(' ').trim()} {...rest}>
+    <section 
+      className={[styles.alert, styles[type] || '', className].join(' ').trim()} 
+      role="alert" 
+      aria-live="polite"
+      {...rest}
+    >
       <span className={styles.icon}>
         <Icon name={icon || defaultIcons[type] || 'info'} size={20} />
       </span>
@@ -28,7 +33,7 @@ const Alert = React.memo(({
           <Icon name='close' size={16} />
         </button>
       )}
-    </div>
+    </section>
   );
 });
 
