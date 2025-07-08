@@ -27,7 +27,6 @@ const CalendarHeader = ({
       {showSelectors ? (
         <>
           <select
-          <select
             value={month}
             onChange={e => onMonthChange && onMonthChange(Number(e.target.value))}
             className={styles.select}
