@@ -11,12 +11,12 @@ import { authFetch } from '../../../auth/authFetch';
 import styles from './AppointmentFormModal.module.css';
 
 const AppointmentFormModal = ({ 
-  isOpen, 
-  onClose, 
-  onSuccess, 
-  selectedDate, 
-  selectedTime, 
-  appointment 
+  isOpen,
+  onClose,
+  onSuccess,
+  selectedDateISO, // Recibir el string ISO
+  selectedTime,
+  appointment
 }) => {
   const [formData, setFormData] = useState({
     patient_id: '',
@@ -30,7 +30,7 @@ const AppointmentFormModal = ({
     amount: '',
     payment_method: 'efectivo'
   });
-  
+
   const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -49,11 +49,11 @@ const AppointmentFormModal = ({
 
   // Solo inicializar el formulario al abrir el modal o cambiar la cita a editar
   useEffect(() => {
-    console.log('useEffect initializeForm triggered:', { isOpen, appointment });
+    // console.log('useEffect initializeForm triggered:', { isOpen, appointment, selectedDateISO, selectedTime });
     if (isOpen) {
       initializeForm();
     }
-  }, [isOpen, appointment, selectedDate, selectedTime]);
+  }, [isOpen, appointment, selectedDateISO, selectedTime]); // Usar string ISO en dependencias
 
   const fetchPatients = async () => {
     try {
@@ -80,7 +80,7 @@ const AppointmentFormModal = ({
   };
 
   const initializeForm = () => {
-    console.log('initializeForm:', { isEditing, appointment, selectedDate, selectedTime });
+    // console.log('initializeForm:', { isEditing, appointment, selectedDateISO, selectedTime });
     if (isEditing && appointment) {
       setFormData({
         patient_id: appointment.patient_id ? String(appointment.patient_id) : '',
@@ -95,11 +95,10 @@ const AppointmentFormModal = ({
         payment_method: appointment.payment_method || 'efectivo'
       });
     } else {
-      const dateStr = selectedDate ? selectedDate.toISOString().split('T')[0] : '';
       setFormData({
         patient_id: '',
         doctor_id: '',
-        date: dateStr,
+        date: selectedDateISO || '', // Usar directamente el string ISO
         time: selectedTime || '',
         reason: '',
         type: 'consulta',

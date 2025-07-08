@@ -196,7 +196,7 @@ const CalendarPage = () => {
           isOpen={showAppointmentForm}
           onClose={handleAppointmentFormClose}
           onSuccess={handleAppointmentFormSuccess}
-          selectedDate={selectedDate}
+          selectedDateISO={selectedDate ? selectedDate.toISOString().split('T')[0] : ''}
           selectedTime={selectedTime}
           appointment={editingAppointment}
         />
