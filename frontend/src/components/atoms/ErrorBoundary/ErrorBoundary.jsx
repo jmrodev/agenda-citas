@@ -8,11 +8,13 @@ class ErrorBoundary extends React.Component {
     this.state = { 
       hasError: false, 
       error: null, 
-      errorInfo: null 
+      errorInfo: null,
+      renderCount: 0
     };
+    this.maxRenders = 100;
   }
 
-  static getDerivedStateFromError() {
+  static getDerivedStateFromError(error) {
     // Actualizar el estado para que el siguiente render muestre el fallback UI
     return { hasError: true };
   }
@@ -23,25 +25,48 @@ class ErrorBoundary extends React.Component {
       console.error('ErrorBoundary capturó un error:', error, errorInfo);
     }
 
-    this.setState({
+    // Detectar posibles bucles infinitos
+    this.setState(prevState => ({
       error: error,
-      errorInfo: errorInfo
-    });
+      errorInfo: errorInfo,
+      renderCount: prevState.renderCount + 1
+    }));
+
+    // Si hay demasiados errores, forzar reload
+    if (this.state.renderCount > this.maxRenders) {
+      console.error('Demasiados errores detectados. Recargando página...');
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    }
 
     // Aquí podrías enviar el error a un servicio de monitoreo
     // reportErrorToService(error, errorInfo);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    // Detectar bucles infinitos en el ErrorBoundary mismo
+    if (this.state.renderCount > this.maxRenders) {
+      console.error('ErrorBoundary en bucle infinito. Recargando...');
+      window.location.reload();
+    }
   }
 
   handleRetry = () => {
     this.setState({ 
       hasError: false, 
       error: null, 
-      errorInfo: null 
+      errorInfo: null,
+      renderCount: 0
     });
   };
 
   handleGoHome = () => {
     window.location.href = '/';
+  };
+
+  handleReload = () => {
+    window.location.reload();
   };
 
   render() {
@@ -79,6 +104,13 @@ class ErrorBoundary extends React.Component {
                 className={styles.homeButton}
               >
                 Ir al inicio
+              </Button>
+              <Button 
+                onClick={this.handleReload} 
+                variant="secondary"
+                className={styles.reloadButton}
+              >
+                Recargar página
               </Button>
             </div>
           </div>

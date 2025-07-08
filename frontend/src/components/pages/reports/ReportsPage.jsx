@@ -7,7 +7,7 @@ const ReportsPage = () => {
   return (
     <div className={styles.pageContainer}>
       <header className={styles.header}>
-        <Title level="h1" className={styles.pageTitle}>Página de Reportes</Title>
+        <Title level={1} className={styles.pageTitle}>Página de Reportes</Title>
       </header>
       <main className={styles.content}>
         <ReportView />

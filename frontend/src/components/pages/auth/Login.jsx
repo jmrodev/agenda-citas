@@ -29,9 +29,12 @@ const Login = () => {
     setError('');
     setLoading(true);
     try {
+      console.log('Login.handleLoginSubmit - Iniciando login con:', formData.username);
       await login(formData);
+      console.log('Login.handleLoginSubmit - Login exitoso, redirigiendo a /app');
       navigate('/app', { replace: true });
     } catch (err) {
+      console.error('Login.handleLoginSubmit - Error:', err.message);
       setError(err.message || 'Error de red o servidor.');
     } finally {
       setLoading(false);

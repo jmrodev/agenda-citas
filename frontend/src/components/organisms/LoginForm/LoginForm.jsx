@@ -18,40 +18,12 @@ const LoginForm = React.memo(({ onSubmit, isLoading, serverError }) => {
     setError('');
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || 'Credenciales incorrectas');
-      }
-
-      const data = await res.json();
-
-      // Guardar token y rol
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('role', data.user.role);
-
-      // Redirigir según el rol del usuario
-      const { role } = data.user;
-      
-      switch (role) {
-        case 'admin':
-          navigate('/dashboard/admin');
-          break;
-        case 'secretary':
-          navigate('/dashboard/secretary');
-          break;
-        case 'doctor':
-          navigate('/dashboard/doctor');
-          break;
-        default:
-          navigate('/dashboard');
-      }
+      console.log('LoginForm.handleSubmit - Llamando onSubmit con:', { username });
+      // Usar la función onSubmit que recibe como prop
+      await onSubmit({ username, password });
+      console.log('LoginForm.handleSubmit - onSubmit completado exitosamente');
     } catch (error) {
+      console.error('LoginForm.handleSubmit - Error:', error.message);
       setError(error.message || 'Error al iniciar sesión');
     } finally {
       setIsSubmitting(false);

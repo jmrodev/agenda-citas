@@ -37,8 +37,17 @@ export function isTokenExpired(token) {
  */
 export async function handleAuthResponse(response) {
   if (!response.ok) {
-    const data = await response.json();
-    throw new Error(data.message || `Error ${response.status}: ${response.statusText}`);
+    let errorMessage = `Error ${response.status}: ${response.statusText}`;
+    
+    try {
+      const data = await response.json();
+      errorMessage = data.error || data.message || errorMessage;
+    } catch (parseError) {
+      // Si no se puede parsear JSON, usar el mensaje por defecto
+      console.warn('No se pudo parsear respuesta de error:', parseError);
+    }
+    
+    throw new Error(errorMessage);
   }
   
   return await response.json();

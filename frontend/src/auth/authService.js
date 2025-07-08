@@ -1,26 +1,33 @@
-import { setSession, clearSession, getRefreshToken, setRefreshToken, clearRefreshToken } from './session.js';
+import { setSession, clearSession, getRefreshToken, setRefreshToken, clearRefreshToken, setToken, setRole } from './session.js';
 import { handleAuthResponse } from './authUtils.js';
 
 export async function login({ username, password }) {
-  console.log('authService.login - Datos a enviar:', { username, password });
+  console.log('authService.login - Iniciando login para usuario:', username);
   
-  const res = await fetch('/api/auth/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password })
-  });
-  
-  console.log('authService.login - Status:', res.status, res.statusText);
-  
-  const data = await handleAuthResponse(res);
-  console.log('authService.login - Success response:', data);
-  
-  setSession(data.token, data.user.role);
-  if (data.refresh_token) {
-    setRefreshToken(data.refresh_token);
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    
+    console.log('authService.login - Status:', res.status, res.statusText);
+    
+    const data = await handleAuthResponse(res);
+    console.log('authService.login - Login exitoso:', { user_id: data.user.user_id, role: data.user.role });
+    
+    // Guardar token y rol en localStorage
+    setToken(data.token);
+    setRole(data.user.role);
+    if (data.refresh_token) {
+      setRefreshToken(data.refresh_token);
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('authService.login - Error:', error.message);
+    throw error;
   }
-  
-  return data;
 }
 
 export async function refreshAccessToken() {
@@ -42,7 +49,9 @@ export async function refreshAccessToken() {
   }
   
   const data = await handleAuthResponse(res);
-  setSession(data.token, data.user.role);
+  // Guardar token y rol en localStorage
+  setToken(data.token);
+  setRole(data.user.role);
   if (data.refresh_token) {
     setRefreshToken(data.refresh_token);
   }
