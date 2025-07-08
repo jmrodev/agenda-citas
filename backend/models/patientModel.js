@@ -224,7 +224,7 @@ async function getPatientReportStats(startDate, endDate, rangeKey) {
     summary: {
       totalActivePatients: totalActivePatients || 0,
       newPatientsInPeriod: newPatientsInPeriod || 0,
-      averageAge: averageAge ? parseFloat(averageAge.toFixed(1)) : 0,
+      averageAge: (typeof averageAge === 'number' && !isNaN(averageAge)) ? averageAge.toFixed(1) : null,
       // growthPercentage se calculará en el servicio si es necesario
     },
     byTimePeriod: newPatientsByTimePeriod,

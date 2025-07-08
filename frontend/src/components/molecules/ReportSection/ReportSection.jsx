@@ -8,7 +8,7 @@ const ReportSection = ({ title, children, isLoading, error, isEmpty, emptyMessag
   return (
     <CardBase className={styles.reportSectionCard}>
       <header className={styles.header}>
-        <Title level="h3" className={styles.title}>{title}</Title>
+        <Title level={3} className={styles.title}>{title}</Title>
       </header>
       <div className={styles.content}>
         {isLoading && <p className={styles.loading}>Cargando datos de la sección...</p>}

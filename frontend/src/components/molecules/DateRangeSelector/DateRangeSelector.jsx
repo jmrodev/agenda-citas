@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styles from './DateRangeSelector.module.css';
 import Button from '../../atoms/Button/Button'; // Asumiendo átomo Button
@@ -104,11 +104,11 @@ const DateRangeSelector = ({ onRangeChange, initialRange = 'thisMonth' }) => {
     };
   };
 
-  // Emitir el rango inicial al montar el componente
-  useState(() => {
-     onRangeChange(calculateDateRange(initialRange));
-  }, []);
-
+  // Emitir el rango inicial SOLO después del primer render
+  useEffect(() => {
+    onRangeChange(calculateDateRange(initialRange));
+    // eslint-disable-next-line
+  }, [initialRange]);
 
   return (
     <div className={styles.dateRangeSelector}>
