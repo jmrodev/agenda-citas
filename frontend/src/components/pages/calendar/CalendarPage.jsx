@@ -61,15 +61,17 @@ const CalendarPage = () => {
   };
 
   const handleTimeClick = (time, appointment = null) => {
+    console.log('handleTimeClick:', { time, appointment });
     setSelectedTime(time);
     setEditingAppointment(appointment);
     setShowAppointmentForm(true);
   };
 
   const handleAppointmentFormClose = () => {
+    console.log('handleAppointmentFormClose - selectedTime antes:', selectedTime);
     setShowAppointmentForm(false);
     setEditingAppointment(null);
-    setSelectedTime(null);
+    // No limpiar selectedTime aquí, solo limpiar editingAppointment
   };
 
   const handleAppointmentFormSuccess = () => {
@@ -147,7 +149,11 @@ const CalendarPage = () => {
               day: 'numeric' 
             })}</h3>
             <Button 
-              onClick={() => setShowAppointmentForm(true)}
+              onClick={() => {
+                setSelectedTime(null);
+                setEditingAppointment(null);
+                setShowAppointmentForm(true);
+              }}
               variant="primary"
               size="small"
             >

@@ -39,13 +39,21 @@ const AppointmentFormModal = ({
 
   const isEditing = Boolean(appointment);
 
+  // Solo cargar pacientes y doctores al abrir el modal
   useEffect(() => {
     if (isOpen) {
       fetchPatients();
       fetchDoctors();
+    }
+  }, [isOpen]);
+
+  // Solo inicializar el formulario al abrir el modal o cambiar la cita a editar
+  useEffect(() => {
+    console.log('useEffect initializeForm triggered:', { isOpen, appointment });
+    if (isOpen) {
       initializeForm();
     }
-  }, [isOpen, appointment, selectedDate, selectedTime]);
+  }, [isOpen, appointment]);
 
   const fetchPatients = async () => {
     try {
@@ -72,22 +80,21 @@ const AppointmentFormModal = ({
   };
 
   const initializeForm = () => {
+    console.log('initializeForm:', { isEditing, appointment, selectedDate, selectedTime });
     if (isEditing && appointment) {
-      // Editar cita existente
       setFormData({
-        patient_id: appointment.patient_id?.toString() || '',
-        doctor_id: appointment.doctor_id?.toString() || '',
+        patient_id: appointment.patient_id ? String(appointment.patient_id) : '',
+        doctor_id: appointment.doctor_id ? String(appointment.doctor_id) : '',
         date: appointment.date ? new Date(appointment.date).toISOString().split('T')[0] : '',
         time: appointment.time || '',
         reason: appointment.reason || '',
         type: appointment.type || 'consulta',
         status: appointment.status || 'pendiente',
         service_type: appointment.service_type || '',
-        amount: appointment.amount?.toString() || '',
+        amount: appointment.amount ? String(appointment.amount) : '',
         payment_method: appointment.payment_method || 'efectivo'
       });
     } else {
-      // Nueva cita
       const dateStr = selectedDate ? selectedDate.toISOString().split('T')[0] : '';
       setFormData({
         patient_id: '',
@@ -169,6 +176,11 @@ const AppointmentFormModal = ({
 
   if (!isOpen) return null;
 
+  console.log('Form data:', formData);
+
+  // Verificar si el formulario se está reinicializando
+  console.log('Modal props:', { isOpen, isEditing, selectedDate, selectedTime });
+
   return (
     <ModalContainer onClose={onClose}>
       <ModalHeader
@@ -184,33 +196,36 @@ const AppointmentFormModal = ({
             <FormGroup title="Paciente" required>
               <Select
                 name="patient_id"
-                value={formData.patient_id}
+                value={formData.patient_id || ''}
                 onChange={handleChange}
                 required
-              >
-                <option value="">Seleccionar paciente</option>
-                {patients.map(patient => (
-                  <option key={patient.patient_id} value={patient.patient_id}>
-                    {patient.first_name} {patient.last_name} - DNI: {patient.dni}
-                  </option>
-                ))}
-              </Select>
+                options={[
+                  { value: '', label: 'Seleccionar paciente' },
+                  ...patients.map(patient => ({
+                    value: String(patient.patient_id),
+                    label: `${patient.first_name} ${patient.last_name} - DNI: ${patient.dni}`
+                  }))
+                ]}
+              />
+              <div style={{ fontSize: '12px', color: 'red' }}>
+                Debug: Value = "{formData.patient_id}"
+              </div>
             </FormGroup>
 
             <FormGroup title="Doctor" required>
               <Select
                 name="doctor_id"
-                value={formData.doctor_id}
+                value={formData.doctor_id || ''}
                 onChange={handleChange}
                 required
-              >
-                <option value="">Seleccionar doctor</option>
-                {doctors.map(doctor => (
-                  <option key={doctor.doctor_id} value={doctor.doctor_id}>
-                    Dr. {doctor.first_name} {doctor.last_name} - {doctor.specialty}
-                  </option>
-                ))}
-              </Select>
+                options={[
+                  { value: '', label: 'Seleccionar doctor' },
+                  ...doctors.map(doctor => ({
+                    value: String(doctor.doctor_id),
+                    label: `Dr. ${doctor.first_name} ${doctor.last_name} - ${doctor.specialty}`
+                  }))
+                ]}
+              />
             </FormGroup>
           </div>
 
@@ -254,12 +269,13 @@ const AppointmentFormModal = ({
                 name="type"
                 value={formData.type}
                 onChange={handleChange}
-              >
-                <option value="consulta">Consulta</option>
-                <option value="control">Control</option>
-                <option value="emergencia">Emergencia</option>
-                <option value="seguimiento">Seguimiento</option>
-              </Select>
+                options={[
+                  { value: 'consulta', label: 'Consulta' },
+                  { value: 'control', label: 'Control' },
+                  { value: 'emergencia', label: 'Emergencia' },
+                  { value: 'seguimiento', label: 'Seguimiento' }
+                ]}
+              />
             </FormGroup>
           </div>
 
@@ -269,12 +285,13 @@ const AppointmentFormModal = ({
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-              >
-                <option value="pendiente">Pendiente</option>
-                <option value="confirmada">Confirmada</option>
-                <option value="cancelada">Cancelada</option>
-                <option value="completada">Completada</option>
-              </Select>
+                options={[
+                  { value: 'pendiente', label: 'Pendiente' },
+                  { value: 'confirmada', label: 'Confirmada' },
+                  { value: 'cancelada', label: 'Cancelada' },
+                  { value: 'completada', label: 'Completada' }
+                ]}
+              />
             </FormGroup>
 
             <FormGroup title="Tipo de servicio">
@@ -308,12 +325,13 @@ const AppointmentFormModal = ({
                 name="payment_method"
                 value={formData.payment_method}
                 onChange={handleChange}
-              >
-                <option value="efectivo">Efectivo</option>
-                <option value="tarjeta">Tarjeta</option>
-                <option value="transferencia">Transferencia</option>
-                <option value="débito">Débito</option>
-              </Select>
+                options={[
+                  { value: 'efectivo', label: 'Efectivo' },
+                  { value: 'tarjeta', label: 'Tarjeta' },
+                  { value: 'transferencia', label: 'Transferencia' },
+                  { value: 'débito', label: 'Débito' }
+                ]}
+              />
             </FormGroup>
           </div>
         </div>

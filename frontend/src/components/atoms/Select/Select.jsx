@@ -13,9 +13,11 @@ const Select = ({
   'aria-describedby': ariaDescribedby,
   ...rest
 }) => {
+  console.log('Select render:', { value, optionsCount: options.length, options });
+  
   return (
     <select
-      value={value}
+      value={value || ''}
       onChange={onChange}
       disabled={disabled}
       aria-label={ariaLabel || label} // Usar label como fallback para aria-label
