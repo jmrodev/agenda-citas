@@ -46,7 +46,29 @@ const ReportView = () => {
       return;
     }
 
-    setReportData(prev => ({ ...prev, [sectionKey]: { ...prev[sectionKey], loading: true, error: null } }));
+  // Corrección: fetchDataForSection no debe depender de 'reportData' para ser estable.
+  // Recibirá 'isSectionAvailable' como argumento.
+  const fetchDataForSection = useCallback(async (sectionKey, range, isSectionAvailable) => {
+    if (!isSectionAvailable || !range) {
+      if (!isSectionAvailable) {
+        // Solo actualiza si estaba cargando o tenía un error, para limpiar el estado.
+        setReportData(prev => {
+          if (prev[sectionKey]?.loading || prev[sectionKey]?.error) {
+            return {
+              ...prev,
+              [sectionKey]: { ...prev[sectionKey], data: prev[sectionKey]?.data, loading: false, error: null }
+            };
+          }
+          return prev; // No hay cambio si no estaba cargando/con error y no está disponible
+        });
+      }
+      return;
+    }
+
+    setReportData(prev => ({
+      ...prev,
+      [sectionKey]: { ...prev[sectionKey], data: prev[sectionKey]?.data, error: null, loading: true } // Preservar datos existentes mientras carga
+    }));
     try {
       const queryParams = `?startDate=${range.startDate}&endDate=${range.endDate}&rangeKey=${range.key}`;
       const response = await authFetch(`${API_ENDPOINTS[sectionKey]}${queryParams}`);
@@ -55,20 +77,35 @@ const ReportView = () => {
         throw new Error(errorData.message || `Error HTTP ${response.status} al cargar datos de ${sectionKey}`);
       }
       const data = await response.json();
-      setReportData(prev => ({ ...prev, [sectionKey]: { ...prev[sectionKey], data, loading: false } }));
+      setReportData(prev => ({
+        ...prev,
+        [sectionKey]: { ...prev[sectionKey], data, loading: false }
+      }));
     } catch (error) {
       console.error(`Error fetching ${sectionKey}:`, error);
-      setReportData(prev => ({ ...prev, [sectionKey]: { ...prev[sectionKey], error: error.message, loading: false } }));
+      setReportData(prev => ({
+        ...prev,
+        [sectionKey]: { ...prev[sectionKey], error: error.message, loading: false }
+      }));
     }
-  }, [reportData]); // Dependencia de reportData para acceder a 'available'
+  }, []); // Dependencias vacías para que la función sea estable
 
   useEffect(() => {
     if (currentDateRange) {
-      Object.keys(reportData).forEach(sectionKey => {
-        fetchDataForSection(sectionKey, currentDateRange);
+      // Iterar sobre una lista constante de keys (API_ENDPOINTS) es más seguro.
+      Object.keys(API_ENDPOINTS).forEach(sectionKey => {
+        if (reportData[sectionKey]) { // Asegurarse que la sección existe en el estado reportData
+            const isSectionAvailable = reportData[sectionKey].available;
+            fetchDataForSection(sectionKey, currentDateRange, isSectionAvailable);
+        }
       });
     }
-  }, [currentDateRange, fetchDataForSection, reportData]); // Incluir reportData en dependencias por el chequeo de 'available'
+    // fetchDataForSection es estable. El useEffect se disparará si currentDateRange cambia.
+    // O si el propio reportData cambia (para re-evaluar isSectionAvailable), PERO esto es lo que queremos evitar
+    // para el bucle. La lectura de isSectionAvailable aquí es del estado actual.
+    // La clave es que fetchDataForSection NO cause un cambio en sí mismo que reinicie el ciclo.
+    // Si available NUNCA cambia después de la inicialización, no necesitamos reportData en las deps.
+  }, [currentDateRange, fetchDataForSection]); // Eliminamos reportData de las dependencias del useEffect.
 
   // Renderizado de ejemplo para una sección. Se necesitarán más detalles para cada una.
   const renderPatientSectionContent = (section) => {
