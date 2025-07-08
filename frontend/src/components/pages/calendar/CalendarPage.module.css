@@ -1,0 +1,191 @@
+.container {
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.calendarLayout {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.calendarPanel {
+  background: var(--surface, #fff);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color, #e5e7eb);
+  height: fit-content;
+}
+
+.compactCalendar {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  box-shadow: none;
+  border: none;
+}
+
+.dayDetailsPanel {
+  background: var(--surface, #fff);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color, #e5e7eb);
+}
+
+.dayHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+}
+
+.dayHeader h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-color, #222);
+  text-transform: capitalize;
+}
+
+.timeSlotsContainer {
+  margin-top: 1rem;
+}
+
+.timeSlotsContainer h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-color, #222);
+}
+
+.timeSlots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.timeSlot {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #e5e7eb);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 60px;
+  justify-content: center;
+}
+
+.timeSlot:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.timeSlot.available {
+  background: var(--surface, #fff);
+  border-color: var(--primary-color, #0070f3);
+}
+
+.timeSlot.available:hover {
+  background: var(--primary-color, #0070f3);
+  color: white;
+}
+
+.timeSlot.booked {
+  background: var(--error-bg, #fef2f2);
+  border-color: var(--error-color, #ef4444);
+  cursor: pointer;
+}
+
+.timeSlot.booked:hover {
+  background: var(--error-color, #ef4444);
+  color: white;
+}
+
+.time {
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.appointmentInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.patientName {
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.doctorName {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.availableText {
+  font-size: 0.875rem;
+  opacity: 0.7;
+  font-style: italic;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .calendarLayout {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .calendarPanel {
+    order: 2;
+  }
+
+  .dayDetailsPanel {
+    order: 1;
+  }
+
+  .timeSlots {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dark mode support */
+.dark .calendarPanel,
+.dark .dayDetailsPanel {
+  background: var(--surface-dark, #23272f);
+  border-color: #333;
+}
+
+.dark .dayHeader h3,
+.dark .timeSlotsContainer h4 {
+  color: var(--text-color, #f3f3f3);
+}
+
+.dark .timeSlot {
+  border-color: #333;
+}
+
+.dark .timeSlot.available {
+  background: var(--surface-dark, #23272f);
+  border-color: var(--primary-color, #3399ff);
+}
+
+.dark .timeSlot.booked {
+  background: var(--error-bg-dark, #2d1b1b);
+  border-color: var(--error-color, #ff6b6b);
+} 

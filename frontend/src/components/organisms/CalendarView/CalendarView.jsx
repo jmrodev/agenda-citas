@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import styles from './CalendarView.module.css';
 import CalendarHeader from '../../molecules/CalendarHeader/CalendarHeader';
 import CalendarWeekdays from '../../molecules/CalendarWeekdays/CalendarWeekdays';
@@ -24,8 +24,17 @@ const CalendarView = React.memo(({
 }) => {
   const [month, setMonth] = useState(initialMonth);
   const [year, setYear] = useState(initialYear);
-  const [selectedDay, setSelectedDay] = useState(null);
+  const [selectedDay, setSelectedDay] = useState(new Date().getDate());
   const logger = createLogger('CalendarView');
+
+  // Llamar onDayClick con el día actual al inicializar
+  useEffect(() => {
+    if (onDayClick) {
+      const today = new Date();
+      const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      onDayClick(dateKey);
+    }
+  }, [onDayClick]);
 
   // Memoizar cálculos costosos
   const { daysInMonth, firstDay, today } = useMemo(() => {

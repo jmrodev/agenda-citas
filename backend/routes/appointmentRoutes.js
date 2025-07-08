@@ -16,9 +16,8 @@ router.get('/dashboard-stats', authenticateToken, authorizeRoles('admin', 'secre
 router.get('/reports/summary', authenticateToken, authorizeRoles('admin', 'secretary', 'doctor'), appointmentController.getAppointmentReportSummary);
 
 router.post('/', authenticateToken, appointmentController.create);
-// PUT y DELETE para citas podrían necesitar el ID en la ruta, ej /:id
-// router.put('/:id', authenticateToken, appointmentController.update);
-// router.delete('/:id', authenticateToken, authorizeRoles('admin'), appointmentController.remove);
+router.put('/:id', authenticateToken, appointmentController.update);
+router.delete('/:id', authenticateToken, authorizeRoles('admin'), appointmentController.remove);
 
 
 module.exports = router; 
