@@ -1,28 +1,31 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import SideMenuWrapper from './SideMenu';
+import { vi } from 'vitest';
 
 // Mock del componente SideMenu de molecules
-jest.mock('../../molecules/SideMenu/SideMenu', () => {
-  return function MockSideMenu({ items, activeIndex, onMenuClick, isCollapsed, onToggleCollapse }) {
-    return (
-      <div data-testid="side-menu" data-collapsed={isCollapsed}>
-        <button onClick={onToggleCollapse} data-testid="toggle-button">
-          {isCollapsed ? 'Expandir' : 'Colapsar'}
-        </button>
-        <div data-testid="menu-items">
-          {items.map((item, index) => (
-            <button
-              key={index}
-              onClick={() => onMenuClick(index)}
-              data-testid={`menu-item-${index}`}
-              data-active={index === activeIndex}
-            >
-              {item.label}
-            </button>
-          ))}
+vi.mock('../../molecules/SideMenu/SideMenu', () => {
+  return {
+    default: function MockSideMenu({ items, activeIndex, onMenuClick, isCollapsed, onToggleCollapse }) {
+      return (
+        <div data-testid="side-menu" data-collapsed={isCollapsed}>
+          <button onClick={onToggleCollapse} data-testid="toggle-button">
+            {isCollapsed ? 'Expandir' : 'Colapsar'}
+          </button>
+          <div data-testid="menu-items">
+            {items.map((item, index) => (
+              <button
+                key={index}
+                onClick={() => onMenuClick(index)}
+                data-testid={`menu-item-${index}`}
+                data-active={index === activeIndex}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
-    );
+      );
+    }
   };
 });
 
@@ -33,10 +36,10 @@ describe('SideMenuWrapper', () => {
     { label: 'Citas', icon: 'appointments' },
     { label: 'Configuración', icon: 'settings' }
   ];
-  const mockOnMenuSelect = jest.fn();
+  const mockOnMenuSelect = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test('renderiza el menú lateral con elementos', () => {

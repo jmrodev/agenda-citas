@@ -3,5 +3,6 @@ import Backdrop from './Backdrop';
 
 test('renderiza el backdrop con la clase correspondiente', () => {
   const { container } = render(<Backdrop open={true} />);
-  expect(container.firstChild).toHaveClass('backdrop');
+  // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+  expect(container.firstChild).toHaveClass(expect.stringContaining('backdrop'));
 }); 

@@ -11,6 +11,7 @@ const FileInput = ({ label, onChange, accept, multiple, disabled, error, classNa
         multiple={multiple}
         disabled={disabled}
         aria-invalid={error}
+        data-testid={rest['data-testid'] || 'file-input'} // Ensure a default testid if none passed
         {...rest}
       />
     </label>

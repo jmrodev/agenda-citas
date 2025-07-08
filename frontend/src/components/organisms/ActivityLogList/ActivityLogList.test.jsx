@@ -1,10 +1,14 @@
 import { render, screen } from '@testing-library/react';
 import ActivityLogList from './ActivityLogList';
 
+import { vi } from 'vitest';
+
 // Mock de ActivityLogItem
-jest.mock('../../molecules/ActivityLogItem/ActivityLogItem', () => {
-  return function MockActivityLogItem(props) {
-    return <div data-testid="activity-log-item">{props.description}</div>;
+vi.mock('../../molecules/ActivityLogItem/ActivityLogItem', () => {
+  return {
+    default: function MockActivityLogItem(props) {
+      return <div data-testid="activity-log-item">{props.description}</div>;
+    }
   };
 });
 

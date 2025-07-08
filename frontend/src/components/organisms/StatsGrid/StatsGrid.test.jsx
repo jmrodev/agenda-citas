@@ -1,28 +1,33 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import StatsGrid from './StatsGrid';
+import { vi } from 'vitest';
 
 // Mock de los componentes hijos
-jest.mock('../../molecules/StatCard/StatCard', () => {
-  return function MockStatCard({ title, value, icon, color, trend }) {
-    return (
-      <div data-testid="stat-card" data-color={color}>
-        <div data-testid="stat-title">{title}</div>
-        <div data-testid="stat-value">{value}</div>
-        <div data-testid="stat-icon">{icon}</div>
-        {trend && <div data-testid="stat-trend">{trend}</div>}
-      </div>
-    );
+vi.mock('../../molecules/StatCard/StatCard', () => {
+  return {
+    default: function MockStatCard({ title, value, icon, color, trend }) {
+      return (
+        <div data-testid="stat-card" data-color={color}>
+          <div data-testid="stat-title">{title}</div>
+          <div data-testid="stat-value">{value}</div>
+          <div data-testid="stat-icon">{icon}</div>
+          {trend && <div data-testid="stat-trend">{trend}</div>}
+        </div>
+      );
+    }
   };
 });
 
-jest.mock('../../molecules/QuickAction/QuickAction', () => {
-  return function MockQuickAction({ title, icon, onClick, variant }) {
-    return (
-      <button data-testid="quick-action" onClick={onClick} data-variant={variant}>
-        <span data-testid="action-title">{title}</span>
-        <span data-testid="action-icon">{icon}</span>
-      </button>
-    );
+vi.mock('../../molecules/QuickAction/QuickAction', () => {
+  return {
+    default: function MockQuickAction({ title, icon, onClick, variant }) {
+      return (
+        <button data-testid="quick-action" onClick={onClick} data-variant={variant}>
+          <span data-testid="action-title">{title}</span>
+          <span data-testid="action-icon">{icon}</span>
+        </button>
+      );
+    }
   };
 });
 
@@ -54,19 +59,19 @@ describe('StatsGrid', () => {
     {
       title: 'Nuevo Paciente',
       icon: '➕',
-      onClick: jest.fn(),
+      onClick: vi.fn(),
       variant: 'primary'
     },
     {
       title: 'Nueva Cita',
       icon: '📝',
-      onClick: jest.fn(),
+      onClick: vi.fn(),
       variant: 'secondary'
     }
   ];
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test('renderiza el grid de estadísticas', () => {

@@ -1,73 +1,82 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import CalendarView from './CalendarView';
+import { vi } from 'vitest';
 
 // Mock de los componentes hijos
-jest.mock('../../molecules/CalendarHeader/CalendarHeader', () => {
-  return function MockCalendarHeader({ month, year, onPrev, onNext }) {
-    return (
-      <div data-testid="calendar-header">
-        <button onClick={onPrev} data-testid="prev-button">Anterior</button>
-        <span data-testid="month-year">{month}/{year}</span>
-        <button onClick={onNext} data-testid="next-button">Siguiente</button>
-      </div>
-    );
+vi.mock('../../molecules/CalendarHeader/CalendarHeader', () => {
+  return {
+    default: function MockCalendarHeader({ month, year, onPrev, onNext }) {
+      return (
+        <div data-testid="calendar-header">
+          <button onClick={onPrev} data-testid="prev-button">Anterior</button>
+          <span data-testid="month-year">{month}/{year}</span>
+          <button onClick={onNext} data-testid="next-button">Siguiente</button>
+        </div>
+      );
+    }
   };
 });
 
-jest.mock('../../molecules/CalendarWeekdays/CalendarWeekdays', () => {
-  return function MockCalendarWeekdays() {
-    return <div data-testid="calendar-weekdays">Días de la semana</div>;
+vi.mock('../../molecules/CalendarWeekdays/CalendarWeekdays', () => {
+  return {
+    default: function MockCalendarWeekdays() {
+      return <div data-testid="calendar-weekdays">Días de la semana</div>;
+    }
   };
 });
 
-jest.mock('../../molecules/CalendarGrid/CalendarGrid', () => {
-  return function MockCalendarGrid({ days }) {
-    return (
-      <div data-testid="calendar-grid">
-        {days.map((day, index) => (
-          <button
-            key={index}
-            onClick={day.onClick}
-            disabled={day.isDisabled}
-            data-testid={`day-${day.day}`}
-            data-selected={day.isSelected}
-            data-today={day.isToday}
-            data-has-event={day.hasEvent}
-          >
-            {day.day}
-          </button>
-        ))}
-      </div>
-    );
+vi.mock('../../molecules/CalendarGrid/CalendarGrid', () => {
+  return {
+    default: function MockCalendarGrid({ days }) {
+      return (
+        <div data-testid="calendar-grid">
+          {days.map((day, index) => (
+            <button
+              key={index}
+              onClick={day.onClick}
+              disabled={day.isDisabled}
+              data-testid={`day-${day.day}`}
+              data-selected={day.isSelected}
+              data-today={day.isToday}
+              data-has-event={day.hasEvent}
+            >
+              {day.day}
+            </button>
+          ))}
+        </div>
+      );
+    }
   };
 });
 
-jest.mock('../../molecules/CalendarEventList/CalendarEventList', () => {
-  return function MockCalendarEventList({ events }) {
-    return (
-      <div data-testid="calendar-event-list">
-        {events.map((event, index) => (
-          <div key={index} data-testid={`event-${index}`}>
-            {event.title} - {event.time}
-          </div>
-        ))}
-      </div>
-    );
+vi.mock('../../molecules/CalendarEventList/CalendarEventList', () => {
+  return {
+    default: function MockCalendarEventList({ events }) {
+      return (
+        <div data-testid="calendar-event-list">
+          {events.map((event, index) => (
+            <div key={index} data-testid={`event-${index}`}>
+              {event.title} - {event.time}
+            </div>
+          ))}
+        </div>
+      );
+    }
   };
 });
 
 // Mock de la función de debug
-jest.mock('../../../utils/debug.js', () => ({
+vi.mock('../../../utils/debug.js', () => ({
   createLogger: () => ({
-    log: jest.fn(),
+    log: vi.fn(),
   }),
 }));
 
 describe('CalendarView', () => {
-  const mockOnDayClick = jest.fn();
+  const mockOnDayClick = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test('renderiza el calendario con componentes básicos', () => {
