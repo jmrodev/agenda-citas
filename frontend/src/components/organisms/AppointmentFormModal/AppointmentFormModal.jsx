@@ -178,7 +178,7 @@ const AppointmentFormModal = ({
   console.log('Form data:', formData);
 
   // Verificar si el formulario se está reinicializando
-  console.log('Modal props:', { isOpen, isEditing, selectedDate, selectedTime });
+  console.log('Modal props:', { isOpen, isEditing, selectedDateISO, selectedTime });
 
   return (
     <ModalContainer onClose={onClose}>

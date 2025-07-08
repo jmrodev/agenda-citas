@@ -16,6 +16,7 @@ const CalendarDayInfo = ({
   className = '',
   style = {},
   onClick,
+  dateKey, // Extract dateKey to prevent it from being passed to DOM
   ...rest
 }) => {
   return (
