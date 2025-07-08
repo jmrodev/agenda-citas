@@ -14,6 +14,10 @@ import styles from './PatientView.module.css';
 import PatientReferencesList from '../../molecules/PatientReferencesList/PatientReferencesList';
 // Descomentar la importación del modal
 import ReferencePersonFormModal from '../../organisms/ReferencePersonFormModal/ReferencePersonFormModal';
+// Importar el nuevo modal de obra social
+import PatientHealthInsuranceModal from '../../molecules/PatientHealthInsuranceModal/PatientHealthInsuranceModal';
+// Importar el nuevo componente de lista de obras sociales
+import PatientHealthInsurancesList from '../../molecules/PatientHealthInsurancesList/PatientHealthInsurancesList';
 // patientReferenceService no se usa directamente aquí si el modal lo maneja todo.
 
 
@@ -29,6 +33,9 @@ const PatientView = React.memo(() => {
   const [showReferenceFormModal, setShowReferenceFormModal] = useState(false);
   // Estado para pasar una referencia a editar (null si es para crear)
   const [editingReference, setEditingReference] = useState(null);
+  
+  // Estado para el modal de gestión de obra social
+  const [showHealthInsuranceModal, setShowHealthInsuranceModal] = useState(false);
 
 
   const loadPatientData = async () => {
@@ -200,44 +207,27 @@ const PatientView = React.memo(() => {
           />
         </div>
 
-        {/* Sección de Obra Social */}
-        {patient.health_insurance_id && (
-          <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>Información de Obra Social</h3>
-            <div className={styles.infoGrid}>
-              <div className={styles.infoItem}>
-                <span className={styles.label}>Obra Social:</span>
-                <span className={styles.value}>
-                  {patient.health_insurance_name || `ID: ${patient.health_insurance_id}`}
-                </span>
-              </div>
-              {patient.health_insurance?.address && (
-                <div className={styles.infoItem}>
-                  <span className={styles.label}>Dirección:</span>
-                  <span className={styles.value}>{patient.health_insurance.address}</span>
-                </div>
-              )}
-              {patient.health_insurance?.phone && (
-                <div className={styles.infoItem}>
-                  <span className={styles.label}>Teléfono:</span>
-                  <span className={styles.value}>{patient.health_insurance.phone}</span>
-                </div>
-              )}
-              {patient.health_insurance?.email && (
-                <div className={styles.infoItem}>
-                  <span className={styles.label}>Email:</span>
-                  <span className={styles.value}>{patient.health_insurance.email}</span>
-                </div>
-              )}
-              {patient.health_insurance_member_number && (
-                <div className={styles.infoItem}>
-                  <span className={styles.label}>Número de Socio:</span>
-                  <span className={styles.value}>{patient.health_insurance_member_number}</span>
-                </div>
-              )}
-            </div>
+        {/* Sección de Obras Sociales */}
+        <div className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h3 className={styles.sectionTitle}>Obras Sociales</h3>
+            {(userRole === 'admin' || userRole === 'secretary') && (
+              <Button
+                size="sm"
+                variant="primary"
+                onClick={() => setShowHealthInsuranceModal(true)}
+              >
+                Agregar Obra Social
+              </Button>
+            )}
           </div>
-        )}
+          
+          <PatientHealthInsurancesList
+            patientId={patient.patient_id}
+            healthInsurances={patient.health_insurances || []}
+            onUpdate={handleDataUpdate}
+          />
+        </div>
 
         {/* Sección de Personas de Referencia MODIFICADA */}
         <div className={styles.section}>
@@ -307,6 +297,19 @@ const PatientView = React.memo(() => {
             setShowReferenceFormModal(false);
             setEditingReference(null); // Limpiar
             handleDataUpdate(); // Recargar datos del paciente para ver la nueva/referencia actualizada
+          }}
+        />
+      )}
+
+      {/* Modal para gestionar obra social */}
+      {showHealthInsuranceModal && patient && (
+        <PatientHealthInsuranceModal
+          isOpen={showHealthInsuranceModal}
+          onClose={() => setShowHealthInsuranceModal(false)}
+          patient={patient}
+          onSuccess={() => {
+            setShowHealthInsuranceModal(false);
+            handleDataUpdate(); // Recargar datos del paciente
           }}
         />
       )}

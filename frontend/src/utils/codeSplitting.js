@@ -111,7 +111,7 @@ export const lazyOrganisms = {
  * Lazy loading de templates
  */
 export const lazyTemplates = {
-  DesktopAppLayout: createLazyComponent(() => import('../components/templates/DesktopAppLayout/DesktopAppLayout'), {
+  AppLayout: createLazyComponent(() => import('../components/templates/AppLayout/AppLayout'), {
     fallbackText: 'Cargando aplicación...',
     fallbackSize: 'large'
   })
@@ -160,7 +160,7 @@ export const lazyPages = {
     fallbackText: 'Cargando obras sociales...',
     fallbackSize: 'large'
   }),
-  DesktopAppPage: createLazyComponent(() => import('../components/pages/desktop/DesktopAppPage'), {
+  AppPage: createLazyComponent(() => import('../components/pages/app/AppPage'), {
     fallbackText: 'Cargando aplicación...',
     fallbackSize: 'large'
   }),
@@ -199,9 +199,9 @@ export const preloadComponent = (componentType, componentName) => {
  * Preload de rutas comunes
  */
 export const preloadCommonRoutes = () => {
-  // Preload desktop después del login
+  // Preload app después del login
   setTimeout(() => {
-    preloadComponent('pages', 'DesktopAppPage');
+    preloadComponent('pages', 'AppPage');
     preloadComponent('pages', 'PatientList');
     preloadComponent('pages', 'CalendarPage');
   }, 1000);

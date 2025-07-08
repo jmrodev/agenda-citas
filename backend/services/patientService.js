@@ -100,32 +100,32 @@ async function getPatientWithReferences(id) {
   const patient = await patientModel.getPatientById(id);
   if (!patient) return null;
   
-  // Obtener información completa de la obra social
-  let healthInsurance = null;
-  if (patient.health_insurance_id) {
-    try {
-      const [rows] = await pool.query(
-        'SELECT insurance_id, name, address, phone, email FROM health_insurances WHERE insurance_id = ?',
-        [patient.health_insurance_id]
-      );
-      if (rows.length > 0) {
-        healthInsurance = rows[0];
-      }
-    } catch (error) {
-      console.error('Error obteniendo obra social:', error);
-    }
-  }
+  // Obtener todas las obras sociales del paciente
+  const patientHealthInsuranceModel = require('../models/patientHealthInsuranceModel');
+  const healthInsurances = await patientHealthInsuranceModel.getPatientHealthInsurances(id);
+  
+  // Obtener la obra social principal (para compatibilidad)
+  const primaryInsurance = healthInsurances.find(hi => hi.is_primary) || healthInsurances[0] || null;
   
   const references = await patientReferenceModel.getReferencesByPatientId(id);
   const doctors = await getDoctorsForPatient(id);
   
-  // patient ya es el objeto base. No se necesita mapReferencePerson.
   return { 
     ...patient,
     reference_persons: references || [],
     doctors: doctors || [],
-    health_insurance_name: healthInsurance?.name || null, // Mantener esto
-    health_insurance: healthInsurance || null // Mantener esto
+    health_insurances: healthInsurances || [],
+    // Mantener compatibilidad con el sistema anterior
+    health_insurance_id: primaryInsurance?.insurance_id || patient.health_insurance_id,
+    health_insurance_member_number: primaryInsurance?.member_number || patient.health_insurance_member_number,
+    health_insurance_name: primaryInsurance?.insurance_name || null,
+    health_insurance: primaryInsurance ? {
+      insurance_id: primaryInsurance.insurance_id,
+      name: primaryInsurance.insurance_name,
+      address: primaryInsurance.insurance_address,
+      phone: primaryInsurance.insurance_phone,
+      email: primaryInsurance.insurance_email
+    } : null
   };
 }
 

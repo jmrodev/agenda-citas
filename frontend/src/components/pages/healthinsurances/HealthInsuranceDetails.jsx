@@ -1,24 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { healthInsuranceService } from '../../../services/healthInsuranceService';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { authFetch } from '../../../auth/authFetch';
 import Button from '../../atoms/Button/Button';
-import styles from './HealthInsuranceDetails.module.css'; // We'll create this file next
+import HealthInsuranceForm from '../../molecules/HealthInsuranceForm/HealthInsuranceForm';
+import styles from './HealthInsuranceDetails.module.css';
 
 const HealthInsuranceDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [insurance, setInsurance] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     const fetchInsuranceDetails = async () => {
       try {
         setLoading(true);
-        const data = await healthInsuranceService.getById(id);
+        const res = await authFetch(`/api/health-insurances/${id}`);
+        
+        if (!res.ok) {
+          throw new Error(`Error ${res.status}: ${res.statusText}`);
+        }
+        
+        const data = await res.json();
         setInsurance(data);
         setError(null);
       } catch (err) {
-        setError(err.message || 'Error fetching health insurance details');
+        setError(err.message || 'Error al cargar los detalles de la obra social');
         console.error(err);
       } finally {
         setLoading(false);
@@ -29,6 +38,32 @@ const HealthInsuranceDetails = () => {
       fetchInsuranceDetails();
     }
   }, [id]);
+
+  const handleSave = async (data) => {
+    try {
+      const response = await authFetch(`/api/health-insurances/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al actualizar la obra social');
+      }
+
+      // Recargar los datos
+      const updatedResponse = await authFetch(`/api/health-insurances/${id}`);
+      if (updatedResponse.ok) {
+        const updatedData = await updatedResponse.json();
+        setInsurance(updatedData);
+      }
+
+      setShowForm(false);
+    } catch (err) {
+      console.error('Error al guardar:', err);
+      alert(`Error al guardar: ${err.message}`);
+    }
+  };
 
   if (loading) {
     return <div className={styles.loading}>Loading...</div>;
@@ -75,14 +110,21 @@ const HealthInsuranceDetails = () => {
       */}
 
       <div className={styles.actions}>
-        <Link to="/health-insurances">
-          <Button variant="outline">Volver al Listado</Button>
-        </Link>
-        {/* TODO: Add Edit button that potentially opens the HealthInsuranceForm modal or navigates to an edit page */}
-        {/* <Link to={`/health-insurances/edit/${insurance.insurance_id}`}>
-          <Button>Editar</Button>
-        </Link> */}
+        <Button variant="outline" onClick={() => navigate('/app/health-insurances')}>
+          Volver al Listado
+        </Button>
+        <Button onClick={() => setShowForm(true)}>
+          Editar
+        </Button>
       </div>
+
+      {showForm && (
+        <HealthInsuranceForm
+          initialData={insurance || {}}
+          onSave={handleSave}
+          onCancel={() => setShowForm(false)}
+        />
+      )}
     </div>
   );
 };

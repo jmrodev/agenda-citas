@@ -91,6 +91,20 @@
   font-size: 1rem;
 }
 
+.noInsurance {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  background: var(--surface-secondary);
+  border-radius: 6px;
+  border: 1px dashed var(--border-color);
+}
+
+.noInsurance p {
+  margin: 0 0 1rem 0;
+  font-size: 0.9rem;
+}
+
 .notes {
   color: var(--text-primary);
   line-height: 1.6;

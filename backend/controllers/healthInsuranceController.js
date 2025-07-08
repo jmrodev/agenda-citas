@@ -38,7 +38,8 @@ async function update(req, res) {
 
 async function remove(req, res) {
   try {
-    await healthInsuranceService.deleteHealthInsurance(req.params.id);
+    const action = req.body.action || 'delete';
+    await healthInsuranceService.deleteHealthInsurance(req.params.id, action);
     res.json({ message: 'Obra social eliminada' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -57,4 +58,16 @@ async function getById(req, res) {
   }
 }
 
-module.exports = { getAll, getAllWithFilters, create, update, remove, getById };
+async function getReferences(req, res) {
+  try {
+    console.log('🔍 [HealthInsuranceController] getReferences llamado con ID:', req.params.id);
+    const references = await healthInsuranceService.getHealthInsuranceReferences(req.params.id);
+    console.log('🔍 [HealthInsuranceController] Referencias obtenidas:', references);
+    res.json(references);
+  } catch (err) {
+    console.error('❌ [HealthInsuranceController] Error en getReferences:', err);
+    res.status(500).json({ error: err.message });
+  }
+}
+
+module.exports = { getAll, getAllWithFilters, create, update, remove, getById, getReferences };

@@ -28,8 +28,18 @@ app.use('/api/prescriptions', prescriptionRoutes);
 const medicalHistoryRoutes = require('./routes/medicalHistoryRoutes');
 app.use('/api/medical-history', medicalHistoryRoutes);
 
+const testRoutes = require('./routes/testRoutes');
+app.use('/api/test', testRoutes);
+
 const healthInsuranceRoutes = require('./routes/healthInsuranceRoutes');
+console.log('🔍 [Index] Registrando rutas de health-insurances');
 app.use('/api/health-insurances', healthInsuranceRoutes);
+console.log('🔍 [Index] Rutas de health-insurances registradas');
+
+const patientHealthInsuranceRoutes = require('./routes/patientHealthInsuranceRoutes');
+console.log('🔍 [Index] Registrando rutas de patient-health-insurances');
+app.use('/api', patientHealthInsuranceRoutes);
+console.log('🔍 [Index] Rutas de patient-health-insurances registradas');
 
 const secretaryActivityRoutes = require('./routes/secretaryActivityRoutes');
 app.use('/api/secretary-activities', secretaryActivityRoutes);
