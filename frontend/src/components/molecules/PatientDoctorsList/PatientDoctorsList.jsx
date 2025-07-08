@@ -66,22 +66,24 @@ const PatientDoctorsList = ({ patientId, onUpdate }) => {
 
   if (loading) {
     return (
-      <div className={styles.container}>
-        <h3>Doctores Asignados</h3>
-        <div className={styles.loading}>
+      <section className={styles.container}>
+        <header className={styles.header}>
+          <h3>Doctores Asignados</h3>
+        </header>
+        <section className={styles.loading}>
           <Spinner size={24} />
           <span>Cargando doctores...</span>
-        </div>
-      </div>
+        </section>
+      </section>
     );
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
+    <section className={styles.container}>
+      <header className={styles.header}>
         <h3>Doctores Asignados</h3>
         <Badge variant="info">{doctors.length} doctor{doctors.length !== 1 ? 'es' : ''}</Badge>
-      </div>
+      </header>
 
       {error && (
         <Alert type="error" className={styles.error}>
@@ -90,13 +92,13 @@ const PatientDoctorsList = ({ patientId, onUpdate }) => {
       )}
 
       {doctors.length === 0 ? (
-        <div className={styles.empty}>
+        <section className={styles.empty}>
           <p>No hay doctores asignados a este paciente</p>
-        </div>
+        </section>
       ) : (
-        <div className={styles.doctorsList}>
+        <ul className={styles.doctorsList}>
           {doctors.map(doctor => (
-            <div key={doctor.doctor_id} className={styles.doctorItem}>
+            <li key={doctor.doctor_id} className={styles.doctorItem}>
               <div className={styles.doctorInfo}>
                 <div className={styles.doctorName}>
                   {doctor.first_name} {doctor.last_name} {/* No añadir "Dr." aquí, ya viene en los datos */}
@@ -110,7 +112,7 @@ const PatientDoctorsList = ({ patientId, onUpdate }) => {
                   )}
                 </div>
               </div>
-              <div className={styles.actions}>
+              <footer className={styles.actions}>
                 <Button
                   size="sm"
                   variant="danger"
@@ -120,12 +122,12 @@ const PatientDoctorsList = ({ patientId, onUpdate }) => {
                 >
                   {removingDoctor === doctor.doctor_id ? 'Eliminando...' : 'Eliminar'}
                 </Button>
-              </div>
-            </div>
+              </footer>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
-    </div>
+    </section>
   );
 };
 
