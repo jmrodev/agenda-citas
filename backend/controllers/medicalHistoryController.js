@@ -22,17 +22,9 @@ async function getAllWithFilters(req, res) {
 
 async function create(req, res) {
   try {
-    let data = { ...req.body };
-    if (data.date && typeof data.date === 'object') {
-      try {
-        data.date = parseAndValidateDate(data.date, 'date', true);
-      } catch (err) {
-        return res.status(400).json({ error: err.message });
-      }
-    } else if (data.date) {
-      return res.status(400).json({ error: 'date debe ser un objeto { day, month, year }' });
-    }
-    const record = await medicalHistoryService.createMedicalHistory(data);
+    // req.body ya validado por Joi (createMedicalHistorySchema)
+    const historyData = req.body;
+    const record = await medicalHistoryService.createMedicalHistory(historyData);
     res.status(201).json(record);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -41,19 +33,17 @@ async function create(req, res) {
 
 async function update(req, res) {
   try {
-    let data = { ...req.body };
-    if (data.date && typeof data.date === 'object') {
-      try {
-        data.date = parseAndValidateDate(data.date, 'date', true);
-      } catch (err) {
-        return res.status(400).json({ error: err.message });
-      }
-    } else if (data.date) {
-      return res.status(400).json({ error: 'date debe ser un objeto { day, month, year }' });
+    // req.body ya validado por Joi (updateMedicalHistorySchema)
+    const historyData = req.body;
+    const record = await medicalHistoryService.updateMedicalHistory(req.params.id, historyData);
+    if (!record) {
+        return res.status(404).json({ error: 'Historial médico no encontrado para actualizar.' });
     }
-    const record = await medicalHistoryService.updateMedicalHistory(req.params.id, data);
     res.json(record);
   } catch (err) {
+    if (err.message.toLowerCase().includes('not found')) {
+        return res.status(404).json({ error: 'Historial médico no encontrado.' });
+    }
     res.status(500).json({ error: err.message });
   }
 }

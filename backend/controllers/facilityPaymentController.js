@@ -78,17 +78,9 @@ async function getPaymentsByDateRange(req, res) {
 
 async function create(req, res) {
   try {
-    let data = { ...req.body };
-    if (data.payment_date && typeof data.payment_date === 'object') {
-      try {
-        data.payment_date = parseAndValidateDate(data.payment_date, 'payment_date', true);
-      } catch (err) {
-        return res.status(400).json({ error: err.message });
-      }
-    } else if (data.payment_date) {
-      return res.status(400).json({ error: 'payment_date debe ser un objeto { day, month, year }' });
-    }
-    const payment = await facilityPaymentService.createPayment(data);
+    // req.body ya validado por Joi (createFacilityPaymentSchema)
+    const paymentData = req.body;
+    const payment = await facilityPaymentService.createPayment(paymentData);
     res.status(201).json(payment);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -97,19 +89,17 @@ async function create(req, res) {
 
 async function update(req, res) {
   try {
-    let data = { ...req.body };
-    if (data.payment_date && typeof data.payment_date === 'object') {
-      try {
-        data.payment_date = parseAndValidateDate(data.payment_date, 'payment_date', true);
-      } catch (err) {
-        return res.status(400).json({ error: err.message });
-      }
-    } else if (data.payment_date) {
-      return res.status(400).json({ error: 'payment_date debe ser un objeto { day, month, year }' });
+    // req.body ya validado por Joi (updateFacilityPaymentSchema)
+    const paymentData = req.body;
+    const payment = await facilityPaymentService.updatePayment(req.params.id, paymentData);
+    if (!payment) {
+        return res.status(404).json({ error: 'Pago no encontrado para actualizar.' });
     }
-    const payment = await facilityPaymentService.updatePayment(req.params.id, data);
     res.json(payment);
   } catch (err) {
+    if (err.message.toLowerCase().includes('not found')) {
+        return res.status(404).json({ error: 'Pago no encontrado.' });
+    }
     res.status(500).json({ error: err.message });
   }
 }

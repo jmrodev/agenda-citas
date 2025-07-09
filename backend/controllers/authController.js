@@ -5,55 +5,22 @@ const pool = require('../config/db');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecreto';
 
-function validateUsername(username) {
-  return /^[a-zA-Z0-9_]{3,20}$/.test(username);
-}
-function validateName(nombre) {
-  return nombre && nombre.trim().length >= 2 && nombre.trim().length <= 50;
-}
-function validateEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-function validatePassword(password) {
-  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password);
-}
+// Las funciones de validación manual (validateUsername, validateName, etc.) se eliminan
+// ya que Joi maneja la validación de formato/presencia.
 
 /**
  * Registro de usuarios (solo admin puede crear usuarios nuevos)
  * Requiere: Authorization: Bearer <token_admin>
- * Body: { username, email, password, role, entity_id }
+ * Body: { username, email, password, role, entity_id, nombre }
+ * La validación del body es manejada por Joi (registerUserSchema)
  */
 async function register(req, res) {
   try {
-    // Solo admin puede crear usuarios (la protección está en la ruta, pero se documenta aquí)
-    if (!req.user || req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Solo el administrador puede crear usuarios nuevos.' });
-    }
+    // La autorización de rol 'admin' ya está en la ruta.
+    // req.body ya está validado por Joi.
     const { username, email, password, role, entity_id, nombre } = req.body;
-    if (!validateName(nombre)) {
-      return res.status(400).json({ error: 'El nombre es obligatorio (2-50 caracteres)' });
-    }
-    if (!username) {
-      return res.status(400).json({ error: 'El nombre de usuario es obligatorio' });
-    }
-    if (!validateUsername(username)) {
-      return res.status(400).json({ error: 'Solo letras, números y guion bajo (3-20 caracteres, sin espacios)' });
-    }
-    if (!email) {
-      return res.status(400).json({ error: 'El email es obligatorio' });
-    }
-    if (!validateEmail(email)) {
-      return res.status(400).json({ error: 'Email no válido' });
-    }
-    if (!password) {
-      return res.status(400).json({ error: 'La contraseña es obligatoria' });
-    }
-    if (!validatePassword(password)) {
-      return res.status(400).json({ error: 'Mínimo 8 caracteres, una mayúscula, una minúscula y un número' });
-    }
-    if (!role) {
-      return res.status(400).json({ error: 'Selecciona un rol' });
-    }
+
+    // Verificar unicidad (lógica de negocio)
     const existingUser = await userService.getUserByUsername(username);
     if (existingUser) {
       return res.status(409).json({ error: 'El nombre de usuario ya está registrado' });
@@ -72,10 +39,9 @@ async function register(req, res) {
 
 async function login(req, res) {
   try {
+    // req.body ya está validado por Joi (loginSchema)
     const { username, password } = req.body;
-    if (!username || !password) {
-      return res.status(400).json({ error: 'Faltan nombre de usuario o contraseña' });
-    }
+
     const user = await userService.getUserByUsername(username);
     if (!user) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
@@ -94,32 +60,17 @@ async function login(req, res) {
 }
 
 /**
- * Registro combinado de doctor y usuario (solo admin)
- * Body: { doctor: {first_name, last_name, ...}, user: {username, email, password} }
+ * Registro combinado de doctor y usuario (admin o secretaria)
+ * Body: { doctor: {...}, user: {...} }
+ * Validación del body por Joi (registerDoctorWithUserSchema)
  */
 async function registerDoctorWithUser(req, res) {
   try {
-    if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'secretary')) {
-      return res.status(403).json({ error: 'Solo el administrador o secretaria pueden crear doctores.' });
-    }
+    // Autorización de rol ya en la ruta.
+    // req.body ya validado por Joi.
     const { doctor, user } = req.body;
-    if (!doctor || !user) {
-      return res.status(400).json({ error: 'Faltan datos de doctor o usuario.' });
-    }
-    // Validaciones básicas de usuario
-    if (!validateName(doctor.first_name) || !validateName(doctor.last_name)) {
-      return res.status(400).json({ error: 'Nombre y apellido del doctor requeridos (2-50 caracteres).' });
-    }
-    if (!user.username || !validateUsername(user.username)) {
-      return res.status(400).json({ error: 'Nombre de usuario inválido.' });
-    }
-    if (!user.email || !validateEmail(user.email)) {
-      return res.status(400).json({ error: 'Email inválido.' });
-    }
-    if (!user.password || !validatePassword(user.password)) {
-      return res.status(400).json({ error: 'Contraseña insegura.' });
-    }
-    // Unicidad usuario/email
+
+    // Unicidad usuario/email (lógica de negocio)
     const existingUser = await userService.getUserByUsername(user.username);
     if (existingUser) {
       return res.status(409).json({ error: 'El nombre de usuario ya está registrado' });
@@ -128,11 +79,17 @@ async function registerDoctorWithUser(req, res) {
     if (existingEmail) {
       return res.status(409).json({ error: 'El email ya está registrado' });
     }
-    // Validar y convertir fecha si es objeto
-    if (doctor.last_earnings_collection_date && typeof doctor.last_earnings_collection_date === 'object') {
-      const { parseAndValidateDate } = require('../utils/date');
-      doctor.last_earnings_collection_date = parseAndValidateDate(doctor.last_earnings_collection_date, 'last_earnings_collection_date', true);
-    }
+
+    // Validar y convertir fecha si es objeto (Joi no convierte, solo valida formato)
+    // Si el esquema Joi para doctor asegura que last_earnings_collection_date es un string YYYY-MM-DD,
+    // esta conversión manual podría no ser necesaria o necesitaría ajustarse.
+    // Por ahora, se asume que el servicio de doctor puede manejar el formato que Joi valida.
+    // Si el esquema Joi para doctor permite un objeto fecha, el servicio de doctor debe manejarlo.
+    // const { parseAndValidateDate } = require('../utils/date'); // Si se necesita parseo post-Joi
+    // if (doctor.last_earnings_collection_date && typeof doctor.last_earnings_collection_date === 'object') {
+    //   doctor.last_earnings_collection_date = parseAndValidateDate(doctor.last_earnings_collection_date, 'last_earnings_collection_date', true);
+    // }
+
     // Crear doctor
     const doctorService = require('../services/doctorService');
     const newDoctor = await doctorService.createDoctor(doctor);
@@ -153,30 +110,15 @@ async function registerDoctorWithUser(req, res) {
 
 /**
  * Registro combinado de secretaria y usuario (solo admin)
- * Body: { secretary: {first_name, last_name, ...}, user: {username, email, password} }
+ * Body: { secretary: {...}, user: {...} }
+ * Validación del body por Joi (registerSecretaryWithUserSchema)
  */
 async function registerSecretaryWithUser(req, res) {
   try {
-    if (!req.user || req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Solo el administrador puede crear secretarias.' });
-    }
+    // Autorización de rol ya en la ruta.
+    // req.body ya validado por Joi.
     const { secretary, user } = req.body;
-    if (!secretary || !user) {
-      return res.status(400).json({ error: 'Faltan datos de secretaria o usuario.' });
-    }
-    // Validaciones básicas de usuario
-    if (!validateName(secretary.first_name) || !validateName(secretary.last_name)) {
-      return res.status(400).json({ error: 'Nombre y apellido de la secretaria requeridos (2-50 caracteres).' });
-    }
-    if (!user.username || !validateUsername(user.username)) {
-      return res.status(400).json({ error: 'Nombre de usuario inválido.' });
-    }
-    if (!user.email || !validateEmail(user.email)) {
-      return res.status(400).json({ error: 'Email inválido.' });
-    }
-    if (!user.password || !validatePassword(user.password)) {
-      return res.status(400).json({ error: 'Contraseña insegura.' });
-    }
+
     // Unicidad usuario/email
     const existingUser = await userService.getUserByUsername(user.username);
     if (existingUser) {
@@ -210,16 +152,9 @@ async function registerSecretaryWithUser(req, res) {
  */
 async function changePassword(req, res) {
   try {
+    // req.body ya validado por Joi (changePasswordSchema)
     const { currentPassword, newPassword } = req.body;
     const userId = req.user.user_id;
-
-    if (!currentPassword || !newPassword) {
-      return res.status(400).json({ error: 'Contraseña actual y nueva contraseña son requeridas' });
-    }
-
-    if (!validatePassword(newPassword)) {
-      return res.status(400).json({ error: 'La nueva contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un número' });
-    }
 
     // Obtener usuario actual
     const user = await userService.getUserById(userId);

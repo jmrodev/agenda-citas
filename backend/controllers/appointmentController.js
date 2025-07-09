@@ -21,59 +21,13 @@ async function getAllWithFilters(req, res) {
 
 async function create(req, res) {
   try {
-    console.log('🔍 [AppointmentController] create - Datos recibidos:', req.body);
-    let data = { ...req.body };
+    // req.body ya validado por Joi (createAppointmentSchema)
+    // Joi valida que 'date' y 'payment_date' sean string YYYY-MM-DD o objeto {day, month, year}
+    // La conversión manual de formato de fecha se elimina, asumiendo que el servicio puede manejar estos formatos.
+    const appointmentData = req.body;
+    console.log('🔍 [AppointmentController] create - Datos recibidos (validados por Joi):', appointmentData);
     
-    // Procesar fecha
-    if (data.date) {
-      if (typeof data.date === 'string') {
-        // Si es un string ISO, convertirlo a objeto
-        const dateObj = new Date(data.date);
-        if (isNaN(dateObj.getTime())) {
-          return res.status(400).json({ error: 'Formato de fecha inválido' });
-        }
-        data.date = {
-          day: dateObj.getDate(),
-          month: dateObj.getMonth() + 1,
-          year: dateObj.getFullYear()
-        };
-      }
-      
-      if (typeof data.date === 'object') {
-        try {
-          data.date = parseAndValidateDate(data.date, 'date', true);
-        } catch (err) {
-          return res.status(400).json({ error: err.message });
-        }
-      }
-    }
-    
-    // Procesar payment_date
-    if (data.payment_date) {
-      if (typeof data.payment_date === 'string') {
-        // Si es un string ISO, convertirlo a objeto
-        const dateObj = new Date(data.payment_date);
-        if (isNaN(dateObj.getTime())) {
-          return res.status(400).json({ error: 'Formato de payment_date inválido' });
-        }
-        data.payment_date = {
-          day: dateObj.getDate(),
-          month: dateObj.getMonth() + 1,
-          year: dateObj.getFullYear()
-        };
-      }
-      
-      if (typeof data.payment_date === 'object') {
-        try {
-          data.payment_date = parseAndValidateDate(data.payment_date, 'payment_date', true);
-        } catch (err) {
-          return res.status(400).json({ error: err.message });
-        }
-      }
-    }
-    
-    console.log('🔍 [AppointmentController] create - Datos procesados:', data);
-    const appointment = await appointmentService.createAppointment(data);
+    const appointment = await appointmentService.createAppointment(appointmentData);
     console.log('🔍 [AppointmentController] create - Cita creada:', appointment);
     res.status(201).json(appointment);
   } catch (err) {
@@ -84,59 +38,22 @@ async function create(req, res) {
 
 async function update(req, res) {
   try {
-    let data = { ...req.body };
-    
-    // Procesar fecha
-    if (data.date) {
-      if (typeof data.date === 'string') {
-        // Si es un string ISO, convertirlo a objeto
-        const dateObj = new Date(data.date);
-        if (isNaN(dateObj.getTime())) {
-          return res.status(400).json({ error: 'Formato de fecha inválido' });
-        }
-        data.date = {
-          day: dateObj.getDate(),
-          month: dateObj.getMonth() + 1,
-          year: dateObj.getFullYear()
-        };
-      }
-      
-      if (typeof data.date === 'object') {
-        try {
-          data.date = parseAndValidateDate(data.date, 'date', true);
-        } catch (err) {
-          return res.status(400).json({ error: err.message });
-        }
-      }
+    // req.body ya validado por Joi (updateAppointmentSchema)
+    // La conversión manual de formato de fecha se elimina.
+    const appointmentData = req.body;
+    console.log('🔍 [AppointmentController] update - Datos recibidos (validados por Joi):', appointmentData);
+
+    const appointment = await appointmentService.updateAppointment(req.params.id, appointmentData);
+    if (!appointment) { // Si el servicio devuelve null o undefined cuando no se encuentra la cita
+        return res.status(404).json({ error: 'Cita no encontrada para actualizar.' });
     }
-    
-    // Procesar payment_date
-    if (data.payment_date) {
-      if (typeof data.payment_date === 'string') {
-        // Si es un string ISO, convertirlo a objeto
-        const dateObj = new Date(data.payment_date);
-        if (isNaN(dateObj.getTime())) {
-          return res.status(400).json({ error: 'Formato de payment_date inválido' });
-        }
-        data.payment_date = {
-          day: dateObj.getDate(),
-          month: dateObj.getMonth() + 1,
-          year: dateObj.getFullYear()
-        };
-      }
-      
-      if (typeof data.payment_date === 'object') {
-        try {
-          data.payment_date = parseAndValidateDate(data.payment_date, 'payment_date', true);
-        } catch (err) {
-          return res.status(400).json({ error: err.message });
-        }
-      }
-    }
-    
-    const appointment = await appointmentService.updateAppointment(req.params.id, data);
     res.json(appointment);
   } catch (err) {
+    // Manejar errores específicos del servicio si es necesario (ej. cita no encontrada si el servicio lanza error)
+    if (err.message.toLowerCase().includes('not found')) {
+        return res.status(404).json({ error: 'Cita no encontrada.' });
+    }
+    console.error('❌ [AppointmentController] update - Error:', err);
     res.status(500).json({ error: err.message });
   }
 }

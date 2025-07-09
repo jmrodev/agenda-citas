@@ -14,28 +14,14 @@ async function getAll(req, res) {
 
 async function create(req, res) {
   try {
-    let data = { ...req.body };
-    // Validación y parseo de last_earnings_collection_date
-    if (data.last_earnings_collection_date) {
-      if (typeof data.last_earnings_collection_date === 'object' && data.last_earnings_collection_date !== null) {
-        try {
-          data.last_earnings_collection_date = parseAndValidateDate(data.last_earnings_collection_date, 'last_earnings_collection_date', true); // true para permitir nulo/undefined
-        } catch (err) {
-          return res.status(400).json({ error: `Formato de fecha inválido para last_earnings_collection_date: ${err.message}` });
-        }
-      } else {
-        // Si no es un objeto (y no es undefined/null), es un formato incorrecto.
-        return res.status(400).json({ error: 'last_earnings_collection_date debe ser un objeto { day, month, year } o nulo.' });
-      }
-    }
+    // req.body ya validado por Joi (createDoctorSchema)
+    // El esquema Joi maneja la validación de formato de last_earnings_collection_date.
+    // Se asume que el servicio puede manejar el formato validado por Joi (string ISO o el objeto fecha).
+    const doctorData = req.body;
 
-    // Aquí se podría añadir validación de esquema (Joi) para el resto de los campos
-    // if (error) return res.status(400).json({ error: error.details[0].message });
-
-    const doctor = await doctorService.createDoctor(data);
+    const doctor = await doctorService.createDoctor(doctorData);
     res.status(201).json(doctor);
   } catch (err) {
-    // Errores específicos podrían venir del servicio (ej. email duplicado)
     if (err.message.includes('Duplicate entry')) { // Ejemplo de manejo de error específico
         return res.status(409).json({ error: 'Error al crear el doctor: Ya existe un doctor con ese email o número de licencia.' });
     }
@@ -46,24 +32,11 @@ async function create(req, res) {
 async function update(req, res) {
   const doctorId = req.params.id;
   try {
-    let data = { ...req.body };
-    // Validación y parseo de last_earnings_collection_date
-    if (data.last_earnings_collection_date) {
-      if (typeof data.last_earnings_collection_date === 'object' && data.last_earnings_collection_date !== null) {
-        try {
-          data.last_earnings_collection_date = parseAndValidateDate(data.last_earnings_collection_date, 'last_earnings_collection_date', true);
-        } catch (err) {
-          return res.status(400).json({ error: `Formato de fecha inválido para last_earnings_collection_date: ${err.message}` });
-        }
-      } else {
-        return res.status(400).json({ error: 'last_earnings_collection_date debe ser un objeto { day, month, year } o nulo.' });
-      }
-    }
+    // req.body ya validado por Joi (updateDoctorSchema)
+    const doctorData = req.body;
 
-    // Aquí se podría añadir validación de esquema (Joi)
-
-    const doctor = await doctorService.updateDoctor(doctorId, data);
-    if (!doctor) { // El servicio podría devolver null si el doctor no se encontró para actualizar
+    const doctor = await doctorService.updateDoctor(doctorId, doctorData);
+    if (!doctor) {
       return res.status(404).json({ error: 'Doctor no encontrado para actualizar.' });
     }
     res.json(doctor);

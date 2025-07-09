@@ -24,41 +24,34 @@ async function getAll(req, res) {
 
 async function create(req, res) {
   try {
-    let data = { ...req.body };
-    if (data.date && typeof data.date === 'object') {
-      try {
-        data.date = parseAndValidateDate(data.date, 'date', true);
-      } catch (err) {
-        return res.status(400).json({ error: err.message });
-      }
-    } else if (data.date) {
-      return res.status(400).json({ error: 'date debe ser un objeto { day, month, year }' });
-    }
-    const activity = await secretaryActivityService.createSecretaryActivity(data);
+    // req.body ya validado por Joi (createSecretaryActivitySchema)
+    const activityData = req.body;
+    const activity = await secretaryActivityService.createSecretaryActivity(activityData);
     res.status(201).json(activity);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 }
 
+// La función update no está actualmente en uso por ninguna ruta, pero si se usara, se simplificaría así:
+/*
 async function update(req, res) {
   try {
-    let data = { ...req.body };
-    if (data.date && typeof data.date === 'object') {
-      try {
-        data.date = parseAndValidateDate(data.date, 'date', true);
-      } catch (err) {
-        return res.status(400).json({ error: err.message });
-      }
-    } else if (data.date) {
-      return res.status(400).json({ error: 'date debe ser un objeto { day, month, year }' });
+    // req.body ya validado por Joi (updateSecretaryActivitySchema)
+    const activityData = req.body;
+    const activity = await secretaryActivityService.updateSecretaryActivity(req.params.id, activityData);
+    if (!activity) {
+        return res.status(404).json({ error: 'Actividad no encontrada para actualizar.' });
     }
-    const activity = await secretaryActivityService.updateSecretaryActivity(req.params.id, data);
     res.json(activity);
   } catch (err) {
+    if (err.message.toLowerCase().includes('not found')) {
+        return res.status(404).json({ error: 'Actividad no encontrada.' });
+    }
     res.status(500).json({ error: err.message });
   }
 }
+*/
 
 async function getSecretaryActivityReportSummary(req, res) {
   try {

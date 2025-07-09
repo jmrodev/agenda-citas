@@ -16,19 +16,20 @@ async function getAllSecretaries(req, res) {
 // Crear una nueva secretaria
 async function createSecretary(req, res) {
   try {
+    // req.body ya está validado por Joi gracias al middleware validateBody
     const secretaryData = req.body;
     const newSecretary = await secretaryService.createSecretary(secretaryData);
     res.status(201).json({ secretary: newSecretary });
   } catch (err) {
     console.error('Error al crear secretaria:', err);
-    if (err.message.includes('duplicate')) {
-      res.status(409).json({ error: { message: 'Ya existe una secretaria con ese email o nombre de usuario' } });
-    } else if (err.message.includes('requeridos') || err.message.includes('inválido') || err.message.includes('nombre de usuario')) {
-      // Specific validation errors from service
-      res.status(400).json({ error: { message: err.message } });
-    }
-    else {
-      res.status(500).json({ error: { message: 'Error al crear la secretaria' } });
+    // Los errores de validación de formato/requerido son manejados por Joi (HTTP 400)
+    // Aquí se manejan errores específicos del servicio (ej. duplicados) u otros errores 500
+    if (err.message.includes('duplicate') || err.message.includes('Ya existe')) {
+      res.status(409).json({ error: { message: err.message } });
+    } else {
+      // Errores de validación que pudieron pasar Joi pero fallaron en el servicio
+      // o errores genéricos del servidor.
+      res.status(err.statusCode || 500).json({ error: { message: err.message || 'Error al crear la secretaria' } });
     }
   }
 }
@@ -53,21 +54,26 @@ async function getSecretaryById(req, res) {
 // Actualizar una secretaria
 async function updateSecretary(req, res) {
   try {
+    // req.body ya está validado por Joi gracias al middleware validateBody
     const { id } = req.params;
     const updateData = req.body;
     const updatedSecretary = await secretaryService.updateSecretary(id, updateData);
     
     if (!updatedSecretary) {
-      return res.status(404).json({ error: { message: 'Secretaria no encontrada' } });
+      return res.status(404).json({ error: { message: 'Secretaria no encontrada para actualizar.' } });
     }
     
     res.json({ secretary: updatedSecretary });
   } catch (err) {
     console.error('Error al actualizar secretaria:', err);
-    if (err.message.includes('duplicate')) {
-      res.status(409).json({ error: { message: 'Ya existe una secretaria con ese email o nombre de usuario' } });
+    // Los errores de validación de formato/requerido son manejados por Joi (HTTP 400)
+    // Aquí se manejan errores específicos del servicio (ej. duplicados, no encontrado) u otros errores 500
+    if (err.message.includes('duplicate') || err.message.includes('Ya existe')) {
+      res.status(409).json({ error: { message: err.message } });
+    } else if (err.message.includes('not found') || err.statusCode === 404) {
+      res.status(404).json({ error: { message: 'Secretaria no encontrada.' } });
     } else {
-      res.status(500).json({ error: { message: 'Error al actualizar la secretaria' } });
+      res.status(err.statusCode || 500).json({ error: { message: err.message || 'Error al actualizar la secretaria' } });
     }
   }
 }

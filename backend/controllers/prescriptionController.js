@@ -22,26 +22,9 @@ async function getAllWithFilters(req, res) {
 
 async function create(req, res) {
   try {
-    let data = { ...req.body };
-    if (data.date && typeof data.date === 'object') {
-      try {
-        data.date = parseAndValidateDate(data.date, 'date', true);
-      } catch (err) {
-        return res.status(400).json({ error: err.message });
-      }
-    } else if (data.date) {
-      return res.status(400).json({ error: 'date debe ser un objeto { day, month, year }' });
-    }
-    if (data.payment_date && typeof data.payment_date === 'object') {
-      try {
-        data.payment_date = parseAndValidateDate(data.payment_date, 'payment_date', true);
-      } catch (err) {
-        return res.status(400).json({ error: err.message });
-      }
-    } else if (data.payment_date) {
-      return res.status(400).json({ error: 'payment_date debe ser un objeto { day, month, year }' });
-    }
-    const prescription = await prescriptionService.createPrescription(data);
+    // req.body ya validado por Joi (createPrescriptionSchema)
+    const prescriptionData = req.body;
+    const prescription = await prescriptionService.createPrescription(prescriptionData);
     res.status(201).json(prescription);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -50,28 +33,17 @@ async function create(req, res) {
 
 async function update(req, res) {
   try {
-    let data = { ...req.body };
-    if (data.date && typeof data.date === 'object') {
-      try {
-        data.date = parseAndValidateDate(data.date, 'date', true);
-      } catch (err) {
-        return res.status(400).json({ error: err.message });
-      }
-    } else if (data.date) {
-      return res.status(400).json({ error: 'date debe ser un objeto { day, month, year }' });
+    // req.body ya validado por Joi (updatePrescriptionSchema)
+    const prescriptionData = req.body;
+    const prescription = await prescriptionService.updatePrescription(req.params.id, prescriptionData);
+    if (!prescription) {
+        return res.status(404).json({ error: 'Prescripción no encontrada para actualizar.' });
     }
-    if (data.payment_date && typeof data.payment_date === 'object') {
-      try {
-        data.payment_date = parseAndValidateDate(data.payment_date, 'payment_date', true);
-      } catch (err) {
-        return res.status(400).json({ error: err.message });
-      }
-    } else if (data.payment_date) {
-      return res.status(400).json({ error: 'payment_date debe ser un objeto { day, month, year }' });
-    }
-    const prescription = await prescriptionService.updatePrescription(req.params.id, data);
     res.json(prescription);
   } catch (err) {
+    if (err.message.toLowerCase().includes('not found')) {
+        return res.status(404).json({ error: 'Prescripción no encontrada.' });
+    }
     res.status(500).json({ error: err.message });
   }
 }

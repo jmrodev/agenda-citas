@@ -3,16 +3,34 @@ const router = express.Router();
 const patientDoctorController = require('../controllers/patientDoctorController');
 const { authenticateToken } = require('../middleware/authMiddleware');
 const { authorizeRoles } = require('../middleware/roleMiddleware');
+const { validateBody } = require('../filters/validateQuery');
+const {
+    assignDoctorsToPatientSchema,
+    assignPatientsToDoctorSchema
+} = require('../validations');
 
 // Rutas para obtener relaciones
 router.get('/patient/:patient_id/doctors', authenticateToken, authorizeRoles('admin', 'secretary', 'doctor'), patientDoctorController.getDoctorsByPatient);
 router.get('/doctor/:doctor_id/patients', authenticateToken, authorizeRoles('admin', 'secretary', 'doctor'), patientDoctorController.getPatientsByDoctor);
 
 // Rutas para asignar múltiples relaciones (reemplazar todas)
-router.put('/patient/:patient_id/doctors', authenticateToken, authorizeRoles('admin', 'secretary'), patientDoctorController.assignDoctorsToPatient);
-router.put('/doctor/:doctor_id/patients', authenticateToken, authorizeRoles('admin', 'secretary'), patientDoctorController.assignPatientsToDoctor);
+router.put(
+    '/patient/:patient_id/doctors',
+    authenticateToken,
+    authorizeRoles('admin', 'secretary'),
+    validateBody(assignDoctorsToPatientSchema),
+    patientDoctorController.assignDoctorsToPatient
+);
+router.put(
+    '/doctor/:doctor_id/patients',
+    authenticateToken,
+    authorizeRoles('admin', 'secretary'),
+    validateBody(assignPatientsToDoctorSchema),
+    patientDoctorController.assignPatientsToDoctor
+);
 
 // Rutas para agregar relaciones individuales
+// Estas rutas usan parámetros de URL, no un body complejo, por lo que no necesitan validateBody aquí.
 router.post('/patient/:patient_id/doctors/:doctor_id', authenticateToken, authorizeRoles('admin', 'secretary'), patientDoctorController.addDoctorToPatient);
 router.post('/doctor/:doctor_id/patients/:patient_id', authenticateToken, authorizeRoles('admin', 'secretary'), patientDoctorController.addPatientToDoctor);
 

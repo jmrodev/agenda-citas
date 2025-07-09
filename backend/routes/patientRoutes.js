@@ -3,8 +3,15 @@ const router = express.Router();
 const patientController = require('../controllers/patientController');
 const { authenticateToken } = require('../middleware/authMiddleware');
 const { authorizeRoles } = require('../middleware/roleMiddleware');
-const validateQuery = require('../filters/validateQuery');
-const { patientFiltersSchema } = require('../validations'); // Modificado para usar el centralizador
+const { validateQuery, validateBody } = require('../filters/validateQuery'); // Importar validateBody
+const {
+    patientFiltersSchema,
+    createPatientSchema,
+    updatePatientSchema,
+    registerPatientWithUserSchema,
+    updateMyPatientProfileSchema,
+    updatePatientDoctorsSchema
+} = require('../validations');
 
 // Importar el router anidado para referencias de paciente
 const { routerForPatient: patientReferenceNestedRouter } = require('./patientReferenceRoutes'); // Renombrado para claridad
@@ -17,12 +24,38 @@ router.use('/:patientId/references', patientReferenceNestedRouter);
 // Rutas existentes de pacientes
 router.get('/', authenticateToken, patientController.getAll);
 router.get('/filtros', authenticateToken, validateQuery(patientFiltersSchema), patientController.getAllWithFilters);
-router.post('/', authenticateToken, authorizeRoles('secretary', 'admin'), patientController.create);
-router.put('/:id', authenticateToken, authorizeRoles('secretary', 'admin'), patientController.update);
+
+router.post(
+    '/',
+    authenticateToken,
+    authorizeRoles('secretary', 'admin'),
+    validateBody(createPatientSchema),
+    patientController.create
+);
+router.put(
+    '/:id',
+    authenticateToken,
+    authorizeRoles('secretary', 'admin'),
+    validateBody(updatePatientSchema),
+    patientController.update
+);
 router.delete('/:id', authenticateToken, authorizeRoles('admin'), patientController.remove);
-router.post('/register', authenticateToken, authorizeRoles('admin', 'secretary', 'doctor'), patientController.registerPatientWithUser);
+
+router.post(
+    '/register',
+    authenticateToken,
+    authorizeRoles('admin', 'secretary', 'doctor'), // O solo admin/secretary si crean el usuario
+    validateBody(registerPatientWithUserSchema),
+    patientController.registerPatientWithUser
+);
 router.get('/me', authenticateToken, authorizeRoles('patient'), patientController.getMe);
-router.put('/me', authenticateToken, authorizeRoles('patient'), patientController.updateMe);
+router.put(
+    '/me',
+    authenticateToken,
+    authorizeRoles('patient'),
+    validateBody(updateMyPatientProfileSchema),
+    patientController.updateMe
+);
 router.get('/:id', authenticateToken, authorizeRoles('admin', 'secretary', 'doctor'), patientController.getById);
 
 /**
@@ -31,7 +64,13 @@ router.get('/:id', authenticateToken, authorizeRoles('admin', 'secretary', 'doct
  * Body: { doctor_ids: [doctor_id1, doctor_id2, ...] }
  * Solo accesible para admin y secretaria.
  */
-router.put('/:id/doctors', authenticateToken, authorizeRoles('admin', 'secretary'), patientController.updatePatientDoctors);
+router.put(
+    '/:id/doctors',
+    authenticateToken,
+    authorizeRoles('admin', 'secretary'),
+    validateBody(updatePatientDoctorsSchema),
+    patientController.updatePatientDoctors
+);
 
 /**
  * POST /patients/:id/doctors/:doctor_id

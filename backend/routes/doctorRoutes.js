@@ -3,6 +3,8 @@ const router = express.Router();
 const doctorController = require('../controllers/doctorController');
 const { authenticateToken } = require('../middleware/authMiddleware');
 const { authorizeRoles } = require('../middleware/roleMiddleware');
+const { validateBody } = require('../filters/validateQuery');
+const { createDoctorSchema, updateDoctorSchema } = require('../validations');
 
 // GET /doctors - Listar todos los doctores
 // Accesible para admin, secretary, doctor
@@ -19,6 +21,7 @@ router.post(
     '/',
     authenticateToken,
     authorizeRoles('admin', 'secretary'),
+    validateBody(createDoctorSchema),
     doctorController.create
 );
 
@@ -46,6 +49,7 @@ router.put(
     '/:id',
     authenticateToken,
     authorizeRoles('admin', 'secretary'),
+    validateBody(updateDoctorSchema),
     doctorController.update
 );
 

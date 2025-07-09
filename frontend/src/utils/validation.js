@@ -215,7 +215,35 @@ export const SCHEMAS = {
     password: ['required', 'password'],
     confirm_password: ['required', (value, password) => 
       value === password ? null : 'Las contraseñas no coinciden'
-    ]
+    ],
+    username: ['required', { type: 'minLength', params: [3] }, { type: 'maxLength', params: [20] }, (value) => PATTERNS.ALPHANUMERIC.test(value.replace(/_/g, '')) ? null : 'Solo letras, números y guion bajo'], // Permitir guion bajo pero validar el resto como alfanumérico
+    role: ['required'] // 'admin', 'doctor', 'secretary', 'patient'
+  },
+
+  DOCTOR: {
+    first_name: ['required', 'onlyLetters', { type: 'minLength', params: [2] }],
+    last_name: ['required', 'onlyLetters', { type: 'minLength', params: [2] }],
+    specialty: ['required', { type: 'maxLength', params: [100] }],
+    license_number: ['required', { type: 'maxLength', params: [50] }],
+    phone: ['phone'], // Opcional por defecto, si es requerido añadir 'required'
+    email: ['required', 'email'],
+    consultation_fee: ['required', { type: 'minValue', params: [0.01] }],
+    prescription_fee: ['required', { type: 'minValue', params: [0.01] }]
+    // last_earnings_collection_date: ['date'] // Si se maneja en el form
+  },
+
+  SECRETARY: {
+    first_name: ['required', 'onlyLetters', { type: 'minLength', params: [2] }],
+    last_name: ['required', 'onlyLetters', { type: 'minLength', params: [2] }],
+    email: ['required', 'email'],
+    phone: ['required', 'phone'], // Asumiendo que es requerido para secretarias
+    username: ['required', { type: 'minLength', params: [3] }, { type: 'maxLength', params: [20] }, (value) => PATTERNS.ALPHANUMERIC.test(value.replace(/_/g, '')) ? null : 'Solo letras, números y guion bajo'], // Solo para creación
+    shift: [], // Opcional, o ['required'] si lo es
+    entry_time: ['time'], // Opcional, o ['required'] si lo es
+    exit_time: ['time', (value, entryTime) => { // Validación custom para asegurar que exit_time > entry_time
+        if (!value || !entryTime) return null;
+        return value > entryTime ? null : 'La hora de salida debe ser posterior a la de entrada';
+    }]
   },
 
   PATIENT: {
@@ -247,9 +275,15 @@ export const SCHEMAS = {
 
   APPOINTMENT: {
     patient_id: ['required'],
-    doctor_id: ['required'],
+    doctor_id: ['required'], // En el modal, doctor_id viene de `selectedDoctorId`, no es un campo de form directo. El hook useForm lo manejará si se pasa en initialValues.
     date: ['required', 'date'],
     time: ['required', 'time'],
-    notes: [(value) => !value || value.length <= 500 ? null : 'Máximo 500 caracteres']
+    reason: ['required', { type: 'maxLength', params: [255] }],
+    type: [], // Opcional, o ['required']
+    status: [], // Opcional, o ['required']
+    service_type: [{ type: 'maxLength', params: [100] }], // Opcional
+    amount: ['required', { type: 'minValue', params: [0.01] }],
+    payment_method: [], // Opcional, o ['required']
+    notes: [{ type: 'maxLength', params: [500] }] // Opcional
   }
 }; 
