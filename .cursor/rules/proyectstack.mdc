@@ -101,15 +101,15 @@ backend/
 
 ## 🚀 Desarrollo y Deployment
 
-### Scripts de Desarrollo
-```bash
-# Frontend
-cd frontend && pnpm dev
-
-# Backend  
-cd backend && pnpm dev
-
-# ⚠️ NUNCA usar start-app.sh (autorestart ya configurado)
+### ⚠️ REGLAS IMPORTANTES DE DESARROLLO
+- **yo me encargo de arrancar el script que crea los server de backend y frontend**
+- **tu a cada cambio de codigo no debes hacer nada**
+- **los servidores se reinician a cada cambio de codigo y hace que se tenga siempre la nueva version corriendo**
+- **⚠️ NUNCA usar start-app.sh (autorestart ya configurado)**
+- **el servidor siempre esta en marcha y se reinicia a cada cambio, no hacer un arranque nuevo**
+- **NO hacer `cd frontend && pnpm dev`**
+- **NO hacer `cd backend && node index.js`**
+- **NO hacer `cd backend && pnpm dev`**
 ```
 
 ### URLs de Desarrollo
@@ -179,7 +179,7 @@ Content-Type: application/json
 ## 🔄 Workflow de Desarrollo
 
 ### Flujo Típico
-1. **Desarrollo**: `pnpm dev` en frontend y backend
+1. **Desarrollo**: Los servidores ya están corriendo automáticamente
 2. **Testing**: Pruebas manuales en navegador
 3. **API Testing**: Usando archivos .http
 4. **Database**: Consultas directas en MySQL
@@ -194,23 +194,13 @@ Content-Type: application/json
 ## 🚀 Deployment (Vercel)
 
 ### Frontend
-- **Platform**: Vercel
+- **el servidor siempre esta en marcha y se reinicia a cada cambio , no hacer un arranque nuevo**.
 - **Build Command**: `pnpm build`
 - **Output Directory**: `dist`
 - **Environment Variables**: Configuradas en Vercel
 
 ### Backend
-- **Platform**: Vercel Functions
+- **el servidor siempre esta en marcha y se reinicia a cada cambio , no hacer un arranque nuevo**.
 - **Runtime**: Node.js
 - **Database**: MySQL externo
 - **Environment Variables**: Para conexión BD
-
-### Consideraciones
-- **Database**: Externa (no incluida en Vercel)
-- **Latencia**: Importante cercanía región Vercel-BD
-- **Variables de Entorno**: Configuradas en Vercel
-- **CORS**: Configurado para dominio de frontend
-description:
-globs:
-alwaysApply: false
----

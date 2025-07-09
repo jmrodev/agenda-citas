@@ -3,6 +3,8 @@ description:
 globs: backend/**
 alwaysApply: false
 ---
+
+el servidor siempre esta en marcha y se reinicia a cada cambio , no hacer un arranque nuevo
 Al generar o modificar código de backend, adherirse a la estructura atómica (config, middleware, models, services, controllers, routes, utils).
 Asegurar la separación lógica de concerns: models para DB interaction, services para business logic, controllers para request handling, routes para endpoints.
 Para database interactions, preferir un ORM como Sequelize si code examples son necesarios, de lo contrario raw SQL queries son aceptables.

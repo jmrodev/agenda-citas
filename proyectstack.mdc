@@ -186,14 +186,20 @@ Content-Type: application/json
 5. **Deployment**: Preparación para Vercel
 
 ### Hot Reload
+
+el servidor siempre esta en marcha y se reinicia a cada cambio , no hacer un arranque nuevo
 - **Frontend**: Vite hot reload automático
+el servidor siempre esta en marcha y se reinicia a cada cambio , no hacer un arranque nuevo
 - **Backend**: Node --watch autorestart
+el servidor siempre esta en marcha y se reinicia a cada cambio , no hacer un arranque nuevo
 - **CSS**: Hot reload automático
 - **API**: Restart automático con cambios
+el servidor siempre esta en marcha y se reinicia a cada cambio , no hacer un arranque nuevo
 
 ## 🚀 Deployment (Vercel)
 
 ### Frontend
+el servidor siempre esta en marcha y se reinicia a cada cambio , no hacer un arranque nuevo
 - **Platform**: Vercel
 - **Build Command**: `pnpm build`
 - **Output Directory**: `dist`

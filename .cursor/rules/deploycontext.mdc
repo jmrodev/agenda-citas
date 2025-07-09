@@ -3,7 +3,5 @@ description:
 globs: 
 alwaysApply: true
 ---
-Considerar Vercel para frontend y Vercel Functions para backend deployment.
-Asumir MySQL database is external y gestionada separadamente de los despliegues de Vercel.
-Al generar instrucciones de despliegue, mencionar la configuración de variables de entorno en Vercel para la conexión a la base de datos externa.
-Si se discute la latencia, mencionar la importancia de la cercanía de la región de Vercel Functions a la región de la base de datos MySQL.
+
+Asumir MySQL database is external y gestionada separadamente
