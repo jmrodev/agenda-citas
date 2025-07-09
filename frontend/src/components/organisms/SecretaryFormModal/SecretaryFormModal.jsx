@@ -109,10 +109,34 @@ const SecretaryFormModal = ({ isOpen, onClose, onSubmit, secretary, isEditing })
     setShowPasswordModal(false);
   };
 
+  const validateForm = () => {
+    if (!formData.first_name.trim()) return 'El nombre es obligatorio.';
+    if (!formData.last_name.trim()) return 'El apellido es obligatorio.';
+    if (!formData.email.trim()) return 'El email es obligatorio.';
+    if (!formData.phone.trim()) return 'El teléfono es obligatorio.';
+    
+    // Validar username
+    if (!formData.username.trim()) return 'El nombre de usuario es obligatorio.';
+    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+    if (!usernameRegex.test(formData.username)) {
+      return 'El nombre de usuario debe tener entre 3 y 20 caracteres, solo letras, números y guion bajo.';
+    }
+    
+    return '';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError('');
+
+    // Validación previa
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       const payload = {

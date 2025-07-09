@@ -65,7 +65,7 @@ const FormField = React.memo(({
 
   // Props para Input (filtrar props que no deben llegar al DOM)
   const inputProps = useMemo(() => {
-    const { error: _, validationRules: __, ...restProps } = props;
+    const { error: _, validationRules: __, helperText: ___, ...restProps } = props;
     return {
       ...restProps,
       id: name,

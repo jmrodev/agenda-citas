@@ -21,7 +21,8 @@ const SecretaryForm = () => {
     phone: '',
     shift: '',
     entry_time: '',
-    exit_time: ''
+    exit_time: '',
+    username: ''
   });
   
   const [loading, setLoading] = useState(false);
@@ -60,7 +61,8 @@ const SecretaryForm = () => {
         phone: secretary.phone || '',
         shift: secretary.shift || '',
         entry_time: secretary.entry_time || '',
-        exit_time: secretary.exit_time || ''
+        exit_time: secretary.exit_time || '',
+        username: secretary.username || '' // Assuming username is part of the secretary object
       });
     } catch (err) {
       setError(err.message);
@@ -90,6 +92,18 @@ const SecretaryForm = () => {
       errors.phone = 'El teléfono es requerido';
     }
 
+    // Validar username (si se está creando una nueva secretaria)
+    if (!isEditing) {
+      if (!formData.username || !formData.username.trim()) {
+        errors.username = 'El nombre de usuario es requerido';
+      } else {
+        const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+        if (!usernameRegex.test(formData.username)) {
+          errors.username = 'El nombre de usuario debe tener entre 3 y 20 caracteres, solo letras, números y guion bajo.';
+        }
+      }
+    }
+
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -112,7 +126,8 @@ const SecretaryForm = () => {
         phone: formData.phone,
         shift: formData.shift || null,
         entry_time: formData.entry_time || null,
-        exit_time: formData.exit_time || null
+        exit_time: formData.exit_time || null,
+        username: formData.username || null // Include username in payload
       };
 
       const url = isEditing 
@@ -224,6 +239,20 @@ const SecretaryForm = () => {
               required
             />
           </FormGroup>
+
+          {!isEditing && (
+            <FormGroup>
+              <FormField
+                label="Nombre de usuario"
+                type="text"
+                value={formData.username}
+                onChange={(e) => handleChange('username', e.target.value)}
+                error={validationErrors.username}
+                required
+                helperText="Solo letras, números y guion bajo (3-20 caracteres)"
+              />
+            </FormGroup>
+          )}
 
           <FormGroup>
             <FormField
