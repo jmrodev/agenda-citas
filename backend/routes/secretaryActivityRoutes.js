@@ -4,7 +4,7 @@ const secretaryActivityController = require('../controllers/secretaryActivityCon
 const authMiddleware = require('../middleware/authMiddleware');
 const { authorizeRoles } = require('../middleware/roleMiddleware');
 const validateQuery = require('../filters/validateQuery');
-const secretaryActivityFiltersSchema = require('../filters/joi/secretaryActivityFiltersSchema');
+const { secretaryActivityFiltersSchema } = require('../validations'); // Modificado
 
 // GET /api/secretary-activities
 // Filtros disponibles por query: secretary_id, date, date_from, date_to, activity_type, activity_types, activity_id, detail, time_from, time_to

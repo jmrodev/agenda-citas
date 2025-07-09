@@ -4,7 +4,7 @@ const patientController = require('../controllers/patientController');
 const { authenticateToken } = require('../middleware/authMiddleware');
 const { authorizeRoles } = require('../middleware/roleMiddleware');
 const validateQuery = require('../filters/validateQuery');
-const patientFiltersSchema = require('../filters/joi/patientFiltersSchema');
+const { patientFiltersSchema } = require('../validations'); // Modificado para usar el centralizador
 
 // Importar el router anidado para referencias de paciente
 const { routerForPatient: patientReferenceNestedRouter } = require('./patientReferenceRoutes'); // Renombrado para claridad

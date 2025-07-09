@@ -4,7 +4,7 @@ const healthInsuranceController = require('../controllers/healthInsuranceControl
 const { authenticateToken } = require('../middleware/authMiddleware');
 const { authorizeRoles } = require('../middleware/roleMiddleware');
 const validateQuery = require('../filters/validateQuery');
-const healthInsuranceFiltersSchema = require('../filters/joi/healthInsuranceFiltersSchema');
+const { healthInsuranceFiltersSchema } = require('../validations'); // Modificado
 
 console.log('🔍 [HealthInsuranceRoutes] Archivo de rutas cargado correctamente');
 

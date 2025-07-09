@@ -1,5 +1,5 @@
 const patientReferenceService = require('../services/patientReferenceService');
-const { createReferencePersonSchema, updateReferencePersonSchema } = require('../filters/joi/referencePersonFiltersSchema');
+const { createReferencePersonSchema, updateReferencePersonSchema } = require('../validations'); // Modificado
 const { debugReferences } = require('../utils/debug'); // Suponiendo que existe un debug para referencias
 
 async function create(req, res) {
