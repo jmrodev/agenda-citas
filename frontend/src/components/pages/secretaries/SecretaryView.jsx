@@ -6,6 +6,7 @@ import Button from '../../atoms/Button/Button';
 import InfoRow from '../../molecules/InfoRow/InfoRow';
 import Alert from '../../atoms/Alert/Alert';
 import Spinner from '../../atoms/Spinner/Spinner';
+import SecretaryFormModal from '../../organisms/SecretaryFormModal/SecretaryFormModal';
 import styles from './SecretaryView.module.css';
 
 const SecretaryView = () => {
@@ -15,6 +16,35 @@ const SecretaryView = () => {
   const [secretary, setSecretary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  // Obtener el rol del usuario actual
+  const getCurrentUserRole = () => {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.role;
+    } catch {
+      return null;
+    }
+  };
+
+  const getCurrentUserId = () => {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.user_id;
+    } catch {
+      return null;
+    }
+  };
+
+  const currentUserRole = getCurrentUserRole();
+  const isAdmin = currentUserRole === 'admin';
+  const isSecretary = currentUserRole === 'secretary';
+  const canEdit = isAdmin || (isSecretary && secretary?.user_id === getCurrentUserId());
 
   useEffect(() => {
     fetchSecretary();
@@ -41,6 +71,39 @@ const SecretaryView = () => {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleEdit = () => {
+    if (!canEdit) {
+      setError('No tienes permisos para editar esta secretaria');
+      return;
+    }
+    setShowModal(true);
+  };
+
+  const handleModalSubmit = async (payload) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3001/api/secretaries/${id}/with-password`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || 'Error al actualizar la secretaria');
+      }
+
+      // Recargar los datos
+      await fetchSecretary();
+      setShowModal(false);
+    } catch (err) {
+      throw err;
     }
   };
 
@@ -121,18 +184,22 @@ const SecretaryView = () => {
           >
             Volver
           </Button>
-          <Button
-            variant="primary"
-            onClick={() => navigate(`/app/secretaries/edit/${id}`)}
-          >
-            Editar
-          </Button>
-          <Button
-            variant="danger"
-            onClick={handleDelete}
-          >
-            Eliminar
-          </Button>
+          {canEdit && (
+            <Button
+              variant="primary"
+              onClick={handleEdit}
+            >
+              Editar
+            </Button>
+          )}
+          {isAdmin && (
+            <Button
+              variant="danger"
+              onClick={handleDelete}
+            >
+              Eliminar
+            </Button>
+          )}
         </div>
       </div>
 
@@ -152,6 +219,24 @@ const SecretaryView = () => {
               label="Teléfono"
               value={secretary.phone}
             />
+            {secretary.shift && (
+              <InfoRow
+                label="Turno"
+                value={secretary.shift}
+              />
+            )}
+            {secretary.entry_time && (
+              <InfoRow
+                label="Hora de entrada"
+                value={secretary.entry_time}
+              />
+            )}
+            {secretary.exit_time && (
+              <InfoRow
+                label="Hora de salida"
+                value={secretary.exit_time}
+              />
+            )}
           </div>
         </div>
 
@@ -160,7 +245,7 @@ const SecretaryView = () => {
           <div className={styles.infoGrid}>
             <InfoRow
               label="Nombre de usuario"
-              value={secretary.username}
+              value={secretary.username || 'N/A'}
             />
             <InfoRow
               label="Rol"
@@ -179,6 +264,15 @@ const SecretaryView = () => {
           </div>
         </div>
       </CardBase>
+
+      {/* Modal de edición */}
+      <SecretaryFormModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onSubmit={handleModalSubmit}
+        secretary={secretary}
+        isEditing={true}
+      />
     </div>
   );
 };

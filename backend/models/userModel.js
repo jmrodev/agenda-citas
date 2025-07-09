@@ -10,6 +10,16 @@ async function findUserByUsername(username) {
   return rows[0];
 }
 
+async function findUserById(userId) {
+  const [rows] = await pool.query('SELECT * FROM users WHERE user_id = ?', [userId]);
+  return rows[0];
+}
+
+async function findUserByEntityId(entityId, role) {
+  const [rows] = await pool.query('SELECT * FROM users WHERE entity_id = ? AND role = ?', [entityId, role]);
+  return rows[0];
+}
+
 async function createUser({ username, email, password, role, entity_id }) {
   const [result] = await pool.query(
     'INSERT INTO users (username, email, password, role, entity_id) VALUES (?, ?, ?, ?, ?)',
@@ -18,4 +28,28 @@ async function createUser({ username, email, password, role, entity_id }) {
   return { user_id: result.insertId, username, email, role, entity_id };
 }
 
-module.exports = { findUserByEmail, findUserByUsername, createUser }; 
+async function updateUserPassword(userId, hashedPassword) {
+  const [result] = await pool.query(
+    'UPDATE users SET password = ? WHERE user_id = ?',
+    [hashedPassword, userId]
+  );
+  return result.affectedRows > 0;
+}
+
+async function updateUsername(userId, username) {
+  const [result] = await pool.query(
+    'UPDATE users SET username = ? WHERE user_id = ?',
+    [username, userId]
+  );
+  return result.affectedRows > 0;
+}
+
+module.exports = { 
+  findUserByEmail, 
+  findUserByUsername, 
+  findUserById,
+  findUserByEntityId,
+  createUser,
+  updateUserPassword,
+  updateUsername
+}; 

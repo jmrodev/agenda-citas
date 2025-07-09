@@ -1,4 +1,6 @@
 const secretaryService = require('../services/secretaryService');
+const userService = require('../services/userService');
+const bcrypt = require('bcryptjs');
 
 // Obtener todas las secretarias
 async function getAllSecretaries(req, res) {
@@ -66,6 +68,68 @@ async function updateSecretary(req, res) {
   }
 }
 
+// Actualizar una secretaria con cambio de contraseña y username opcional
+async function updateSecretaryWithPassword(req, res) {
+  try {
+    const { id } = req.params;
+    const { secretaryData, passwordData, userData } = req.body;
+    const currentUser = req.user;
+
+    // Verificar permisos
+    if (currentUser.role === 'admin') {
+      // Admin puede editar cualquier secretaria
+      // Si se proporciona contraseña, debe incluir contraseña de admin
+      if (passwordData && passwordData.newPassword && !passwordData.adminPassword) {
+        return res.status(400).json({ error: { message: 'Se requiere contraseña de administrador para cambiar la contraseña' } });
+      }
+
+      // Validar contraseña de admin si se proporciona
+      if (passwordData && passwordData.adminPassword) {
+        const adminUser = await userService.getUserById(currentUser.user_id);
+        const validAdminPassword = await bcrypt.compare(passwordData.adminPassword, adminUser.password);
+        if (!validAdminPassword) {
+          return res.status(401).json({ error: { message: 'Contraseña de administrador incorrecta' } });
+        }
+      }
+    } else if (currentUser.role === 'secretary') {
+      // Secretaria solo puede editar su propio perfil
+      const user = await userService.getUserByEntityId(id, 'secretary');
+      if (!user || user.user_id !== currentUser.user_id) {
+        return res.status(403).json({ error: { message: 'Solo puedes editar tu propio perfil' } });
+      }
+
+      // Para cambiar contraseña, debe proporcionar contraseña actual
+      if (passwordData && passwordData.newPassword && !passwordData.currentPassword) {
+        return res.status(400).json({ error: { message: 'Se requiere contraseña actual para cambiar la contraseña' } });
+      }
+
+      // Secretaria no puede cambiar su username
+      if (userData && userData.username) {
+        return res.status(403).json({ error: { message: 'No puedes cambiar tu nombre de usuario' } });
+      }
+    } else {
+      return res.status(403).json({ error: { message: 'No tienes permisos para editar secretarias' } });
+    }
+
+    const updatedSecretary = await secretaryService.updateSecretaryWithPassword(id, secretaryData, passwordData, userData);
+    
+    if (!updatedSecretary) {
+      return res.status(404).json({ error: { message: 'Secretaria no encontrada' } });
+    }
+    
+    res.json({ secretary: updatedSecretary });
+  } catch (err) {
+    console.error('Error al actualizar secretaria con contraseña:', err);
+    if (err.message.includes('Contraseña actual incorrecta')) {
+      res.status(401).json({ error: { message: err.message } });
+    } else if (err.message.includes('duplicate') || err.message.includes('ya está en uso')) {
+      res.status(409).json({ error: { message: err.message } });
+    } else {
+      res.status(500).json({ error: { message: 'Error al actualizar la secretaria' } });
+    }
+  }
+}
+
 // Eliminar una secretaria
 async function deleteSecretary(req, res) {
   try {
@@ -99,6 +163,7 @@ module.exports = {
   createSecretary,
   getSecretaryById,
   updateSecretary,
+  updateSecretaryWithPassword,
   deleteSecretary,
   getDashboardStats
 }; 

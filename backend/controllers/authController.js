@@ -1,6 +1,7 @@
 const userService = require('../services/userService');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const pool = require('../config/db');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecreto';
 
@@ -203,4 +204,111 @@ async function registerSecretaryWithUser(req, res) {
   }
 }
 
-module.exports = { register, login, registerDoctorWithUser, registerSecretaryWithUser }; 
+/**
+ * Cambiar contraseña de usuario
+ * Body: { currentPassword, newPassword }
+ */
+async function changePassword(req, res) {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.user.user_id;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Contraseña actual y nueva contraseña son requeridas' });
+    }
+
+    if (!validatePassword(newPassword)) {
+      return res.status(400).json({ error: 'La nueva contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un número' });
+    }
+
+    // Obtener usuario actual
+    const user = await userService.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    // Verificar contraseña actual
+    const validCurrentPassword = await bcrypt.compare(currentPassword, user.password);
+    if (!validCurrentPassword) {
+      return res.status(401).json({ error: 'Contraseña actual incorrecta' });
+    }
+
+    // Hashear nueva contraseña
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    // Actualizar contraseña
+    const updated = await userService.updateUserPassword(userId, hashedNewPassword);
+    if (!updated) {
+      return res.status(500).json({ error: 'Error al actualizar la contraseña' });
+    }
+
+    res.json({ message: 'Contraseña actualizada correctamente' });
+  } catch (err) {
+    console.error('Error al cambiar contraseña:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+}
+
+/**
+ * Cambiar contraseña de otro usuario (solo admin)
+ * Body: { newPassword }
+ */
+async function changeUserPassword(req, res) {
+  try {
+    const { userId } = req.params;
+    const { newPassword } = req.body;
+
+    // Solo admin puede cambiar contraseñas de otros usuarios
+    if (!req.user || req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Solo el administrador puede cambiar contraseñas de otros usuarios' });
+    }
+
+    if (!newPassword) {
+      return res.status(400).json({ error: 'Nueva contraseña es requerida' });
+    }
+
+    if (!validatePassword(newPassword)) {
+      return res.status(400).json({ error: 'La nueva contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un número' });
+    }
+
+    // Verificar que el usuario existe
+    const user = await userService.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    // Hashear nueva contraseña
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    // Actualizar contraseña
+    const updated = await userService.updateUserPassword(userId, hashedNewPassword);
+    if (!updated) {
+      return res.status(500).json({ error: 'Error al actualizar la contraseña' });
+    }
+
+    res.json({ message: 'Contraseña actualizada correctamente' });
+  } catch (err) {
+    console.error('Error al cambiar contraseña de usuario:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+}
+
+/**
+ * Función temporal para obtener usuarios (solo para modal de secretaria)
+ */
+async function getUsers(req, res) {
+  try {
+    // Solo admin puede ver esta información
+    if (!req.user || req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Solo el administrador puede ver esta información' });
+    }
+
+    const [rows] = await pool.query('SELECT user_id, username, email, role, entity_id FROM users');
+    res.json({ users: rows });
+  } catch (err) {
+    console.error('Error al obtener usuarios:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+}
+
+module.exports = { register, login, registerDoctorWithUser, registerSecretaryWithUser, changePassword, changeUserPassword, getUsers }; 

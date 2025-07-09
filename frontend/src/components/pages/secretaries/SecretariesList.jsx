@@ -7,6 +7,7 @@ import SearchBar from '../../molecules/SearchBar/SearchBar';
 import UserListItem from '../../molecules/UserListItem/UserListItem';
 import Alert from '../../atoms/Alert/Alert';
 import Spinner from '../../atoms/Spinner/Spinner';
+import SecretaryFormModal from '../../organisms/SecretaryFormModal/SecretaryFormModal';
 import styles from './SecretariesList.module.css';
 
 const SecretariesList = () => {
@@ -14,6 +15,25 @@ const SecretariesList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [selectedSecretary, setSelectedSecretary] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Obtener el rol del usuario actual
+  const getCurrentUserRole = () => {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.role;
+    } catch {
+      return null;
+    }
+  };
+
+  const currentUserRole = getCurrentUserRole();
+  const isAdmin = currentUserRole === 'admin';
+  const isSecretary = currentUserRole === 'secretary';
 
   useEffect(() => {
     fetchSecretaries();
@@ -40,6 +60,88 @@ const SecretariesList = () => {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleEdit = (secretary) => {
+    // Verificar permisos
+    if (isSecretary) {
+      // Secretaria solo puede editar su propio perfil
+      const currentUserId = getCurrentUserId();
+      const secretaryUserId = getSecretaryUserId(secretary.secretary_id);
+      
+      if (currentUserId !== secretaryUserId) {
+        setError('Solo puedes editar tu propio perfil');
+        return;
+      }
+    }
+
+    setSelectedSecretary(secretary);
+    setIsEditing(true);
+    setShowModal(true);
+  };
+
+  const getCurrentUserId = () => {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.user_id;
+    } catch {
+      return null;
+    }
+  };
+
+  const getSecretaryUserId = async (secretaryId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3001/api/secretaries/${secretaryId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.secretary.user_id;
+      }
+    } catch (error) {
+      console.error('Error obteniendo usuario de secretaria:', error);
+    }
+    return null;
+  };
+
+  const handleModalSubmit = async (payload) => {
+    try {
+      const token = localStorage.getItem('token');
+      const url = isEditing 
+        ? `http://localhost:3001/api/secretaries/${selectedSecretary.secretary_id}/with-password`
+        : 'http://localhost:3001/api/secretaries';
+      
+      const method = isEditing ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || 'Error al guardar la secretaria');
+      }
+
+      // Recargar la lista
+      await fetchSecretaries();
+      setShowModal(false);
+      setSelectedSecretary(null);
+      setIsEditing(false);
+    } catch (err) {
+      throw err;
     }
   };
 
@@ -88,11 +190,18 @@ const SecretariesList = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <CardTitle>Secretarias</CardTitle>
-        <Link to="/app/secretaries/new">
-          <Button variant="primary">
+        {isAdmin && (
+          <Button 
+            variant="primary"
+            onClick={() => {
+              setSelectedSecretary(null);
+              setIsEditing(false);
+              setShowModal(true);
+            }}
+          >
             Nueva Secretaria
           </Button>
-        </Link>
+        )}
       </div>
 
       {error && (
@@ -133,19 +242,33 @@ const SecretariesList = () => {
                   },
                   {
                     label: 'Editar',
-                    onClick: () => window.location.href = `/app/secretaries/edit/${secretary.secretary_id}`
+                    onClick: () => handleEdit(secretary),
+                    disabled: isSecretary && getCurrentUserId() !== getSecretaryUserId(secretary.secretary_id)
                   },
-                  {
+                  ...(isAdmin ? [{
                     label: 'Eliminar',
                     onClick: () => handleDelete(secretary.secretary_id),
                     variant: 'danger'
-                  }
+                  }] : [])
                 ]}
               />
             ))}
           </div>
         )}
       </CardBase>
+
+      {/* Modal de edición/creación */}
+      <SecretaryFormModal
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false);
+          setSelectedSecretary(null);
+          setIsEditing(false);
+        }}
+        onSubmit={handleModalSubmit}
+        secretary={selectedSecretary}
+        isEditing={isEditing}
+      />
     </div>
   );
 };

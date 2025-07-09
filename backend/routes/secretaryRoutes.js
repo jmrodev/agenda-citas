@@ -9,6 +9,7 @@ router.get('/', authenticateToken, authorizeRoles('admin'), secretaryController.
 router.post('/', authenticateToken, authorizeRoles('admin'), secretaryController.createSecretary);
 router.get('/:id', authenticateToken, authorizeRoles('admin'), secretaryController.getSecretaryById);
 router.put('/:id', authenticateToken, authorizeRoles('admin'), secretaryController.updateSecretary);
+router.put('/:id/with-password', authenticateToken, authorizeRoles('admin', 'secretary'), secretaryController.updateSecretaryWithPassword);
 router.delete('/:id', authenticateToken, authorizeRoles('admin'), secretaryController.deleteSecretary);
 
 // Ruta para estadísticas del dashboard
