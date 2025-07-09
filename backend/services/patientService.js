@@ -130,15 +130,21 @@ async function getPatientWithReferences(id) {
 }
 
 async function createPatientWithDoctors(data) {
-  // patientModel.createPatient ya no maneja reference_person
-  const newPatientBase = await patientModel.createPatient(data);
+  try {
+    // patientModel.createPatient ya no maneja reference_person
+    const newPatientBase = await patientModel.createPatient(data);
 
-  if (Array.isArray(data.doctor_ids) && data.doctor_ids.length > 0) {
-    await patientModel.addDoctorsToPatient(newPatientBase.patient_id, data.doctor_ids);
+    if (Array.isArray(data.doctor_ids) && data.doctor_ids.length > 0) {
+      await patientModel.addDoctorsToPatient(newPatientBase.patient_id, data.doctor_ids);
+    }
+
+    // Obtener el paciente completo con sus doctores y referencias para devolverlo
+    return getPatientWithReferences(newPatientBase.patient_id);
+  } catch (error) {
+    console.error('Error en createPatientWithDoctors:', error);
+    // Re-lanzar el error para que llegue al controlador
+    throw error;
   }
-
-  // Obtener el paciente completo con sus doctores y referencias para devolverlo
-  return getPatientWithReferences(newPatientBase.patient_id);
 }
 
 async function updatePatientDoctors(patient_id, doctor_ids) {

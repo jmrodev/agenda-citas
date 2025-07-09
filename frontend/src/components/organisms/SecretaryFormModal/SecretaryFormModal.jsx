@@ -115,19 +115,30 @@ const SecretaryFormModal = ({ isOpen, onClose, onSubmit, secretary, isEditing })
   };
 
   const validateForm = () => {
-    if (!formData.first_name.trim()) return 'El nombre es obligatorio.';
-    if (!formData.last_name.trim()) return 'El apellido es obligatorio.';
-    if (!formData.email.trim()) return 'El email es obligatorio.';
-    if (!formData.phone.trim()) return 'El teléfono es obligatorio.';
+    const errors = {};
     
-    // Validar username
-    if (!formData.username.trim()) return 'El nombre de usuario es obligatorio.';
-    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
-    if (!usernameRegex.test(formData.username)) {
-      return 'El nombre de usuario debe tener entre 3 y 20 caracteres, solo letras, números y guion bajo.';
+    if (!formData.first_name.trim()) errors.first_name = 'El nombre es requerido';
+    if (!formData.last_name.trim()) errors.last_name = 'El apellido es requerido';
+    if (!formData.email.trim()) {
+      errors.email = 'El email es requerido';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = 'El formato del email no es válido';
     }
-    
-    return '';
+    if (!formData.phone.trim()) errors.phone = 'El teléfono es requerido';
+
+    // Username validation (only if creating or if username field is available)
+    // Username is required for new secretaries
+    if (!isEditing && !formData.username.trim()) {
+        errors.username = 'El nombre de usuario es requerido';
+    } else if (formData.username.trim()) { // Validate if username is provided (for new or edit)
+        const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+        if (!usernameRegex.test(formData.username)) {
+            errors.username = 'Debe tener 3-20 caracteres (letras, números, guion bajo)';
+        }
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e) => {
@@ -136,15 +147,8 @@ const SecretaryFormModal = ({ isOpen, onClose, onSubmit, secretary, isEditing })
     setError('');
     setValidationErrors({});
 
-    if (!validateForm()) {
-      setIsSubmitting(false);
-      return;
-    }
-
     // Validación previa
-    const validationError = validateForm();
-    if (validationError) {
-      setError(validationError);
+    if (!validateForm()) {
       setIsSubmitting(false);
       return;
     }
@@ -216,31 +220,7 @@ const SecretaryFormModal = ({ isOpen, onClose, onSubmit, secretary, isEditing })
     }
   };
 
-  const validateForm = () => {
-    const errors = {};
-    if (!formData.first_name.trim()) errors.first_name = 'El nombre es requerido';
-    if (!formData.last_name.trim()) errors.last_name = 'El apellido es requerido';
-    if (!formData.email.trim()) {
-      errors.email = 'El email es requerido';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'El formato del email no es válido';
-    }
-    if (!formData.phone.trim()) errors.phone = 'El teléfono es requerido';
 
-    // Username validation (only if creating or if username field is available)
-    // Username is required for new secretaries
-    if (!isEditing && !formData.username.trim()) {
-        errors.username = 'El nombre de usuario es requerido';
-    } else if (formData.username.trim()) { // Validate if username is provided (for new or edit)
-        const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
-        if (!usernameRegex.test(formData.username)) {
-            errors.username = 'Debe tener 3-20 caracteres (letras, números, guion bajo)';
-        }
-    }
-
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
 
   const handleClose = () => {
     setFormData(initialFormState);

@@ -112,11 +112,16 @@ const PatientForm = React.memo(({ onSuccess }) => {
       // Preparar datos para el backend
       const patientData = {
         ...formData,
+        // Convertir date_of_birth a birth_date para el backend
+        birth_date: formData.date_of_birth,
         // Convertir doctor_ids a array si no lo es
         doctor_ids: Array.isArray(formData.doctor_ids) ? formData.doctor_ids : [],
         // Convertir health_insurance_id a número si existe
         health_insurance_id: formData.health_insurance_id ? parseInt(formData.health_insurance_id) : null
       };
+      
+      // Remover date_of_birth ya que ahora usamos birth_date
+      delete patientData.date_of_birth;
 
       let result;
       if (isEditing) {

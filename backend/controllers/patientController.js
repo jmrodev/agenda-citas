@@ -56,10 +56,19 @@ async function create(req, res) {
     const patient = await patientService.createPatientWithDoctors(patientData);
     res.status(201).json(patient);
   } catch (err) {
-    if (err.message.includes('duplicate') || err.message.includes('Ya existe')) { // Ejemplo DNI duplicado
-        return res.status(409).json({ error: err.message });
+    console.error('Error en create patient:', err);
+    // Verificar si es un error de duplicado de MySQL
+    if (err.code === 1062 || err.message.includes('duplicate') || err.message.includes('Duplicate entry')) {
+      // Mensaje amigable según el campo duplicado
+      let userMessage = 'Ya existe un paciente con los mismos datos.';
+      if (err.message.includes("for key 'email'")) {
+        userMessage = 'El email ingresado ya está registrado para otro paciente.';
+      } else if (err.message.includes("for key 'dni'")) {
+        userMessage = 'El DNI ingresado ya está registrado para otro paciente.';
+      }
+      return res.status(409).json({ error: userMessage });
     }
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Error interno al crear el paciente.' });
   }
 }
 

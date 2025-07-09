@@ -39,26 +39,32 @@ async function findPatientsWithFilters(query) {
 }
 
 async function createPatient(data) {
-  // Quitar reference_person de la desestructuración. Añadir dni y doctor_id si se manejan aquí.
-  const {
-    first_name, last_name, date_of_birth, address, phone, email, dni,
-    preferred_payment_methods, health_insurance_id, health_insurance_member_number,
-    doctor_id // Asumiendo que doctor_id en la tabla patients es el 'médico de cabecera'
-  } = data;
+  try {
+    // Quitar reference_person de la desestructuración. Añadir dni y doctor_id si se manejan aquí.
+    const {
+      first_name, last_name, date_of_birth, address, phone, email, dni,
+      preferred_payment_methods, health_insurance_id, health_insurance_member_number,
+      doctor_id // Asumiendo que doctor_id en la tabla patients es el 'médico de cabecera'
+    } = data;
 
-  const sql = `INSERT INTO patients (
-                 first_name, last_name, date_of_birth, address, phone, email, dni,
-                 preferred_payment_methods, health_insurance_id, health_insurance_member_number, doctor_id
-               ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-  const params = [
-    first_name, last_name, date_of_birth, address, phone, email, dni,
-    preferred_payment_methods, health_insurance_id, health_insurance_member_number, doctor_id
-  ];
+    const sql = `INSERT INTO patients (
+                   first_name, last_name, date_of_birth, address, phone, email, dni,
+                   preferred_payment_methods, health_insurance_id, health_insurance_member_number, doctor_id
+                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const params = [
+      first_name, last_name, date_of_birth, address, phone, email, dni,
+      preferred_payment_methods, health_insurance_id, health_insurance_member_number, doctor_id
+    ];
 
-  const [result] = await pool.query(sql, params);
-  // data puede contener reference_person y doctor_ids (para patient_doctors),
-  // pero esos se manejan en el servicio después de crear el paciente base.
-  return { patient_id: result.insertId, ...data };
+    const [result] = await pool.query(sql, params);
+    // data puede contener reference_person y doctor_ids (para patient_doctors),
+    // pero esos se manejan en el servicio después de crear el paciente base.
+    return { patient_id: result.insertId, ...data };
+  } catch (error) {
+    console.error('Error en createPatient:', error);
+    // Re-lanzar el error para que llegue al controlador
+    throw error;
+  }
 }
 
 async function updatePatient(id, data) {

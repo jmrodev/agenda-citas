@@ -2,7 +2,7 @@ const Joi = require('joi');
 
 // Helper para validar fecha que puede ser string YYYY-MM-DD o objeto {day, month, year}
 const dateOrDateObjectSchema = Joi.alternatives().try(
-    Joi.string().isoDate().messages({ // Acepta 'YYYY-MM-DD'
+    Joi.string().isoDate().raw().messages({ // Acepta 'YYYY-MM-DD' sin transformar
         'string.isoDate': 'El formato de fecha debe ser YYYY-MM-DD.'
     }),
     Joi.object({
@@ -11,7 +11,7 @@ const dateOrDateObjectSchema = Joi.alternatives().try(
         year: Joi.number().integer().min(1900).max(new Date().getFullYear()).required() // Año hasta el actual
     }).required()
 ).messages({
-    'alternatives.types': 'La fecha debe ser una cadena YYYY-MM-DD o un objeto {day, month, year}.'
+    'alternatives.types': 'La fecha debe ser una cadena YYYY-MM-DD o un objeto con propiedades day, month, year.'
 });
 
 // Esquema para la persona de referencia (simplificado para anidar, o podríamos importar el completo)

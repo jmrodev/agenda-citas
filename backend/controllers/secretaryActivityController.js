@@ -68,4 +68,4 @@ async function getSecretaryActivityReportSummary(req, res) {
   }
 }
 
-module.exports = { getAll, create, update, getSecretaryActivityReportSummary };
+module.exports = { getAll, create, getSecretaryActivityReportSummary };

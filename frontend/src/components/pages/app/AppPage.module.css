@@ -1,0 +1,19 @@
+.content {
+  padding: var(--spacing-xl);
+  min-height: 400px;
+  background: var(--background-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .content {
+    padding: var(--spacing-md);
+    min-height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: var(--spacing-sm);
+  }
+} 
