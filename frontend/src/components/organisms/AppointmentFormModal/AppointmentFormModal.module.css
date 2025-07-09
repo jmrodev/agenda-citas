@@ -40,4 +40,39 @@
 /* Dark mode support */
 .dark .formContent {
   background: var(--surface-dark, #23272f);
+}
+
+/* Estilos para la información del doctor */
+.doctorInfo {
+  padding: 0.75rem;
+  background-color: var(--info-bg, #eff6ff);
+  border: 1px solid var(--info-border, #bfdbfe);
+  border-radius: 0.375rem;
+}
+
+.doctorName {
+  display: block;
+  font-weight: 600;
+  color: var(--info-text, #1e40af);
+  font-size: 1rem;
+}
+
+.doctorNote {
+  display: block;
+  color: var(--text-muted, #6b7280);
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.noDoctorSelected {
+  padding: 0.75rem;
+  background-color: var(--warning-bg, #fffbeb);
+  border: 1px solid var(--warning-border, #fbbf24);
+  border-radius: 0.375rem;
+}
+
+.warning {
+  color: var(--warning-color, #f59e0b);
+  font-weight: 500;
+  font-size: 0.875rem;
 } 

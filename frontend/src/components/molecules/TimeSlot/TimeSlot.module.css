@@ -1,0 +1,161 @@
+.timeSlot {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  background-color: var(--background-color, #ffffff);
+  transition: all 0.2s ease;
+  min-height: 80px;
+  position: relative;
+}
+
+.timeSlot.clickable {
+  cursor: pointer;
+}
+
+.timeSlot.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Estados del slot */
+.timeSlot.available {
+  border-color: var(--success-color, #10b981);
+  background-color: var(--success-bg, #f0fdf4);
+}
+
+.timeSlot.available:hover {
+  border-color: var(--success-hover, #059669);
+  background-color: var(--success-hover-bg, #ecfdf5);
+}
+
+.timeSlot.booked {
+  border-color: var(--error-color, #ef4444);
+  background-color: var(--error-bg, #fef2f2);
+  cursor: pointer;
+}
+
+.timeSlot.booked:hover {
+  border-color: var(--error-hover, #dc2626);
+  background-color: var(--error-hover-bg, #fef2f2);
+}
+
+.timeSlot.out-of-schedule {
+  border-color: var(--warning-color, #f59e0b);
+  background-color: var(--warning-bg, #fffbeb);
+  cursor: pointer;
+}
+
+.timeSlot.out-of-schedule:hover {
+  border-color: var(--warning-hover, #d97706);
+  background-color: var(--warning-hover-bg, #fef3c7);
+}
+
+.timeSlot.unavailable {
+  border-color: var(--disabled-color, #9ca3af);
+  background-color: var(--disabled-bg, #f9fafb);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Header del slot */
+.timeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.time {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-color, #374151);
+}
+
+.statusIcon {
+  flex-shrink: 0;
+}
+
+/* Contenido del slot */
+.slotContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.statusText {
+  font-size: 0.875rem;
+  color: var(--text-muted, #6b7280);
+  font-weight: 500;
+}
+
+.appointmentInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.patientName {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-color, #374151);
+}
+
+.doctorName {
+  font-size: 0.75rem;
+  color: var(--text-muted, #6b7280);
+}
+
+/* Nota para horarios fuera de horario */
+.outOfScheduleNote {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--warning-color, #f59e0b);
+  text-align: center;
+}
+
+.outOfScheduleNote small {
+  color: var(--warning-color, #f59e0b);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Estados específicos de iconos */
+.timeSlot.available .statusIcon {
+  color: var(--success-color, #10b981);
+}
+
+.timeSlot.booked .statusIcon {
+  color: var(--error-color, #ef4444);
+}
+
+.timeSlot.out-of-schedule .statusIcon {
+  color: var(--warning-color, #f59e0b);
+}
+
+.timeSlot.unavailable .statusIcon {
+  color: var(--disabled-color, #9ca3af);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .timeSlot {
+    padding: 0.5rem;
+    min-height: 70px;
+  }
+  
+  .time {
+    font-size: 0.875rem;
+  }
+  
+  .statusText,
+  .patientName {
+    font-size: 0.75rem;
+  }
+  
+  .doctorName {
+    font-size: 0.625rem;
+  }
+} 

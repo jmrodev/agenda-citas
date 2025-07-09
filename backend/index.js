@@ -17,6 +17,11 @@ const patientRoutes = require('./routes/patientRoutes');
 app.use('/api/patients', patientRoutes);
 
 const doctorRoutes = require('./routes/doctorRoutes');
+const doctorScheduleRoutes = require('./routes/doctorScheduleRoutes');
+
+// Registrar las rutas de horarios de doctores primero (rutas más específicas)
+app.use('/api/doctors', doctorScheduleRoutes);
+// Luego registrar las rutas generales de doctores
 app.use('/api/doctors', doctorRoutes);
 
 const appointmentRoutes = require('./routes/appointmentRoutes');

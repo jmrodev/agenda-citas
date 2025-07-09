@@ -1,6 +1,5 @@
 import React from 'react';
 import styles from './CalendarHeader.module.css';
-import IconButton from '../../atoms/IconButton/IconButton';
 
 const months = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -12,6 +11,7 @@ const CalendarHeader = ({
   year,
   onPrev,
   onNext,
+  onToday,
   onMonthChange,
   onYearChange,
   showSelectors = false,
@@ -21,9 +21,14 @@ const CalendarHeader = ({
 }) => {
   return (
     <div className={[styles.calendarHeader, className].join(' ').trim()} style={style} {...rest}>
-      <IconButton aria-label='Mes anterior' onClick={onPrev} className={styles.navBtn}>
-        <span role='img' aria-label='prev'>◀️</span>
-      </IconButton>
+      <button 
+        type="button"
+        aria-label='Mes anterior' 
+        onClick={onPrev} 
+        className={styles.navBtn}
+      >
+        ◀️
+      </button>
       {showSelectors ? (
         <>
           <select
@@ -50,9 +55,22 @@ const CalendarHeader = ({
       ) : (
         <span className={styles.title}>{months[month]} {year}</span>
       )}
-      <IconButton aria-label='Mes siguiente' onClick={onNext} className={styles.navBtn}>
-        <span role='img' aria-label='next'>▶️</span>
-      </IconButton>
+      <button 
+        type="button"
+        aria-label='Ir a hoy' 
+        onClick={onToday} 
+        className={styles.todayBtn}
+      >
+        Hoy
+      </button>
+      <button 
+        type="button"
+        aria-label='Mes siguiente' 
+        onClick={onNext} 
+        className={styles.navBtn}
+      >
+        ▶️
+      </button>
     </div>
   );
 };

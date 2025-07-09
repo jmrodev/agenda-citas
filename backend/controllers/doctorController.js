@@ -107,6 +107,7 @@ async function getDashboardStats(req, res) {
 // Modificado para incluir pacientes
 async function getById(req, res) {
   const doctorId = req.params.id;
+  console.log('getById called with doctorId:', doctorId);
   try {
     // Usamos getDoctorWithPatients para incluir la lista de pacientes.
     // El servicio se encargará de llamar al método correcto del modelo.

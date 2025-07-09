@@ -15,13 +15,13 @@ async function listAppointmentsWithFilters(query) {
 }
 
 async function createAppointment(data) {
-  const { patient_id, doctor_id, date, time } = data;
+  const { patient_id, doctor_id, date, time, isOutOfSchedule = false } = data;
 
   // 1. Verificar que el paciente no tenga otra cita activa con el mismo médico
   const sameDoctor = await appointmentModel.findAppointmentsWithFilters({
-    paciente_id: patient_id,
+    patient_id: patient_id,
     doctor_id: doctor_id,
-    estado: ['pendiente', 'confirmada']
+    status: ['pendiente', 'confirmada', 'pendiente_confirmacion']
   });
   if (sameDoctor && sameDoctor.length > 0) {
     throw new Error('Ya tienes una cita activa con este médico.');
@@ -29,16 +29,15 @@ async function createAppointment(data) {
 
   // 2. Verificar que el paciente no tenga otra cita en el mismo horario
   const overlap = await appointmentModel.findAppointmentsWithFilters({
-    paciente_id: patient_id,
-    fecha: date,
-    estado: ['pendiente', 'confirmada'],
+    patient_id: patient_id,
+    date: date,
+    status: ['pendiente', 'confirmada', 'pendiente_confirmacion'],
   });
   if (overlap && overlap.some(cita => cita.time === time)) {
     throw new Error('Ya tienes una cita en ese horario.');
   }
 
   // 3. Verificar disponibilidad del médico
-  // Obtener el día de la semana (en español, para compatibilidad con la tabla)
   const dias = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
   const dayOfWeek = dias[new Date(date).getDay()];
   const hours = await doctorConsultationHourModel.getConsultationHoursByDoctorAndDay(doctor_id, dayOfWeek);
@@ -46,11 +45,18 @@ async function createAppointment(data) {
   const disponible = hours.some(h =>
     requestedMinutes >= timeToMinutes(h.start_time) && requestedMinutes < timeToMinutes(h.end_time)
   );
-  if (!disponible) {
+
+  // 4. Determinar el status de la cita
+  let status = 'pendiente';
+  if (!disponible && isOutOfSchedule) {
+    status = 'pendiente_confirmacion';
+  } else if (!disponible && !isOutOfSchedule) {
     throw new Error('El médico no está disponible en ese horario.');
   }
 
-  return await appointmentModel.createAppointment(data);
+  // 5. Crear la cita con el status apropiado
+  const appointmentData = { ...data, status };
+  return await appointmentModel.createAppointment(appointmentData);
 }
 
 async function updateAppointment(id, data) {
@@ -59,6 +65,22 @@ async function updateAppointment(id, data) {
 
 async function deleteAppointment(id) {
   return await appointmentModel.deleteAppointment(id);
+}
+
+async function updateAppointmentStatus(id, status) {
+  return await appointmentModel.updateAppointmentStatus(id, status);
+}
+
+async function getAppointmentsByDoctor(doctorId) {
+  return await appointmentModel.getAppointmentsByDoctor(doctorId);
+}
+
+async function confirmOutOfScheduleAppointment(id) {
+  return await appointmentModel.updateAppointmentStatus(id, 'confirmada');
+}
+
+async function rejectOutOfScheduleAppointment(id) {
+  return await appointmentModel.updateAppointmentStatus(id, 'cancelada');
 }
 
 async function getDashboardStats() {
@@ -104,4 +126,16 @@ async function getAppointmentReportData(startDate, endDate, rangeKey) {
   };
 }
 
-module.exports = { listAppointments, listAppointmentsWithFilters, createAppointment, updateAppointment, deleteAppointment, getDashboardStats, getAppointmentReportData };
+module.exports = { 
+  listAppointments, 
+  listAppointmentsWithFilters, 
+  createAppointment, 
+  updateAppointment, 
+  deleteAppointment, 
+  updateAppointmentStatus,
+  getAppointmentsByDoctor,
+  confirmOutOfScheduleAppointment,
+  rejectOutOfScheduleAppointment,
+  getDashboardStats, 
+  getAppointmentReportData 
+};

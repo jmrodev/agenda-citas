@@ -1,41 +1,78 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import Select from '../../atoms/Select/Select';
+import { doctorService } from '../../../services/doctorService';
 import styles from './DoctorSelector.module.css';
 
-const DoctorSelector = ({ doctors, selectedDoctor, onSelect, onClose, variant = 'modal', style = {} }) => {
-  const content = (
-    <div className={styles.selector} style={style} onClick={e => e.stopPropagation()}>
-      <h3 className={styles.title}>Selecciona un doctor</h3>
-      <ul className={styles.list}>
-        {doctors.map(doctor => (
-          <li
-            key={doctor.id || doctor.doctor_id}
-            className={(doctor.id || doctor.doctor_id) === (selectedDoctor.id || selectedDoctor.doctor_id) ? styles.selected : ''}
-            onClick={() => onSelect(doctor.id || doctor.doctor_id)}
-          >
-            {doctor.name || `Dr. ${doctor.first_name} ${doctor.last_name}`}
-          </li>
-        ))}
-      </ul>
-      {onClose && <button className={styles.closeBtn} onClick={onClose}>Cerrar</button>}
+const DoctorSelector = ({ 
+  selectedDoctorId, 
+  onDoctorChange, 
+  className = '',
+  placeholder = 'Seleccionar doctor...'
+}) => {
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetchDoctors();
+  }, []);
+
+  const fetchDoctors = async () => {
+    try {
+      setLoading(true);
+      const doctorsData = await doctorService.getAll();
+      setDoctors(doctorsData);
+    } catch (err) {
+      setError('Error al cargar doctores');
+      console.error('Error fetching doctors:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDoctorChange = (event) => {
+    const doctorId = event.target.value;
+    onDoctorChange(doctorId ? parseInt(doctorId) : null);
+  };
+
+  if (loading) {
+    return (
+      <div className={`${styles.container} ${className}`}>
+        <div className={styles.loading}>Cargando doctores...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={`${styles.container} ${className}`}>
+        <div className={styles.error}>{error}</div>
+      </div>
+    );
+  }
+
+
+  
+  return (
+    <div className={`${styles.container} ${className}`}>
+      <label htmlFor="doctor-select" className={styles.label}>
+        Doctor:
+      </label>
+      <Select
+        id="doctor-select"
+        value={selectedDoctorId || ''}
+        onChange={handleDoctorChange}
+        className={styles.select}
+        options={[
+          { value: '', label: placeholder },
+          ...doctors.map((doctor) => ({
+            value: doctor.doctor_id,
+            label: `Dr. ${doctor.first_name} ${doctor.last_name} - ${doctor.specialty}`
+          }))
+        ]}
+      />
     </div>
   );
-
-  if (variant === 'modal') {
-    return (
-      <div className={styles.overlay} onClick={onClose}>
-        {content}
-      </div>
-    );
-  }
-  if (variant === 'dropdown') {
-    return (
-      <div className={styles.dropdown} onClick={e => e.stopPropagation()}>
-        {content}
-      </div>
-    );
-  }
-  // inline
-  return content;
 };
 
 export default DoctorSelector; 

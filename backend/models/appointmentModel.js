@@ -23,7 +23,7 @@ async function findAppointmentsWithFilters(query) {
 async function createAppointment(data) {
   const { patient_id, doctor_id, date, time, reason, type, status, recorded_by_secretary_id, service_type, amount, payment_method, payment_date } = data;
   const [result] = await pool.query(
-    'INSERT INTO appointments (patient_id, doctor_id, date, time, reason, type, status, recorded_by_secretary_id, service_type, amount, payment_method, payment_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO appointments (patient_id, doctor_id, date, time, reason, type, status, recorded_by_secretary_id, service_type, amount, payment_method, payment_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
     [patient_id, doctor_id, date, time, reason, type, status, recorded_by_secretary_id, service_type, amount, payment_method, payment_date]
   );
   return { appointment_id: result.insertId, ...data };
@@ -41,6 +41,25 @@ async function updateAppointment(id, data) {
 async function deleteAppointment(id) {
   await pool.query('DELETE FROM appointments WHERE appointment_id=?', [id]);
   return { appointment_id: id };
+}
+
+async function updateAppointmentStatus(id, status) {
+  await pool.query('UPDATE appointments SET status=? WHERE appointment_id=?', [status, id]);
+  return { appointment_id: id, status };
+}
+
+async function getAppointmentsByDoctor(doctorId) {
+  const [rows] = await pool.query(`
+    SELECT a.*, 
+           CONCAT(p.first_name, ' ', p.last_name) as patient_name,
+           CONCAT(d.first_name, ' ', d.last_name) as doctor_name
+    FROM appointments a
+    JOIN patients p ON a.patient_id = p.patient_id
+    JOIN doctors d ON a.doctor_id = d.doctor_id
+    WHERE a.doctor_id = ?
+    ORDER BY a.date ASC, a.time ASC
+  `, [doctorId]);
+  return rows;
 }
 
 async function getAppointmentReportStats(startDate, endDate, rangeKey) {
@@ -130,4 +149,13 @@ async function getAppointmentReportStats(startDate, endDate, rangeKey) {
   };
 }
 
-module.exports = { getAllAppointments, findAppointmentsWithFilters, createAppointment, updateAppointment, deleteAppointment, getAppointmentReportStats };
+module.exports = { 
+  getAllAppointments, 
+  findAppointmentsWithFilters, 
+  createAppointment, 
+  updateAppointment, 
+  deleteAppointment, 
+  updateAppointmentStatus,
+  getAppointmentsByDoctor,
+  getAppointmentReportStats 
+};

@@ -13,8 +13,6 @@ const Select = ({
   'aria-describedby': ariaDescribedby,
   ...rest
 }) => {
-  console.log('Select render:', { value, optionsCount: options.length, options });
-  
   return (
     <select
       value={value || ''}

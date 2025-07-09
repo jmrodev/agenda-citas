@@ -2,20 +2,30 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authFetch } from '../../../auth/authFetch';
 import CalendarView from '../../organisms/CalendarView/CalendarView';
+import TimeSlot from '../../molecules/TimeSlot/TimeSlot';
+import OutOfScheduleModal from '../../molecules/OutOfScheduleModal/OutOfScheduleModal';
+import DoctorSelector from '../../molecules/DoctorSelector/DoctorSelector';
 import Button from '../../atoms/Button/Button';
 import Alert from '../../atoms/Alert/Alert';
 import Spinner from '../../atoms/Spinner/Spinner';
 import AppointmentFormModal from '../../organisms/AppointmentFormModal/AppointmentFormModal';
+import { doctorScheduleService } from '../../../services/doctorScheduleService';
 import styles from './CalendarPage.module.css';
 
 const CalendarPage = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedDoctorId, setSelectedDoctorId] = useState(null);
+  const [selectedDoctorName, setSelectedDoctorName] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(null);
   const [showAppointmentForm, setShowAppointmentForm] = useState(false);
   const [editingAppointment, setEditingAppointment] = useState(null);
+  const [showOutOfScheduleModal, setShowOutOfScheduleModal] = useState(false);
+  const [outOfScheduleTime, setOutOfScheduleTime] = useState(null);
+  const [doctorsSchedule, setDoctorsSchedule] = useState({});
+  const [scheduleLoading, setScheduleLoading] = useState(false);
   const navigate = useNavigate();
 
   // Obtener día actual en formato YYYY-MM-DD
@@ -25,12 +35,63 @@ const CalendarPage = () => {
     fetchAppointments();
   }, []);
 
+  // Set initial selected date to today when component mounts
+  useEffect(() => {
+    const today = new Date();
+    setSelectedDate(today);
+  }, []);
+
+  // Cargar horarios de doctores cuando cambie la fecha seleccionada o el doctor
+  useEffect(() => {
+    if (selectedDate && selectedDoctorId) {
+      fetchDoctorsSchedule();
+    }
+  }, [selectedDate, selectedDoctorId]);
+
+  const fetchDoctorsSchedule = async () => {
+    try {
+      setScheduleLoading(true);
+      const dayOfWeek = doctorScheduleService.getDayOfWeek(selectedDate);
+      const schedule = await doctorScheduleService.getAllDoctorsSchedule(dayOfWeek);
+      setDoctorsSchedule(schedule);
+    } catch (error) {
+      console.error('Error fetching doctors schedule:', error);
+    } finally {
+      setScheduleLoading(false);
+    }
+  };
+
+  const handleDoctorChange = (doctorId) => {
+    setSelectedDoctorId(doctorId);
+    setSelectedDoctorName('');
+    setDoctorsSchedule({});
+    setScheduleLoading(false);
+    
+    // Si se seleccionó un doctor, obtener su nombre
+    if (doctorId) {
+      fetchDoctorName(doctorId);
+    }
+  };
+
+  const fetchDoctorName = async (doctorId) => {
+    try {
+      const res = await authFetch(`/api/doctors/${doctorId}`);
+      if (res.ok) {
+        const doctor = await res.json();
+        setSelectedDoctorName(`Dr. ${doctor.first_name} ${doctor.last_name} - ${doctor.specialty}`);
+      }
+    } catch (err) {
+      console.error('Error fetching doctor name:', err);
+    }
+  };
+
   const fetchAppointments = async () => {
     try {
       setLoading(true);
       const res = await authFetch('/api/appointments');
       if (!res.ok) throw new Error('Error al cargar citas');
       const data = await res.json();
+      console.log('🔍 [CalendarPage] Citas cargadas:', data);
       setAppointments(data);
     } catch (err) {
       setError(err.message);
@@ -39,15 +100,21 @@ const CalendarPage = () => {
     }
   };
 
-  // Convertir citas a formato de eventos para el calendario
+  // Convertir citas a formato de eventos para el calendario (filtrar por doctor si está seleccionado)
   const events = appointments.reduce((acc, appointment) => {
-    const dateKey = appointment.date.split('T')[0]; // Asegurar formato YYYY-MM-DD
+    // Si hay un doctor seleccionado, solo mostrar sus citas
+    if (selectedDoctorId && appointment.doctor_id !== selectedDoctorId) {
+      return acc;
+    }
+    
+    // Normalizar la fecha para asegurar formato YYYY-MM-DD
+    const dateKey = appointment.date.split('T')[0];
     if (!acc[dateKey]) {
       acc[dateKey] = [];
     }
     acc[dateKey].push({
       id: appointment.appointment_id,
-      title: `${appointment.time} - ${appointment.patient_name || 'Paciente'}`,
+      title: `${appointment.time.slice(0, 5)} - ${appointment.patient_name || 'Paciente'}`,
       time: appointment.time,
       appointment: appointment
     });
@@ -60,6 +127,12 @@ const CalendarPage = () => {
     setSelectedTime(null);
   };
 
+  const handleCalendarToday = (dateKey) => {
+    const [year, month, day] = dateKey.split('-').map(Number);
+    setSelectedDate(new Date(year, month - 1, day));
+    setSelectedTime(null);
+  };
+
   const handleTimeClick = (time, appointment = null) => {
     console.log('handleTimeClick:', { time, appointment });
     setSelectedTime(time);
@@ -67,10 +140,27 @@ const CalendarPage = () => {
     setShowAppointmentForm(true);
   };
 
+  const handleOutOfScheduleConfirm = (time) => {
+    setOutOfScheduleTime(time);
+    setShowOutOfScheduleModal(true);
+  };
+
+  const handleOutOfScheduleModalConfirm = (time) => {
+    setSelectedTime(time);
+    setEditingAppointment(null);
+    setIsOutOfScheduleAppointment(true);
+    setShowAppointmentForm(true);
+    setShowOutOfScheduleModal(false);
+    setOutOfScheduleTime(null);
+  };
+
+  const [isOutOfScheduleAppointment, setIsOutOfScheduleAppointment] = useState(false);
+
   const handleAppointmentFormClose = () => {
     console.log('handleAppointmentFormClose - selectedTime antes:', selectedTime);
     setShowAppointmentForm(false);
     setEditingAppointment(null);
+    setIsOutOfScheduleAppointment(false);
     // No limpiar selectedTime aquí, solo limpiar editingAppointment
   };
 
@@ -82,18 +172,36 @@ const CalendarPage = () => {
   // Obtener citas del día seleccionado
   const selectedDateKey = selectedDate.toISOString().split('T')[0];
   const dayAppointments = events[selectedDateKey] || [];
+  console.log('🔍 [CalendarPage] Citas del día', selectedDateKey, ':', dayAppointments);
 
   // Generar slots de tiempo disponibles (8:00 - 18:00, cada 30 minutos)
   const generateTimeSlots = () => {
+    if (!selectedDoctorId) {
+      return [];
+    }
+
     const slots = [];
     for (let hour = 8; hour < 18; hour++) {
       for (let minute = 0; minute < 60; minute += 30) {
         const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-        const appointment = dayAppointments.find(apt => apt.time === time);
+        // Normalizar la hora de la cita para comparar correctamente (quitar segundos)
+        const appointment = dayAppointments.find(apt => apt.time.slice(0, 5) === time);
+        
+        // Debug: mostrar cuando encuentra una cita
+        if (appointment) {
+          console.log('🔍 [CalendarPage] Cita encontrada para slot', time, ':', appointment);
+        }
+        
+        // Verificar si el doctor seleccionado está disponible en este horario
+        const doctorSchedule = doctorsSchedule[selectedDoctorId];
+        const isInSchedule = doctorSchedule ? 
+          doctorScheduleService.isTimeInSchedule(time, doctorSchedule.schedule) : false;
+        
         slots.push({
           time,
           appointment,
-          isAvailable: !appointment
+          isAvailable: !appointment,
+          isInSchedule: isInSchedule
         });
       }
     }
@@ -127,7 +235,22 @@ const CalendarPage = () => {
     <div className={styles.container}>
       <h2>Calendario</h2>
       
-      <div className={styles.calendarLayout}>
+      {/* Selector de doctor */}
+      <DoctorSelector
+        selectedDoctorId={selectedDoctorId}
+        onDoctorChange={handleDoctorChange}
+        className={styles.doctorSelector}
+        placeholder="Selecciona un doctor para ver sus horarios..."
+      />
+      
+      {!selectedDoctorId && (
+        <div className={styles.noDoctorSelected}>
+          <p>Por favor, selecciona un doctor para ver sus horarios y citas disponibles.</p>
+        </div>
+      )}
+      
+      {selectedDoctorId && (
+        <div className={styles.calendarLayout}>
         {/* Panel izquierdo - Calendario compacto */}
         <div className={styles.calendarPanel}>
           <CalendarView 
@@ -156,6 +279,8 @@ const CalendarPage = () => {
               }}
               variant="primary"
               size="small"
+              disabled={!selectedDoctorId}
+              title={!selectedDoctorId ? 'Debe seleccionar un doctor primero' : ''}
             >
               Nueva Cita
             </Button>
@@ -163,32 +288,29 @@ const CalendarPage = () => {
 
           <div className={styles.timeSlotsContainer}>
             <h4>Horarios disponibles</h4>
+            {scheduleLoading && (
+              <div className={styles.scheduleLoading}>
+                <Spinner size={24} color="primary" />
+                <span>Cargando horarios de doctores...</span>
+              </div>
+            )}
             <div className={styles.timeSlots}>
               {timeSlots.map((slot) => (
-                <div 
+                <TimeSlot
                   key={slot.time}
-                  className={`${styles.timeSlot} ${slot.isAvailable ? styles.available : styles.booked}`}
-                  onClick={() => handleTimeClick(slot.time, slot.appointment?.appointment)}
-                >
-                  <span className={styles.time}>{slot.time}</span>
-                  {slot.appointment ? (
-                    <div className={styles.appointmentInfo}>
-                      <span className={styles.patientName}>
-                        {slot.appointment.appointment.patient_name || 'Paciente'}
-                      </span>
-                      <span className={styles.doctorName}>
-                        Dr. {slot.appointment.appointment.doctor_name || 'Doctor'}
-                      </span>
-                    </div>
-                  ) : (
-                    <span className={styles.availableText}>Disponible</span>
-                  )}
-                </div>
+                  time={slot.time}
+                  appointment={slot.appointment?.appointment}
+                  isInSchedule={slot.isInSchedule}
+                  isAvailable={slot.isAvailable}
+                  onTimeClick={handleTimeClick}
+                  onOutOfScheduleConfirm={handleOutOfScheduleConfirm}
+                />
               ))}
             </div>
           </div>
         </div>
       </div>
+      )}
 
       {/* Modal de formulario de cita */}
       {showAppointmentForm && (
@@ -199,8 +321,28 @@ const CalendarPage = () => {
           selectedDateISO={selectedDate ? selectedDate.toISOString().split('T')[0] : ''}
           selectedTime={selectedTime}
           appointment={editingAppointment}
+          isOutOfSchedule={isOutOfScheduleAppointment}
+          selectedDoctorId={selectedDoctorId}
+          selectedDoctorName={selectedDoctorName}
         />
       )}
+
+      {/* Modal de confirmación fuera de horario */}
+      <OutOfScheduleModal
+        isOpen={showOutOfScheduleModal}
+        onClose={() => {
+          setShowOutOfScheduleModal(false);
+          setOutOfScheduleTime(null);
+        }}
+        onConfirm={handleOutOfScheduleModalConfirm}
+        time={outOfScheduleTime}
+        date={selectedDate ? selectedDate.toLocaleDateString('es-ES', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        }) : ''}
+      />
     </div>
   );
 };

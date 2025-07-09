@@ -70,6 +70,37 @@
   color: var(--text-color, #222);
 }
 
+.scheduleLoading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: var(--info-bg, #eff6ff);
+  border: 1px solid var(--info-border, #bfdbfe);
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  color: var(--info-text, #1e40af);
+  font-size: 0.875rem;
+}
+
+.doctorSelector {
+  margin-bottom: 1.5rem;
+}
+
+.noDoctorSelected {
+  text-align: center;
+  padding: 3rem 1rem;
+  background-color: var(--surface, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  color: var(--text-muted, #6b7280);
+}
+
+.noDoctorSelected p {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
 .timeSlots {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));

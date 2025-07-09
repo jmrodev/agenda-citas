@@ -21,28 +21,63 @@ async function getAllWithFilters(req, res) {
 
 async function create(req, res) {
   try {
+    console.log('🔍 [AppointmentController] create - Datos recibidos:', req.body);
     let data = { ...req.body };
-    if (data.date && typeof data.date === 'object') {
-      try {
-        data.date = parseAndValidateDate(data.date, 'date', true);
-      } catch (err) {
-        return res.status(400).json({ error: err.message });
+    
+    // Procesar fecha
+    if (data.date) {
+      if (typeof data.date === 'string') {
+        // Si es un string ISO, convertirlo a objeto
+        const dateObj = new Date(data.date);
+        if (isNaN(dateObj.getTime())) {
+          return res.status(400).json({ error: 'Formato de fecha inválido' });
+        }
+        data.date = {
+          day: dateObj.getDate(),
+          month: dateObj.getMonth() + 1,
+          year: dateObj.getFullYear()
+        };
       }
-    } else if (data.date) {
-      return res.status(400).json({ error: 'date debe ser un objeto { day, month, year }' });
-    }
-    if (data.payment_date && typeof data.payment_date === 'object') {
-      try {
-        data.payment_date = parseAndValidateDate(data.payment_date, 'payment_date', true);
-      } catch (err) {
-        return res.status(400).json({ error: err.message });
+      
+      if (typeof data.date === 'object') {
+        try {
+          data.date = parseAndValidateDate(data.date, 'date', true);
+        } catch (err) {
+          return res.status(400).json({ error: err.message });
+        }
       }
-    } else if (data.payment_date) {
-      return res.status(400).json({ error: 'payment_date debe ser un objeto { day, month, year }' });
     }
+    
+    // Procesar payment_date
+    if (data.payment_date) {
+      if (typeof data.payment_date === 'string') {
+        // Si es un string ISO, convertirlo a objeto
+        const dateObj = new Date(data.payment_date);
+        if (isNaN(dateObj.getTime())) {
+          return res.status(400).json({ error: 'Formato de payment_date inválido' });
+        }
+        data.payment_date = {
+          day: dateObj.getDate(),
+          month: dateObj.getMonth() + 1,
+          year: dateObj.getFullYear()
+        };
+      }
+      
+      if (typeof data.payment_date === 'object') {
+        try {
+          data.payment_date = parseAndValidateDate(data.payment_date, 'payment_date', true);
+        } catch (err) {
+          return res.status(400).json({ error: err.message });
+        }
+      }
+    }
+    
+    console.log('🔍 [AppointmentController] create - Datos procesados:', data);
     const appointment = await appointmentService.createAppointment(data);
+    console.log('🔍 [AppointmentController] create - Cita creada:', appointment);
     res.status(201).json(appointment);
   } catch (err) {
+    console.error('❌ [AppointmentController] create - Error:', err);
     res.status(500).json({ error: err.message });
   }
 }
@@ -50,24 +85,55 @@ async function create(req, res) {
 async function update(req, res) {
   try {
     let data = { ...req.body };
-    if (data.date && typeof data.date === 'object') {
-      try {
-        data.date = parseAndValidateDate(data.date, 'date', true);
-      } catch (err) {
-        return res.status(400).json({ error: err.message });
+    
+    // Procesar fecha
+    if (data.date) {
+      if (typeof data.date === 'string') {
+        // Si es un string ISO, convertirlo a objeto
+        const dateObj = new Date(data.date);
+        if (isNaN(dateObj.getTime())) {
+          return res.status(400).json({ error: 'Formato de fecha inválido' });
+        }
+        data.date = {
+          day: dateObj.getDate(),
+          month: dateObj.getMonth() + 1,
+          year: dateObj.getFullYear()
+        };
       }
-    } else if (data.date) {
-      return res.status(400).json({ error: 'date debe ser un objeto { day, month, year }' });
-    }
-    if (data.payment_date && typeof data.payment_date === 'object') {
-      try {
-        data.payment_date = parseAndValidateDate(data.payment_date, 'payment_date', true);
-      } catch (err) {
-        return res.status(400).json({ error: err.message });
+      
+      if (typeof data.date === 'object') {
+        try {
+          data.date = parseAndValidateDate(data.date, 'date', true);
+        } catch (err) {
+          return res.status(400).json({ error: err.message });
+        }
       }
-    } else if (data.payment_date) {
-      return res.status(400).json({ error: 'payment_date debe ser un objeto { day, month, year }' });
     }
+    
+    // Procesar payment_date
+    if (data.payment_date) {
+      if (typeof data.payment_date === 'string') {
+        // Si es un string ISO, convertirlo a objeto
+        const dateObj = new Date(data.payment_date);
+        if (isNaN(dateObj.getTime())) {
+          return res.status(400).json({ error: 'Formato de payment_date inválido' });
+        }
+        data.payment_date = {
+          day: dateObj.getDate(),
+          month: dateObj.getMonth() + 1,
+          year: dateObj.getFullYear()
+        };
+      }
+      
+      if (typeof data.payment_date === 'object') {
+        try {
+          data.payment_date = parseAndValidateDate(data.payment_date, 'payment_date', true);
+        } catch (err) {
+          return res.status(400).json({ error: err.message });
+        }
+      }
+    }
+    
     const appointment = await appointmentService.updateAppointment(req.params.id, data);
     res.json(appointment);
   } catch (err) {
@@ -120,4 +186,46 @@ async function getAppointmentReportSummary(req, res) {
   }
 }
 
-module.exports = { getAll, getAllWithFilters, create, update, remove, getMyAppointments, getDashboardStats, getAppointmentReportSummary };
+async function getAppointmentsByDoctor(req, res) {
+  try {
+    const { doctorId } = req.params;
+    const appointments = await appointmentService.getAppointmentsByDoctor(doctorId);
+    res.json(appointments);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function confirmOutOfScheduleAppointment(req, res) {
+  try {
+    const { id } = req.params;
+    const appointment = await appointmentService.confirmOutOfScheduleAppointment(id);
+    res.json({ message: 'Cita confirmada exitosamente', appointment });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function rejectOutOfScheduleAppointment(req, res) {
+  try {
+    const { id } = req.params;
+    const appointment = await appointmentService.rejectOutOfScheduleAppointment(id);
+    res.json({ message: 'Cita rechazada exitosamente', appointment });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+module.exports = { 
+  getAll, 
+  getAllWithFilters, 
+  create, 
+  update, 
+  remove, 
+  getMyAppointments, 
+  getDashboardStats, 
+  getAppointmentReportSummary,
+  getAppointmentsByDoctor,
+  confirmOutOfScheduleAppointment,
+  rejectOutOfScheduleAppointment
+};

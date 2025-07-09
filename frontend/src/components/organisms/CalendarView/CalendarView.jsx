@@ -27,14 +27,8 @@ const CalendarView = React.memo(({
   const [selectedDay, setSelectedDay] = useState(new Date().getDate());
   const logger = createLogger('CalendarView');
 
-  // Llamar onDayClick con el día actual al inicializar
-  useEffect(() => {
-    if (onDayClick) {
-      const today = new Date();
-      const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-      onDayClick(dateKey);
-    }
-  }, [onDayClick]);
+  // Removed automatic onDayClick call to prevent infinite loops
+  // The parent component should handle initial day selection if needed
 
   // Memoizar cálculos costosos
   const { daysInMonth, firstDay, today } = useMemo(() => {
@@ -115,6 +109,19 @@ const CalendarView = React.memo(({
     setSelectedDay(null);
   }, [month]);
 
+  const handleToday = useCallback(() => {
+    const today = new Date();
+    setMonth(today.getMonth());
+    setYear(today.getFullYear());
+    setSelectedDay(today.getDate());
+    
+    // Llamar al callback del día seleccionado para actualizar el panel derecho
+    const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    if (onDayClick) {
+      onDayClick(todayKey);
+    }
+  }, [onDayClick]);
+
   // DEBUG LOGS
   logger.log('render');
   logger.log('days', days);
@@ -129,6 +136,7 @@ const CalendarView = React.memo(({
         year={year}
         onPrev={handlePrev}
         onNext={handleNext}
+        onToday={handleToday}
       />
       <CalendarWeekdays />
       <CalendarGrid days={days} />

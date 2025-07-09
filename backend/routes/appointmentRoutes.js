@@ -19,5 +19,10 @@ router.post('/', authenticateToken, appointmentController.create);
 router.put('/:id', authenticateToken, appointmentController.update);
 router.delete('/:id', authenticateToken, authorizeRoles('admin'), appointmentController.remove);
 
+// Nuevas rutas para manejo de citas por doctor y confirmación/rechazo
+router.get('/doctor/:doctorId', authenticateToken, appointmentController.getAppointmentsByDoctor);
+router.put('/:id/confirm', authenticateToken, authorizeRoles('doctor', 'admin'), appointmentController.confirmOutOfScheduleAppointment);
+router.put('/:id/reject', authenticateToken, authorizeRoles('doctor', 'admin'), appointmentController.rejectOutOfScheduleAppointment);
+
 
 module.exports = router; 

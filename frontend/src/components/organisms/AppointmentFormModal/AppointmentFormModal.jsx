@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import ModalContainer from '../../molecules/ModalContainer/ModalContainer';
 import ModalHeader from '../../molecules/ModalHeader/ModalHeader';
 import ModalFooter from '../../molecules/ModalFooter/ModalFooter';
 import Button from '../../atoms/Button/Button';
 import Input from '../../atoms/Input/Input';
 import Select from '../../atoms/Select/Select';
+import SearchableSelect from '../../molecules/SearchableSelect/SearchableSelect';
 import FormGroup from '../../molecules/FormGroup/FormGroup';
 import Alert from '../../atoms/Alert/Alert';
 import { authFetch } from '../../../auth/authFetch';
@@ -16,7 +17,10 @@ const AppointmentFormModal = ({
   onSuccess,
   selectedDateISO, // Recibir el string ISO
   selectedTime,
-  appointment
+  appointment,
+  isOutOfSchedule = false,
+  selectedDoctorId = null,
+  selectedDoctorName = ''
 }) => {
   const [formData, setFormData] = useState({
     patient_id: '',
@@ -32,18 +36,30 @@ const AppointmentFormModal = ({
   });
 
   const [patients, setPatients] = useState([]);
-  const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isEditing = Boolean(appointment);
 
-  // Solo cargar pacientes y doctores al abrir el modal
+  // Memoizar las opciones de pacientes y doctores para evitar re-renders innecesarios
+  const patientOptions = useMemo(() => [
+    { value: '', label: 'Seleccionar paciente' },
+    ...patients.map(patient => ({
+      value: String(patient.patient_id),
+      label: `${patient.first_name} ${patient.last_name} - DNI: ${patient.dni}`,
+      firstName: patient.first_name,
+      lastName: patient.last_name,
+      dni: patient.dni
+    }))
+  ], [patients]);
+
+  // El doctor ya está seleccionado desde el calendario, no necesitamos opciones
+
+  // Solo cargar pacientes al abrir el modal
   useEffect(() => {
     if (isOpen) {
       fetchPatients();
-      fetchDoctors();
     }
   }, [isOpen]);
 
@@ -67,17 +83,7 @@ const AppointmentFormModal = ({
     }
   };
 
-  const fetchDoctors = async () => {
-    try {
-      const res = await authFetch('/api/doctors');
-      if (res.ok) {
-        const data = await res.json();
-        setDoctors(data);
-      }
-    } catch (err) {
-      console.error('Error fetching doctors:', err);
-    }
-  };
+
 
   const initializeForm = () => {
     // console.log('initializeForm:', { isEditing, appointment, selectedDateISO, selectedTime });
@@ -97,7 +103,7 @@ const AppointmentFormModal = ({
     } else {
       setFormData({
         patient_id: '',
-        doctor_id: '',
+        doctor_id: selectedDoctorId ? String(selectedDoctorId) : '', // Usar el doctor seleccionado
         date: selectedDateISO || '', // Usar directamente el string ISO
         time: selectedTime || '',
         reason: '',
@@ -118,7 +124,7 @@ const AppointmentFormModal = ({
 
   const validateForm = () => {
     if (!formData.patient_id) return 'Seleccione un paciente';
-    if (!formData.doctor_id) return 'Seleccione un doctor';
+    if (!selectedDoctorId) return 'Debe seleccionar un doctor en el calendario';
     if (!formData.date) return 'Seleccione una fecha';
     if (!formData.time) return 'Seleccione una hora';
     if (!formData.reason.trim()) return 'Ingrese el motivo de la consulta';
@@ -138,12 +144,26 @@ const AppointmentFormModal = ({
 
     setIsSubmitting(true);
     try {
+      // Convertir la fecha del formato YYYY-MM-DD a objeto { day, month, year }
+      const dateParts = formData.date.split('-');
+      const dateObject = {
+        year: parseInt(dateParts[0]),
+        month: parseInt(dateParts[1]),
+        day: parseInt(dateParts[2])
+      };
+
       const submitData = {
         ...formData,
-        amount: parseFloat(formData.amount),
+        date: dateObject, // Usar el objeto de fecha en lugar del string
+        amount: parseFloat(formData.amount) || 0, // Asegurar que amount sea un número
         patient_id: parseInt(formData.patient_id),
-        doctor_id: parseInt(formData.doctor_id)
+        doctor_id: parseInt(formData.doctor_id),
+        isOutOfSchedule: isOutOfSchedule // Agregar el flag de fuera de horario
       };
+
+      // Remover campos que no deben enviarse al backend
+      delete submitData.patientOptions;
+      delete submitData.doctorOptions;
 
       let res;
       if (isEditing) {
@@ -175,11 +195,6 @@ const AppointmentFormModal = ({
 
   if (!isOpen) return null;
 
-  console.log('Form data:', formData);
-
-  // Verificar si el formulario se está reinicializando
-  console.log('Modal props:', { isOpen, isEditing, selectedDateISO, selectedTime });
-
   return (
     <ModalContainer onClose={onClose}>
       <ModalHeader
@@ -193,35 +208,28 @@ const AppointmentFormModal = ({
 
           <div className={styles.row}>
             <FormGroup title="Paciente" required>
-              <Select
+              <SearchableSelect
                 name="patient_id"
                 value={formData.patient_id || ''}
                 onChange={handleChange}
                 required
-                options={[
-                  { value: '', label: 'Seleccionar paciente' },
-                  ...patients.map(patient => ({
-                    value: String(patient.patient_id),
-                    label: `${patient.first_name} ${patient.last_name} - DNI: ${patient.dni}`
-                  }))
-                ]}
+                placeholder="Buscar paciente por nombre, apellido o DNI..."
+                searchFields={['label', 'firstName', 'lastName', 'dni']}
+                options={patientOptions}
               />
             </FormGroup>
 
             <FormGroup title="Doctor" required>
-              <Select
-                name="doctor_id"
-                value={formData.doctor_id || ''}
-                onChange={handleChange}
-                required
-                options={[
-                  { value: '', label: 'Seleccionar doctor' },
-                  ...doctors.map(doctor => ({
-                    value: String(doctor.doctor_id),
-                    label: `Dr. ${doctor.first_name} ${doctor.last_name} - ${doctor.specialty}`
-                  }))
-                ]}
-              />
+              {selectedDoctorName ? (
+                <div className={styles.doctorInfo}>
+                  <span className={styles.doctorName}>{selectedDoctorName}</span>
+                  <small className={styles.doctorNote}>Seleccionado desde el calendario</small>
+                </div>
+              ) : (
+                <div className={styles.noDoctorSelected}>
+                  <span className={styles.warning}>Debe seleccionar un doctor en el calendario</span>
+                </div>
+              )}
             </FormGroup>
           </div>
 

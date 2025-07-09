@@ -2,19 +2,19 @@ function buildAppointmentFilters(query) {
   let sql = 'WHERE 1=1';
   const params = [];
   if (query.fecha) {
-    sql += ' AND fecha = ?';
+    sql += ' AND date = ?';
     params.push(query.fecha);
   }
   if (query.fecha_desde) {
-    sql += ' AND fecha >= ?';
+    sql += ' AND date >= ?';
     params.push(query.fecha_desde);
   }
   if (query.fecha_hasta) {
-    sql += ' AND fecha <= ?';
+    sql += ' AND date <= ?';
     params.push(query.fecha_hasta);
   }
   if (query.paciente_id) {
-    sql += ' AND paciente_id = ?';
+    sql += ' AND patient_id = ?';
     params.push(query.paciente_id);
   }
   if (query.doctor_id) {
@@ -27,10 +27,10 @@ function buildAppointmentFilters(query) {
   }
   if (query.estado) {
     if (Array.isArray(query.estado)) {
-      sql += ` AND estado IN (${query.estado.map(() => '?').join(',')})`;
+      sql += ` AND status IN (${query.estado.map(() => '?').join(',')})`;
       params.push(...query.estado);
     } else {
-      sql += ' AND estado = ?';
+      sql += ' AND status = ?';
       params.push(query.estado);
     }
   }
