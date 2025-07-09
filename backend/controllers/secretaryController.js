@@ -23,7 +23,11 @@ async function createSecretary(req, res) {
     console.error('Error al crear secretaria:', err);
     if (err.message.includes('duplicate')) {
       res.status(409).json({ error: { message: 'Ya existe una secretaria con ese email o nombre de usuario' } });
-    } else {
+    } else if (err.message.includes('requeridos') || err.message.includes('inválido') || err.message.includes('nombre de usuario')) {
+      // Specific validation errors from service
+      res.status(400).json({ error: { message: err.message } });
+    }
+    else {
       res.status(500).json({ error: { message: 'Error al crear la secretaria' } });
     }
   }
