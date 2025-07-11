@@ -1,13 +1,14 @@
 .formField {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
-  margin-bottom: 1.2rem;
+  gap: var(--spacing-xs, 0.3rem); /* Usar variable global, mantener fallback por si acaso */
+  margin-bottom: var(--spacing-lg, 1.2rem); /* Usar variable global */
 }
 
 .label {
-  font-weight: 600;
-  margin-bottom: 0.2rem;
+  font-weight: var(--font-weight-semibold, 600); /* Usar variable global */
+  margin-bottom: var(--spacing-xxs, 0.2rem); /* Usar variable global */
+  color: var(--text-color); /* Asegurar que use el color de texto base */
 }
 
 .inputWrapper {
@@ -17,30 +18,36 @@
 }
 
 .errorIcon {
-  margin-left: 0.5rem;
-  color: var(--danger-color, #d32f2f);
+  margin-left: var(--spacing-sm, 0.5rem); /* Usar variable global */
+  color: var(--error-color); /* Usar variable global, sin fallback */
   flex-shrink: 0;
-  z-index: 2;
+  z-index: var(--z-index-dropdown); /* O un z-index específico para iconos de error si es necesario */
 }
 
 .helperText {
-  color: var(--text-color-secondary, #666);
-  font-size: 0.95em;
-  margin-top: 0.1rem;
+  color: var(--text-color-secondary); /* Usar variable global */
+  font-size: var(--font-size-sm, 0.9em); /* Usar variable global, ajustar si 0.95em es muy específico */
+  margin-top: var(--spacing-xxs, 0.1rem); /* Usar variable global */
 }
 
 .errorText {
-  color: var(--danger-color, #d32f2f);
-  font-size: 1em;
-  font-weight: bold;
-  margin-top: 0.1rem;
+  color: var(--error-color); /* Usar variable global */
+  font-size: var(--font-size-sm, 0.9em); /* Consistente con helper text o usar font-size-base si debe ser más grande */
+  font-weight: var(--font-weight-medium); /* Un poco menos fuerte que bold, pero más que normal */
+  margin-top: var(--spacing-xxs, 0.1rem); /* Usar variable global */
   letter-spacing: 0.01em;
 }
 
+/* Las reglas .dark para .helperText y .errorText no son necesarias si las variables base
+   (--text-color-secondary y --error-color) ya se actualizan correctamente en el bloque .dark
+   de variables.css. Si esas variables globales se manejan bien en modo oscuro, estas
+   reglas específicas aquí son redundantes. Asumiré que lo son. */
+/*
 .dark .helperText {
-  color: var(--text-color-secondary, #bdbdbd); /* Esto ya era correcto */
+  color: var(--text-color-secondary);
 }
 
 .dark .errorText {
-  color: var(--danger-color, #f87171); /* Usar --danger-color para consistencia, aunque el fallback sea el mismo */
-} 
+  color: var(--error-color);
+}
+*/

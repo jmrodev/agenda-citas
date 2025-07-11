@@ -2,16 +2,31 @@ import React from 'react';
 import FormField from '../FormField/FormField'; // Use the generic FormField
 import styles from './DoctorInfo.module.css'; // Keep its specific styles for content display
 
+/**
+ * DoctorInfo is a molecule that displays information about a selected doctor
+ * or a prompt if no doctor is selected. It's typically used in forms where
+ * a doctor selection is required and might have associated validation errors.
+ * It uses FormField for consistent labeling and error display.
+ *
+ * @param {object} props - The component's props.
+ * @param {string} [props.selectedDoctorName] - The name of the currently selected doctor.
+ * @param {object} [props.errors={}] - Object containing validation errors, typically for 'doctor_id'.
+ * @param {object} [props.touched={}] - Object indicating if the 'doctor_id' field has been touched.
+ * @param {string} [props.name="doctor_id"] - The logical name for this field, used for error mapping and label association.
+ * @param {string} [props.label="Doctor"] - The text label for this information block.
+ * @param {boolean} [props.required=true] - If true, marks the label as required.
+ * @param {object} [props.rest] - Any other props will be passed to the underlying FormField component.
+ * @returns {JSX.Element} The rendered doctor information component.
+ */
 const DoctorInfo = ({
   selectedDoctorName,
-  errors = {}, // Expects errors object
-  touched = {}, // Expects touched object
-  name = "doctor_id", // Name for FormField (label, error association)
+  errors = {},
+  touched = {},
+  name = "doctor_id",
   label = "Doctor",
-  required = true, // Default required as per original
-  ...rest // Pass other props to FormField if any
+  required = true,
+  ...rest
 }) => {
-  // Assuming errors object might have error for 'name' (e.g., errors.doctor_id)
   const errorMessage = touched[name] && errors[name] ? errors[name] : undefined;
 
   return (
