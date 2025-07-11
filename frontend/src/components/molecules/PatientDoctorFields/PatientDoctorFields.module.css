@@ -1,0 +1,59 @@
+.row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--grid-gap);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Mobile First - Desktop */
+@media (min-width: 768px) {
+  .row {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--grid-gap);
+  }
+}
+
+/* Tablet */
+@media (min-width: 1024px) {
+  .row {
+    gap: var(--grid-gap);
+  }
+}
+
+.doctorInfo {
+  padding: 0.75rem;
+  background-color: var(--success-light);
+  border: 1px solid var(--success-color);
+  border-radius: 0.5rem;
+}
+
+.doctorName {
+  display: block;
+  font-weight: 600;
+  color: var(--success-color);
+}
+
+.doctorNote {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.noDoctorSelected {
+  padding: 0.75rem;
+  background-color: var(--warning-light);
+  border: 1px solid var(--warning-color);
+  border-radius: 0.5rem;
+}
+
+.warning {
+  color: var(--warning-color);
+  font-weight: 500;
+}
+
+.error {
+  color: var(--error-color);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+} 

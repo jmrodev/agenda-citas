@@ -3,6 +3,15 @@ description:
 globs: 
 alwaysApply: true
 ---
+# ⚠️ IMPORTANTE: NUNCA usar el script manualmente
+**NUNCA** ejecutes el script `./start-app.sh` manualmente durante el desarrollo.
+**NUNCA** ejecutes comandos como `pnpm dev`, `node index.js`, `npm start` o similares.
+
+**YO me encargo de ejecutar el script al inicio del proyecto.**
+Los servidores se reinician automáticamente con cada cambio de código.
+
+---
+
 Asumir JWT (JSON Web Tokens) para authentication across the application.
 Considerar user roles (admin, secretary, doctor) al discutir authorization logic.
 Al generar código relacionado con la autenticación o el acceso, priorizar la seguridad (ej., uso de hashing para contraseñas, validación de tokens).

@@ -1,0 +1,37 @@
+.doctorInfo {
+  padding: var(--spacing-sm);
+  background-color: var(--alert-success-bg);
+  border: 1px solid var(--success-color);
+  border-radius: var(--border-radius);
+}
+
+.doctorName {
+  display: block;
+  font-weight: 600;
+  color: var(--success-color);
+}
+
+.doctorNote {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+.noDoctorSelected {
+  padding: var(--spacing-sm);
+  background-color: var(--alert-warning-bg);
+  border: 1px solid var(--warning-color);
+  border-radius: var(--border-radius);
+}
+
+.warning {
+  color: var(--warning-color);
+  font-weight: 500;
+}
+
+.error {
+  color: var(--text-color-danger);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xs);
+} 

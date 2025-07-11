@@ -11,7 +11,7 @@ const dateOrDateObjectSchema = Joi.alternatives().try(
         year: Joi.number().integer().min(1900).max(new Date().getFullYear()).required()
     }).required()
 ).messages({
-    'alternatives.types': 'La fecha debe ser una cadena YYYY-MM-DD o un objeto {day, month, year}.'
+    'alternatives.types': 'La fecha debe ser una cadena YYYY-MM-DD o un objeto con propiedades day, month, year.'
 });
 
 const timeSchema = Joi.string().pattern(/^([01]\d|2[0-3]):([0-5]\d)$/).required().messages({ // HH:MM

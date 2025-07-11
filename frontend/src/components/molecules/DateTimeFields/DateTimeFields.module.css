@@ -1,0 +1,27 @@
+.row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--grid-gap);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Mobile First - Desktop */
+@media (min-width: 768px) {
+  .row {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--grid-gap);
+  }
+}
+
+/* Tablet */
+@media (min-width: 1024px) {
+  .row {
+    gap: var(--grid-gap);
+  }
+}
+
+.error {
+  color: var(--text-color-danger);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xs);
+} 

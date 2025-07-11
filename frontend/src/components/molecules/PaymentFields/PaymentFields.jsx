@@ -1,0 +1,39 @@
+import React from 'react';
+import FormGroup from '../FormGroup/FormGroup';
+import Select from '../../atoms/Select/Select';
+import AmountField from '../../atoms/AmountField/AmountField';
+import styles from './PaymentFields.module.css';
+
+const PaymentFields = ({
+  formData,
+  onChange,
+  errors = {},
+  touched = {}
+}) => {
+  return (
+    <div className={styles.row}>
+      <AmountField
+        value={formData.amount}
+        onChange={onChange}
+        errors={errors}
+        touched={touched}
+      />
+
+      <FormGroup title="Método de pago">
+        <Select
+          name="payment_method"
+          value={formData.payment_method}
+          onChange={onChange}
+          options={[
+            { value: 'efectivo', label: 'Efectivo' },
+            { value: 'tarjeta', label: 'Tarjeta' },
+            { value: 'transferencia', label: 'Transferencia' },
+            { value: 'débito', label: 'Débito' }
+          ]}
+        />
+      </FormGroup>
+    </div>
+  );
+};
+
+export default PaymentFields; 

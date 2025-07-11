@@ -103,13 +103,11 @@ backend/
 
 ### Scripts de Desarrollo
 ```bash
-# Frontend
-cd frontend && pnpm dev
+# ⚠️ IMPORTANTE: NUNCA usar el script manualmente
+# NUNCA ejecutes: ./start-app.sh, pnpm dev, node index.js, npm start, etc.
 
-# Backend  
-cd backend && pnpm dev
-
-# ⚠️ NUNCA usar start-app.sh (autorestart ya configurado)
+# YO me encargo de ejecutar el script al inicio del proyecto
+# Los servidores se reinician automáticamente con cada cambio de código
 ```
 
 ### URLs de Desarrollo
@@ -179,7 +177,7 @@ Content-Type: application/json
 ## 🔄 Workflow de Desarrollo
 
 ### Flujo Típico
-1. **Desarrollo**: `pnpm dev` en frontend y backend
+1. **Desarrollo**: YO ejecuto el script al inicio, servidores se reinician automáticamente
 2. **Testing**: Pruebas manuales en navegador
 3. **API Testing**: Usando archivos .http
 4. **Database**: Consultas directas en MySQL

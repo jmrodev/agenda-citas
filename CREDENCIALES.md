@@ -31,10 +31,12 @@ curl -X POST http://localhost:3001/api/auth/login \
 
 ## Comandos Útiles
 
-### Iniciar la aplicación:
-```bash
-./start-app.sh
-```
+### ⚠️ IMPORTANTE: NUNCA usar el script manualmente
+**NUNCA** ejecutes el script `./start-app.sh` manualmente durante el desarrollo.
+**NUNCA** ejecutes comandos como `pnpm dev`, `node index.js`, `npm start` o similares.
+
+**YO me encargo de ejecutar el script al inicio del proyecto.**
+Los servidores se reinician automáticamente con cada cambio de código.
 
 ### Verificar estado de servicios:
 ```bash

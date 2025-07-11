@@ -3,6 +3,15 @@ description:
 globs: backend/**
 alwaysApply: false
 ---
+# ⚠️ IMPORTANTE: NUNCA usar el script manualmente
+**NUNCA** ejecutes el script `./start-app.sh` manualmente durante el desarrollo.
+**NUNCA** ejecutes comandos como `pnpm dev`, `node index.js`, `npm start` o similares.
+
+**YO me encargo de ejecutar el script al inicio del proyecto.**
+Los servidores se reinician automáticamente con cada cambio de código.
+
+---
+
 Al generar o modificar código de backend, adherirse a la estructura atómica (config, middleware, models, services, controllers, routes, utils).
 Asegurar la separación lógica de concerns: models para DB interaction, services para business logic, controllers para request handling, routes para endpoints.
 Para database interactions, preferir un ORM como Sequelize si code examples son necesarios, de lo contrario raw SQL queries son aceptables.

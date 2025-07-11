@@ -1,7 +1,16 @@
+# ⚠️ IMPORTANTE: NUNCA usar el script manualmente
+**NUNCA** ejecutes el script `./start-app.sh` manualmente durante el desarrollo.
+**NUNCA** ejecutes comandos como `pnpm dev`, `node index.js`, `npm start` o similares.
+
+**YO me encargo de ejecutar el script al inicio del proyecto.**
+Los servidores se reinician automáticamente con cada cambio de código.
+
+---
+
 # Stack Tecnológico - Agenda de Citas
 
 ## 🏗️ Arquitectura General
-- **Frontend**: React 19.1.0 con Vite 7.0.0
+- **Frontend**: React  con Vite 
 - **Backend**: Node.js con Express.js
 - **Base de Datos**: MySQL (MariaDB)
 - **Package Manager**: pnpm
@@ -10,11 +19,11 @@
 ## 🎯 Frontend Stack
 
 ### Core Technologies
-- **React**: 19.1.0 (Functional Components + Hooks)
-- **Vite**: 7.0.0 (Build tool y dev server)
-- **React Router**: 7.6.3 (Navegación)
-- **Material-UI**: 7.2.0 (Componentes UI)
-- **Emotion**: 11.14.0 (Styling)
+- **React**:  (Functional Components + Hooks)
+- **Vite**: (Build tool y dev server)
+- **React Router**: (Navegación)
+- **Material-UI**: (Componentes UI)
+- **Emotion**: (Styling)
 
 ### Estructura de Componentes (Atomic Design)
 ```
@@ -103,13 +112,11 @@ backend/
 
 ### Scripts de Desarrollo
 ```bash
-# Frontend
-cd frontend && pnpm dev
+# ⚠️ IMPORTANTE: NUNCA usar el script manualmente
+# NUNCA ejecutes: ./start-app.sh, pnpm dev, node index.js, npm start, etc.
 
-# Backend  
-cd backend && pnpm dev
-
-# ⚠️ NUNCA usar start-app.sh (autorestart ya configurado)
+# YO me encargo de ejecutar el script al inicio del proyecto
+# Los servidores se reinician automáticamente con cada cambio de código
 ```
 
 ### URLs de Desarrollo
@@ -179,7 +186,7 @@ Content-Type: application/json
 ## 🔄 Workflow de Desarrollo
 
 ### Flujo Típico
-1. **Desarrollo**: `pnpm dev` en frontend y backend
+1. **Desarrollo**: YO ejecuto el script al inicio, servidores se reinician automáticamente
 2. **Testing**: Pruebas manuales en navegador
 3. **API Testing**: Usando archivos .http
 4. **Database**: Consultas directas en MySQL

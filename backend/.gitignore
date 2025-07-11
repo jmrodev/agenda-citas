@@ -4,8 +4,8 @@ node_modules/
 .pnp.js
 
 # Archivos de entorno
-.env
-.env.*.local
+#.env
+#.env.*.local
 
 # Salidas de producción/build
 /build/
