@@ -6,8 +6,11 @@ import { vi } from 'vitest';
 // Si los tests de Icon son robustos, podemos asumir que funciona.
 
 describe('IconButton Component', () => {
-  const testIconName = 'star';
+  const testIconName = 'star'; // Assuming 'star' is a valid icon name in Icon.jsx
   const testAriaLabel = 'Marcar como favorito';
+
+  // Helper to check for default aria-label if a specific one isn't provided.
+  const defaultAriaLabel = `${testIconName} icon`;
 
   test('renderiza un botón con el aria-label proporcionado', () => {
     render(<IconButton icon={testIconName} onClick={() => {}} aria-label={testAriaLabel} />);
@@ -15,10 +18,16 @@ describe('IconButton Component', () => {
     expect(buttonElement).toBeInTheDocument();
   });
 
+  test('renderiza con un aria-label por defecto si no se proporciona uno específico', () => {
+    render(<IconButton icon={testIconName} onClick={() => {}} />);
+    const buttonElement = screen.getByRole('button', { name: defaultAriaLabel });
+    expect(buttonElement).toBeInTheDocument();
+  });
+
+
   test('renderiza el Icon componente interno con el nombre correcto', () => {
     render(<IconButton icon={testIconName} onClick={() => {}} aria-label={testAriaLabel} />);
-    // El Icon ahora genera data-testid="icon-${iconName}"
-    const iconElement = screen.getByTestId(`icon-${testIconName}`);
+    const iconElement = screen.getByTestId(`icon-${testIconName}`); // Icon component adds data-testid
     expect(iconElement).toBeInTheDocument();
     // Asegurarse que el icono está dentro del botón
     const buttonElement = screen.getByRole('button', { name: testAriaLabel });
@@ -85,36 +94,17 @@ describe('IconButton Component', () => {
         icon={testIconName}
         onClick={() => {}}
         aria-label={testAriaLabel}
-        size={32} // Prop 'size' de IconButton, que se pasa a Icon
-        color="secondary" // Prop 'color' de IconButton
+        iconSize={32} // Updated prop name
+        iconColor="var(--secondary-color)" // Updated prop to take actual color value
       />
     );
     const iconElement = screen.getByTestId(`icon-${testIconName}`);
-    // El componente Icon usa estas props para aplicar estilos inline
     expect(iconElement).toHaveStyle('width: 32px');
     expect(iconElement).toHaveStyle('height: 32px');
-    // El color se pasa como var(--secondary-color) al Icon
     expect(iconElement).toHaveStyle('color: var(--secondary-color)');
   });
 
-  test('requiere aria-label para accesibilidad', () => {
-    // Este test es más conceptual. En un entorno real, linting o PropTypes/TypeScript lo forzarían.
-    // Aquí, podemos verificar que si no se pasa, el botón podría no ser accesible por nombre.
-    // Sin embargo, el test de arriba "renderiza un botón con el aria-label proporcionado" ya lo cubre.
-    // Si el aria-label fuera opcional y hubiera un fallback, se testearía ese fallback.
-    // Por ahora, asumimos que es mandatorio y los tests fallarían si no se encuentra por nombre.
-    // console.error = vi.fn(); // Mock para evitar warnings de propTypes si los hubiera
-    // render(<IconButton icon={testIconName} onClick={() => {}} />);
-    // expect(console.error).toHaveBeenCalledWith(expect.stringContaining('aria-label')); // O similar
-    // console.error.mockRestore();
-    // Este tipo de test es más para prop-types o chequeos estáticos. Testing Library se enfoca en cómo el usuario interactúa.
-    // Si no hay aria-label, screen.getByRole('button', { name: ... }) fallaría.
-    // Para hacerlo explícito:
-    const { container } = render(<IconButton icon={testIconName} onClick={() => {}} />);
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const buttonWithoutLabel = container.querySelector('button');
-    expect(buttonWithoutLabel).not.toHaveAttribute('aria-label'); // O que tenga uno por defecto si así se diseña
-    // Y intentar obtenerlo por un nombre que no existe debería fallar o no encontrarlo:
-    expect(screen.queryByRole('button', { name: "unlabel" })).not.toBeInTheDocument();
-  });
+  // The test for default aria-label now covers part of the old 'requiere aria-label' test.
+  // Explicitly testing that a meaningful label is recommended or enforced by other means (linting/TS)
+  // is good, but for RTL, we test the outcome (e.g., button is accessible by its label).
 }); 

@@ -1,13 +1,21 @@
 import React from 'react';
+import Spinner from '../Spinner/Spinner'; // Import the Spinner atom
 import styles from './Loader.module.css';
 
-const Loader = ({ size = 'medium', color = 'primary', text = 'Cargando...' }) => {
-  const sizeClass = styles[size] || styles.medium;
-  const colorClass = styles[color] || styles.primary;
+// Mapping Loader sizes to Spinner sizes
+const sizeMap = {
+  small: 'sm',
+  medium: 'md',
+  large: 'lg',
+  xlarge: 'xl',
+};
+
+const Loader = ({ size = 'medium', color = 'primary', text = 'Cargando...', className = '' }) => {
+  const spinnerSize = sizeMap[size] || 'md'; // Default to 'md' if size prop is invalid
 
   return (
-    <section className={styles.loaderContainer} aria-busy="true" aria-live="polite">
-      <span className={`${styles.spinner} ${sizeClass} ${colorClass}`} role="status" aria-label="Cargando"></span>
+    <section className={[styles.loaderContainer, className].join(' ').trim()} aria-busy="true" aria-live="polite">
+      <Spinner size={spinnerSize} color={color} aria-label={text || 'Cargando'} />
       {text && <span className={styles.text}>{text}</span>}
     </section>
   );

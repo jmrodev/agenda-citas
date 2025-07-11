@@ -7,11 +7,18 @@ import { vi } from 'vitest';
 vi.mock('../../atoms/CardImage/CardImage', () => ({
   default: vi.fn(({ src, alt, className }) => <img src={src} alt={alt} className={className} data-testid="mock-cardimage" />),
 }));
-vi.mock('../../atoms/CardTitle/CardTitle', () => ({
-  default: vi.fn(({ children, className }) => <h3 className={className} data-testid="mock-cardtitle">{children}</h3>),
-}));
-vi.mock('../../atoms/CardSubtitle/CardSubtitle', () => ({
-  default: vi.fn(({ children, className }) => <h4 className={className} data-testid="mock-cardsubtitle">{children}</h4>),
+// Mock Text atom instead of CardTitle and CardSubtitle
+vi.mock('../../atoms/Text/Text', () => ({
+  // Mocking the Text component to check its props
+  default: vi.fn(({ as, size, weight, color, className, children }) => (
+    React.createElement(as || 'p', {
+      'data-testid': `mock-text-${as || 'p'}`,
+      'data-size': size,
+      'data-weight': weight,
+      'data-color': color,
+      className
+    }, children)
+  )),
 }));
 vi.mock('../../atoms/Badge/Badge', () => ({
   default: vi.fn(({ children, className }) => <span className={className} data-testid="mock-badge">{children}</span>),
@@ -19,23 +26,29 @@ vi.mock('../../atoms/Badge/Badge', () => ({
 
 describe('CardHeader Component', () => {
   const defaultTitle = "Título Principal";
+  let TextMock;
 
   beforeEach(() => {
     // Limpiar mocks antes de cada test
-    require('../../atoms/CardImage/CardImage').default.mockClear();
-    require('../../atoms/CardTitle/CardTitle').default.mockClear();
-    require('../../atoms/CardSubtitle/CardSubtitle').default.mockClear();
-    require('../../atoms/Badge/Badge').default.mockClear();
+    vi.clearAllMocks(); // Clear all mocks
+    TextMock = require('../../atoms/Text/Text').default;
   });
 
-  test('renderiza CardTitle con el título proporcionado y clases correctas', () => {
+  test('renderiza Text como título con las props y clases correctas', () => {
     render(<CardHeader title={defaultTitle} />);
 
-    const cardTitleMock = require('../../atoms/CardTitle/CardTitle').default;
-    expect(cardTitleMock).toHaveBeenCalledTimes(1);
-    expect(cardTitleMock).toHaveBeenCalledWith(expect.objectContaining({ children: defaultTitle, className: 'title' }), {});
-
-    expect(screen.getByTestId('mock-cardtitle')).toBeInTheDocument();
+    expect(TextMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        as: "h3",
+        size: "lg",
+        weight: "bold",
+        children: defaultTitle,
+        className: 'title'
+      }),
+      {}
+    );
+    // Check for the rendered output via testId added in mock
+    expect(screen.getByTestId('mock-text-h3')).toBeInTheDocument();
     expect(screen.getByText(defaultTitle)).toBeInTheDocument();
   });
 
@@ -60,26 +73,37 @@ describe('CardHeader Component', () => {
     expect(screen.queryByTestId('mock-cardimage')).not.toBeInTheDocument();
   });
 
-  test('renderiza CardSubtitle cuando subtitle se proporciona', () => {
+  test('renderiza Text como subtítulo cuando subtitle se proporciona', () => {
     const subtitleText = "Un subtítulo interesante";
     render(<CardHeader title={defaultTitle} subtitle={subtitleText} />);
 
-    const cardSubtitleMock = require('../../atoms/CardSubtitle/CardSubtitle').default;
-    expect(cardSubtitleMock).toHaveBeenCalledTimes(1);
-    expect(cardSubtitleMock).toHaveBeenCalledWith(expect.objectContaining({ children: subtitleText, className: 'subtitle' }), {});
-
-    expect(screen.getByTestId('mock-cardsubtitle')).toBeInTheDocument();
+    // TextMock should be called twice: once for title, once for subtitle
+    expect(TextMock).toHaveBeenCalledTimes(2);
+    expect(TextMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        as: "h4",
+        size: "md",
+        weight: "medium",
+        color: "secondary",
+        children: subtitleText,
+        className: 'subtitle'
+      }),
+      {}
+    );
+    expect(screen.getByTestId('mock-text-h4')).toBeInTheDocument(); // From mock
     expect(screen.getByText(subtitleText)).toBeInTheDocument();
   });
 
-  test('no renderiza CardSubtitle si subtitle no se proporciona o es vacío', () => {
+  test('no renderiza Text como subtítulo si subtitle no se proporciona o es vacío', () => {
     const { rerender } = render(<CardHeader title={defaultTitle} subtitle="" />);
-    expect(require('../../atoms/CardSubtitle/CardSubtitle').default).not.toHaveBeenCalled();
-    expect(screen.queryByTestId('mock-cardsubtitle')).not.toBeInTheDocument();
+    // TextMock called once for title, not for subtitle
+    expect(TextMock).toHaveBeenCalledTimes(1);
+    expect(screen.queryByTestId('mock-text-h4')).not.toBeInTheDocument();
 
+    TextMock.mockClear(); // Clear mock before rerender
     rerender(<CardHeader title={defaultTitle} />); // subtitle es undefined
-    expect(require('../../atoms/CardSubtitle/CardSubtitle').default).not.toHaveBeenCalled();
-    expect(screen.queryByTestId('mock-cardsubtitle')).not.toBeInTheDocument();
+    expect(TextMock).toHaveBeenCalledTimes(1); // Called for title
+    expect(screen.queryByTestId('mock-text-h4')).not.toBeInTheDocument();
   });
 
   test('renderiza Badge cuando badge se proporciona', () => {

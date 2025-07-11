@@ -1,8 +1,7 @@
 import React from 'react';
 import styles from './CardHeader.module.css';
 import CardImage from '../../atoms/CardImage/CardImage';
-import CardTitle from '../../atoms/CardTitle/CardTitle';
-import CardSubtitle from '../../atoms/CardSubtitle/CardSubtitle';
+import Text from '../../atoms/Text/Text'; // Updated import
 import Badge from '../../atoms/Badge/Badge';
 
 const CardHeader = ({
@@ -22,10 +21,18 @@ const CardHeader = ({
       <div className={styles.headerContent}>
         <div className={styles.titleRow}>
           {icon && <span className={styles.icon}>{icon}</span>}
-          <CardTitle className={styles.title}>{title}</CardTitle>
+          {/* Using Text atom for title, assuming h3 equivalent for CardTitle */}
+          <Text as="h3" size="lg" weight="bold" className={styles.title}>
+            {title}
+          </Text>
           {badge && <Badge className={styles.badge}>{badge}</Badge>}
         </div>
-        {subtitle && <CardSubtitle className={styles.subtitle}>{subtitle}</CardSubtitle>}
+        {/* Using Text atom for subtitle, assuming h4 equivalent for CardSubtitle */}
+        {subtitle && (
+          <Text as="h4" size="md" weight="medium" color="secondary" className={styles.subtitle}>
+            {subtitle}
+          </Text>
+        )}
       </div>
     </div>
   );

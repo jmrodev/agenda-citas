@@ -22,13 +22,24 @@ const SearchBar = ({
         placeholder={placeholder}
         className={styles.input}
       />
-      <IconButton aria-label='Buscar' className={styles.iconBtn}>
-        <Icon name="search" size={18} />
-      </IconButton>
+      <IconButton
+        icon="search"
+        iconSize={18}
+        iconColor="currentColor" // Assuming default inherited color is desired
+        aria-label='Buscar'
+        className={styles.iconBtn}
+        buttonVariant="outline" // Or choose another variant if 'outline' adds unwanted styles
+      />
       {value && onClear && (
-        <IconButton aria-label='Limpiar' onClick={onClear} className={styles.clearBtn}>
-          <Icon name="close" size={18} />
-        </IconButton>
+        <IconButton
+          icon="close"
+          iconSize={18}
+          iconColor="currentColor" // Assuming default inherited color is desired
+          aria-label='Limpiar'
+          onClick={onClear}
+          className={styles.clearBtn}
+          buttonVariant="outline" // Or choose another variant
+        />
       )}
     </div>
   );

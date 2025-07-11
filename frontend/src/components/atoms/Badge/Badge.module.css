@@ -16,23 +16,23 @@
 
 .primary {
   background: var(--primary-color);
-  color: #fff;
+  color: var(--text-color-light); /* Use global var */
 }
 .secondary {
-  background: var(--secondary-color);
-  color: var(--primary-color);
+  background: var(--secondary-color); /* This is now pink */
+  color: var(--text-color-light); /* Text on pink should be light */
 }
 .danger {
-  background: var(--danger-color);
-  color: #fff;
+  background: var(--error-color); /* Use theme var */
+  color: var(--text-color-light); /* Use global var */
 }
 .success {
   background: var(--success-color);
-  color: #fff;
+  color: var(--text-color-light); /* Use global var */
 }
 .warning {
   background: var(--warning-color);
-  color: #222;
+  color: var(--text-color); /* Dark text on light orange */
 }
 
 .sm {

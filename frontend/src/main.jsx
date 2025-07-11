@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './styles/abstracts/_variables.css';
+import './styles/main.css'; // Updated import
 import AppRouter from './components/pages/AppRouter.jsx';
 import InactivityHandler from './hooks/InactivityHandler.jsx';
 import ErrorBoundary from './components/atoms/ErrorBoundary/ErrorBoundary.jsx';

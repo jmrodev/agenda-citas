@@ -15,19 +15,19 @@
 
 .info {
   background: var(--alert-info-bg, #e3f2fd);
-  color: var(--alert-info-color, #1976d2);
+  color: var(--alert-info-text-color); /* Use global variable */
 }
 .success {
-  background: #21c87a !important;
-  color: #fff !important;
+  background: var(--alert-success-background-color); /* Use global variable */
+  color: var(--alert-success-text-color); /* Use global variable */
 }
 .warning {
-  background: var(--alert-warning-bg, #fff8e1);
-  color: var(--alert-warning-color, #ffb300);
+  background: var(--alert-warning-background-color); /* Use global variable */
+  color: var(--alert-warning-text-color); /* Use global variable */
 }
 .danger {
-  background: #e00 !important;
-  color: #fff !important;
+  background: var(--alert-danger-background-color); /* Use global variable */
+  color: var(--alert-danger-text-color); /* Use global variable */
 }
 
 .icon {

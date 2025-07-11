@@ -1,0 +1,387 @@
+/* ======== GLOBAL CSS VARIABLES ======== */
+
+:root {
+  /* -------------------------------------------------------------------------- */
+  /* Colores Principales (New system, from prompt example)                      */
+  /* -------------------------------------------------------------------------- */
+  --primary-color: #1976d2;
+  --primary-color-dark: #125693;
+  --primary-color-light: #63a4ff;
+
+  --secondary-color: #dc004e; /* Distinct Pink/Red */
+  --secondary-color-dark: #9a0036;
+  --secondary-color-light: #ff5c7a;
+
+  /* -------------------------------------------------------------------------- */
+  /* Colores de Feedback y Estado (New system, from prompt example)             */
+  /* -------------------------------------------------------------------------- */
+  --success-color: #4caf50;
+  --success-color-dark: #388e3c;
+  --warning-color: #ff9800;
+  --warning-color-dark: #f57c00;
+  --error-color: #f44336;
+  --error-color-dark: #d32f2f;
+
+  /* -------------------------------------------------------------------------- */
+  /* Colores de Texto (New structure, values mostly from new, some from old)    */
+  /* -------------------------------------------------------------------------- */
+  --text-color: #212121;            /* Default text */
+  --text-color-secondary: #757575;  /* Lighter text for secondary info */
+  --text-color-light: #ffffff;      /* Text on dark backgrounds */
+  --text-color-disabled: #bdbdbd;   /* Text for disabled elements */
+  --text-color-link: var(--primary-color);
+  /* Specific text colors from old, if needed and distinct: */
+  /* --text-color-danger: var(--error-color); (already covered by error-color) */
+  /* --text-color-success: var(--success-color); (already covered by success-color) */
+
+  /* -------------------------------------------------------------------------- */
+  /* Colores de Fondo y Superficies (New structure, values from new & old)      */
+  /* -------------------------------------------------------------------------- */
+  --background-color: #ffffff;      /* Main app background */
+  --background-color-secondary: #f5f5f5; /* Secondary bg areas */
+  --surface-color: #ffffff;         /* Cards, modals, etc. */
+  /* --surface-dark from old was #333, new was #23272f. Will use new for dark mode. */
+  --border-color: #e0e0e0;          /* Default borders */
+  --border-color-light: #eeeeee;    /* Lighter borders/dividers */
+  --overlay-color: rgba(0, 0, 0, 0.5); /* Modal backdrops etc (new) */
+  /* --overlay-bg from old was rgba(0,0,0,0.8) - new is a bit lighter */
+
+  /* -------------------------------------------------------------------------- */
+  /* Tipografía (New structure, Roboto font stack from prompt)                  */
+  /* -------------------------------------------------------------------------- */
+  --font-family-base: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --font-family-heading: 'Roboto', sans-serif;
+
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-md: 1.125rem;   /* 18px (base for content text on larger screens) */
+  --font-size-lg: 1.25rem;    /* 20px (base for larger text/subheadings) */
+  --font-size-xl: 1.5rem;     /* 24px */
+  --font-size-xxl: 2rem;      /* 32px */
+  --font-size-xxxl: 2.5rem;   /* 40px */
+
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-base: 1.5;
+  --line-height-heading: 1.2;
+  --line-height-condensed: 1.25;
+
+  /* -------------------------------------------------------------------------- */
+  /* Espaciado (New structure, comprehensive scale)                             */
+  /* -------------------------------------------------------------------------- */
+  --spacing-xxs: 0.125rem; /* 2px */
+  --spacing-xs: 0.25rem;   /* 4px */
+  --spacing-sm: 0.5rem;    /* 8px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 1.5rem;    /* 24px */
+  --spacing-xl: 2rem;      /* 32px */
+  --spacing-xxl: 3rem;     /* 48px */
+  --spacing-xxxl: 4rem;    /* 64px */
+
+  /* -------------------------------------------------------------------------- */
+  /* Radios de Borde (New structure, comprehensive scale)                       */
+  /* -------------------------------------------------------------------------- */
+  --border-radius-sm: 2px;
+  --border-radius: 4px;
+  --border-radius-md: 6px; /* Added from new thinking */
+  --border-radius-lg: 8px;
+  --border-radius-xl: 12px; /* Added from new thinking */
+  --border-radius-pill: 9999px;
+  --border-radius-circle: 50%;
+
+  /* -------------------------------------------------------------------------- */
+  /* Sombras (Comprehensive set from new, similar to old)                       */
+  /* -------------------------------------------------------------------------- */
+  --box-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --box-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* Old was slightly different */
+  --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --box-shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Old was slightly different */
+  --box-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Old was slightly different */
+  --box-shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --box-shadow-inner: inset 0 2px 4px 0 rgba(0,0,0,0.06);
+
+  /* -------------------------------------------------------------------------- */
+  /* Transiciones (New structure, old had cubic-bezier, new simple ease)        */
+  /* -------------------------------------------------------------------------- */
+  --transition-fast: 0.15s ease-in-out;
+  --transition-base: 0.2s ease-in-out; /* Old was 0.3s */
+  --transition-slow: 0.3s ease-in-out;
+  --transition-bezier: 0.4,0,0.2,1; /* From old, can be used in animations */
+
+  /* -------------------------------------------------------------------------- */
+  /* Z-Indexes (Standardized stack)                                             */
+  /* -------------------------------------------------------------------------- */
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+
+  /* -------------------------------------------------------------------------- */
+  /* Breakpoints (Names from prompt, values from old file or prompt if conflict)*/
+  /* -------------------------------------------------------------------------- */
+  --breakpoint-xs: 320px;  /* From old */
+  --breakpoint-sm: 480px;  /* From old */
+  --breakpoint-mobile: 768px;  /* Prompt & old --breakpoint-md */
+  --breakpoint-tablet: 1024px; /* Prompt & old --breakpoint-lg */
+  --breakpoint-desktop: 1200px;/* Prompt */
+  --breakpoint-xl: 1280px; /* From old */
+  --breakpoint-xxl: 1440px;/* From old (Pantallas grandes) */
+
+
+  /* -------------------------------------------------------------------------- */
+  /* Component-Specific Variables (Integrated from old, generic names where possible) */
+  /* -------------------------------------------------------------------------- */
+
+  /* Inputs & Forms (generic) */
+  --input-padding: 0.5rem 1rem;
+  --input-font-size: var(--font-size-base);
+  --input-border-color: #ccc; /* Renamed from --input-border for clarity */
+  --input-border-color-focus: var(--primary-color); /* Renamed */
+  --input-radius: var(--border-radius);
+  --input-background-color: var(--background-color); /* Renamed */
+  --input-background-color-disabled: #f3f3f3; /* Renamed */
+  --input-placeholder-color: #aaa; /* Renamed */
+  --input-error-border-color: var(--error-color); /* Renamed */
+  --input-error-background-color: #fff0f0; /* From old Input.module.css .error */
+
+  /* Buttons (generic) */
+  --button-padding: 0.5rem 1.2rem;
+  --button-font-size: var(--font-size-base);
+  --button-radius: var(--border-radius);
+  --button-min-width: 100px; /* From old */
+  --button-icon-only-padding: 0.5rem;
+  --button-icon-only-radius: var(--border-radius-circle);
+  --icon-button-padding: 0.3em; /* From IconButton.module.css */
+
+  /* Loaders & Spinners */
+  --loader-size: 2rem; /* From old */
+  --loader-color: var(--primary-color); /* From old */
+  --loader-background-color: var(--secondary-color-light, #e2e2e2); /* Renamed from --loader-bg */
+  --loader-speed: 0.8s;
+
+  /* Opacity */
+  --opacity-disabled: 0.65; /* New was 0.65, old was 0.5. Sticking to 0.65 */
+  --opacity-hover: 0.85; /* From old */
+
+  /* Scrollbar */
+  --scrollbar-background-color: #e5e7eb; /* Renamed */
+  --scrollbar-thumb-color: #bdbdbd; /* Renamed */
+  --scrollbar-thumb-color-hover: #888; /* Renamed */
+
+  /* Cards */
+  --card-background-color: var(--surface-color); /* Renamed */
+  --card-radius: var(--border-radius-lg); /* Old was 8px */
+  --card-shadow: var(--box-shadow-md);
+  --card-padding: 1.5rem; /* Base, will be overridden by responsive */
+
+  /* Tooltips & Popovers */
+  --tooltip-background-color: #222; /* Renamed */
+  --tooltip-text-color: var(--text-color-light); /* Renamed */
+  --tooltip-radius: var(--border-radius);
+  --tooltip-padding: 0.5rem 1rem;
+  --tooltip-shadow: var(--box-shadow-sm);
+
+  /* Alerts */
+  --alert-info-background-color: #e3f2fd; /* Renamed */
+  --alert-info-text-color: #1976d2; /* Renamed */
+  --alert-success-background-color: #e6f9f0; /* Renamed */
+  --alert-success-text-color: var(--success-color); /* Renamed */
+  --alert-warning-background-color: #fff8e1; /* Renamed */
+  --alert-warning-text-color: var(--warning-color); /* Renamed */
+  --alert-danger-background-color: #ffebee; /* Renamed */
+  --alert-danger-text-color: var(--error-color); /* Renamed */
+
+  /* Navigation */
+  --nav-background-color: var(--surface-color); /* Renamed */
+  --nav-background-color-active: var(--primary-color); /* Renamed */
+  --nav-text-color: var(--text-color); /* Renamed */
+  --nav-text-color-active: var(--text-color-light); /* Renamed */
+  --nav-height: 56px; /* Base, will be overridden */
+  --nav-shadow: var(--box-shadow-sm);
+
+  /* Tables */
+  --table-header-background-color: #f3f3f3; /* Renamed */
+  --table-row-background-color-hover: #f5faff; /* Renamed */
+  --table-border-color: var(--border-color); /* Renamed */
+  --table-padding: 0.75rem 1rem;
+
+  /* Lists */
+  --list-background-color: var(--surface-color); /* Renamed */
+  --list-item-background-color-hover: #f5faff; /* Renamed */
+  --list-border-color: var(--border-color); /* Renamed */
+  --list-radius: var(--border-radius-md); /* Old was 6px */
+
+  /* Modals */
+  --modal-background-color: var(--surface-color); /* Renamed */
+
+  /* Layout Helpers */
+  --layout-max-width: 1200px; /* Renamed */
+  --layout-min-width: 320px; /* Renamed */
+  --section-spacing: 3rem; /* Base, will be overridden */
+  --container-padding: 1rem; /* Base, will be overridden */
+  --grid-gap: 1rem; /* Base, will be overridden */
+  --sidebar-width: 0; /* Base, for mobile */
+
+  /* Badges */
+  --badge-background-color: var(--primary-color); /* Renamed */
+  --badge-text-color: var(--text-color-light); /* Renamed */
+  --badge-radius: var(--border-radius-pill); /* Old was 12px, pill is more common */
+  --badge-padding: 0.25em 0.75em;
+  --badge-font-size: var(--font-size-xs); /* Old was 0.75rem */
+
+  /* Chart specific colors (can be overridden in Charts.module.css if needed for local scope) */
+  --chart-color-1: #26a69a;
+  --chart-color-2: #42a5f5;
+  --chart-color-3: #ffca28;
+  --chart-color-4: #ef5350;
+  --chart-color-5: #66bb6a;
+  --chart-color-6: #ab47bc;
+  --chart-color-7: #78909c;
+  --chart-color-8: #ffa726;
+  --chart-color-9: #5c6bc0;
+  --chart-color-10: #ec407a;
+  --chart-trend-up: var(--success-color);
+  --chart-trend-down: var(--error-color);
+  --chart-trend-neutral: var(--text-color-secondary);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Responsive Variable Overrides (Based on old file's structure)              */
+/* Using new breakpoint names for media queries                               */
+/* -------------------------------------------------------------------------- */
+
+/* Mobile-first base is defined above in :root */
+
+/* Tablet (>= 768px) */
+@media (min-width: var(--breakpoint-mobile)) { /* 768px */
+  :root {
+    --container-padding: 2rem;
+    --font-size-md: 1.125rem;    /* Old: 1.125rem */
+    --font-size-lg: 1.5rem;      /* Old: 1.5rem */
+    --nav-height: 56px;
+    --sidebar-width: 180px;
+    --card-padding: 1.5rem;
+    --section-spacing: 3rem;
+    --grid-gap: 1.5rem;
+  }
+}
+
+/* Desktop (>= 1024px) */
+@media (min-width: var(--breakpoint-tablet)) { /* 1024px */
+  :root {
+    --container-padding: 3rem;
+    --font-size-md: 1.125rem;    /* Old: 1.25rem, new variables.css has 1.125rem for md, 1.25 for lg. Let's keep consistent with base scale. */
+                                 /* Prompt had 1.25rem for desktop font-size-large. This means base font size probably increases. */
+                                 /* The old file's logic was to redefine --font-size-md and --font-size-lg themselves. This is fine. */
+    --font-size-lg: 1.75rem;     /* Old: 1.75rem */
+    --nav-height: 64px;
+    --sidebar-width: 240px;
+    --card-padding: 2rem;
+    --section-spacing: 4rem;
+    --grid-gap: 2rem;
+  }
+}
+
+/* Large Desktop / XXL (>= 1280px or 1440px) */
+/* Old file had 1280px as --breakpoint-xl and 1440px for "Pantallas grandes" */
+/* Let's use --breakpoint-desktop (1200px) for consistency with prompt if it was the max specified for general desktop */
+/* Or use the old --breakpoint-xl (1280px) as the next step */
+@media (min-width: var(--breakpoint-xl)) { /* 1280px */
+ :root {
+    /* Could add further overrides if needed from old --breakpoint-xl if they differ from 1024px */
+ }
+}
+
+@media (min-width: var(--breakpoint-xxl)) { /* 1440px */
+  :root {
+    --container-padding: 4rem;
+    --font-size-md: 1.5rem;
+    --font-size-lg: 2rem;
+    --sidebar-width: 320px;
+    --card-padding: 2.5rem;
+    --section-spacing: 5rem;
+    --grid-gap: 2.5rem;
+  }
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* Dark Mode Variables                                                        */
+/* -------------------------------------------------------------------------- */
+.dark {
+  /* Colors from new .dark definition, merged with old .dark values */
+  --primary-color: #63a4ff;                 /* New .dark.primary-color */
+  --primary-color-dark: #1976d2;            /* New .dark.primary-color-dark */
+  --primary-color-light: #82b1ff;           /* New .dark.primary-color-light */
+
+  --secondary-color: #ff5c7a;               /* New .dark.secondary-color */
+  --secondary-color-dark: #dc004e;          /* New .dark.secondary-color-dark */
+  --secondary-color-light: #ff8a9e;         /* New .dark.secondary-color-light */
+
+  --success-color: #81c784;                 /* New .dark.success-color */
+  --warning-color: #ffd54f;                 /* New .dark.warning-color (old was #ffd166) */
+  --error-color: #e57373;                   /* New .dark.error-color (old was #ff5a5f) */
+
+  --text-color: #f5f5f5;                    /* New .dark.text-color (old was #f3f3f3) */
+  --text-color-secondary: #bdbdbd;          /* New & Old .dark.text-color-secondary */
+  --text-color-disabled: #757575;           /* New .dark.text-color-disabled */
+  --text-color-light: #ffffff;              /* Text on very dark backgrounds */
+  --text-color-link: var(--primary-color);   /* Link color in dark mode */
+
+  --background-color: #121212;              /* New .dark.background-color (old was #181a1b) */
+  --background-color-secondary: #1e1e1e;    /* New .dark.background-color-secondary */
+  --surface-color: #1e1e1e;                 /* New .dark.surface-color (old was #23272f) */
+  /* --surface-dark from old was #181a1b, now covered by background-color or similar */
+  --border-color: #424242;                  /* New .dark.border-color (old was #333) */
+  --border-color-light: #2c2c2c;            /* New .dark.border-color-light */
+  --overlay-color: rgba(0, 0, 0, 0.7);      /* Darker overlay for dark mode (old was rgba(255,255,255,0.1)) - using darker from old logic */
+
+  /* Inputs & Forms */
+  --input-border-color: #555;
+  --input-border-color-focus: var(--primary-color);
+  --input-background-color: #2c2c2f;
+  --input-background-color-disabled: #333; /* Old was #181a1b */
+  --input-placeholder-color: #888;
+  --input-error-border-color: var(--error-color);
+  --input-error-background-color: rgba(229, 115, 115, 0.1); /* Lighter red bg for dark */
+
+
+  /* Loader */
+  --loader-background-color: var(--surface-color); /* Use surface color for loader bg in dark */
+
+  /* Component specific dark mode variables from old, adapted to new names */
+  --card-background-color: #23272f;
+  --card-shadow: var(--box-shadow-md); /* Old had specific dark shadow, can be adapted if needed */
+
+  --tooltip-background-color: #333; /* Lighter than pure black for dark mode tooltips */
+  --tooltip-text-color: var(--text-color);
+
+  --alert-info-background-color: #23272f;
+  --alert-info-text-color: var(--primary-color);
+  --alert-success-background-color: #1b2e23;
+  --alert-success-text-color: var(--success-color);
+  --alert-warning-background-color: #2c2f36;
+  --alert-warning-text-color: var(--warning-color);
+  --alert-danger-background-color: #2c2f36;
+  --alert-danger-text-color: var(--error-color);
+
+  --nav-background-color: var(--surface-color);
+  --nav-background-color-active: var(--primary-color);
+  --nav-text-color: var(--text-color);
+  --nav-text-color-active: var(--text-color-light); /* Or a contrasting color for primary */
+
+  --table-header-background-color: #23272f;
+  --table-row-background-color-hover: #2c2f36; /* Slightly lighter than table bg */
+  --list-background-color: #23272f;
+  --list-item-background-color-hover: #2c2f36;
+
+  --modal-background-color: var(--surface-color);
+}

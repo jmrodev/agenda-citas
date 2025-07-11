@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './CalendarDay.module.css';
+import CalendarDot from '../CalendarDot/CalendarDot'; // Import CalendarDot atom
 
 const CalendarDay = ({
   day,
@@ -25,8 +26,9 @@ const CalendarDay = ({
       disabled={isDisabled}
       {...rest}
     >
-      {day}
-      {hasEvent && <span className={styles['calendar-dot']} />}
+      <span className={styles.dayNumber}>{day}</span>
+      {hasEvent && <CalendarDot className={styles.eventDotPosition} />}
+      {/* Added className for positioning if needed, CalendarDot handles its own base style */}
     </button>
   );
 };

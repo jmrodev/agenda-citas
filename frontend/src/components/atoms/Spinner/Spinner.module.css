@@ -1,20 +1,45 @@
-.spinner {
+.spinnerBase { /* Renamed from .spinner to .spinnerBase */
   display: inline-block;
-  border: 3px solid var(--loader-bg, var(--secondary-color, #e2e2e2));
-  border-top: 3px solid var(--primary-color, #0070f3);
+  border: 3px solid var(--loader-bg, var(--secondary-color, #e2e2e2)); /* Default base border color */
+  /* border-top color will be set by color classes like .primary */
   border-radius: 50%;
-  width: 2rem;
-  height: 2rem;
   animation: spin var(--loader-speed, 0.8s) linear infinite;
   vertical-align: middle;
   position: relative;
+  /* Default width/height are now set by size classes e.g. .md */
 }
 
-.primary { border-top-color: var(--primary-color, #0070f3); }
-.secondary { border-top-color: var(--secondary-color, #e2e2e2); }
-.danger { border-top-color: var(--danger-color, #e00); }
-.success { border-top-color: var(--success-color, #21c87a); }
-.warning { border-top-color: var(--warning-color, #ffb300); }
+/* Size classes */
+.sm {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-width: 2px;
+}
+.md { /* Default size */
+  width: 2rem;
+  height: 2rem;
+  border-width: 3px;
+}
+.lg {
+  width: 3rem;
+  height: 3rem;
+  border-width: 4px;
+}
+.xl { /* Renamed from xlarge for consistency */
+  width: 4rem;
+  height: 4rem;
+  border-width: 5px;
+}
+
+
+/* Color classes for border-top-color */
+.primary { border-top-color: var(--primary-color, #0070f3) !important; } /* Added !important to ensure override if base has it */
+.secondary { border-top-color: var(--secondary-color, #e2e2e2) !important; }
+.danger { border-top-color: var(--danger-color, #e00) !important; }
+.success { border-top-color: var(--success-color, #21c87a) !important; }
+.warning { border-top-color: var(--warning-color, #ffb300) !important; }
+.light { border-top-color: var(--text-light, #ffffff) !important; }
+
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
@@ -32,6 +57,9 @@
   border: 0;
 }
 
-.dark .spinner {
-  border: 3px solid var(--surface-dark, #23272f);
-} 
+/* Dark mode adjustments for the base border of the spinner */
+.dark .spinnerBase {
+  border-color: var(--loader-bg-dark, var(--surface-dark, #23272f));
+}
+/* Dark mode for border-top-color will be handled by specific color variables if they are dark-mode aware */
+/* e.g. var(--primary-color) should ideally have a dark mode version if needed */

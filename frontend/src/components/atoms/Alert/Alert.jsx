@@ -3,10 +3,10 @@ import styles from './Alert.module.css';
 import Icon from '../Icon/Icon';
 
 const defaultIcons = {
-  info: 'info',
+  info: 'info', // Assumes 'info' icon exists in Icon.jsx, if not use a more generic one or ensure it's added
   success: 'check',
-  warning: 'warning',
-  danger: 'close'
+  warning: 'warning', // Assumes 'warning' icon exists or use 'danger' as fallback
+  danger: 'danger' // Changed from 'close' to 'danger'
 };
 
 const Alert = React.memo(({

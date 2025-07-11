@@ -7,48 +7,8 @@
   padding: 2rem;
 }
 
-.spinner {
-  display: inline-block;
-  border: 3px solid var(--loader-bg, var(--secondary-color, #e2e2e2));
-  border-top: 3px solid var(--primary-color, #0070f3);
-  border-radius: 50%;
-  animation: spin var(--loader-speed, 0.8s) linear infinite;
-  vertical-align: middle;
-  position: relative;
-}
-
-/* Tamaños */
-.small {
-  width: 1.5rem;
-  height: 1.5rem;
-  border-width: 2px;
-}
-
-.medium {
-  width: 2rem;
-  height: 2rem;
-  border-width: 3px;
-}
-
-.large {
-  width: 3rem;
-  height: 3rem;
-  border-width: 4px;
-}
-
-.xlarge {
-  width: 4rem;
-  height: 4rem;
-  border-width: 5px;
-}
-
-/* Colores */
-.primary { border-top-color: var(--primary-color, #0070f3); }
-.secondary { border-top-color: var(--secondary-color, #e2e2e2); }
-.danger { border-top-color: var(--danger-color, #e00); }
-.success { border-top-color: var(--success-color, #21c87a); }
-.warning { border-top-color: var(--warning-color, #ffb300); }
-.light { border-top-color: var(--text-light, #ffffff); }
+/* Spinner related styles (base, sizes, colors, animation, dark mode) are now removed. */
+/* They are handled by the Spinner atom and Spinner.module.css */
 
 .text {
   font-size: 0.875rem;
