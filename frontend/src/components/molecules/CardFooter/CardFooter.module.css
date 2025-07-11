@@ -1,19 +1,19 @@
 .cardFooter {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--spacing-sm, 0.75rem); /* Use global var */
   width: 100%;
   flex-wrap: wrap;
-  padding-top: 0.5rem;
+  padding-top: var(--spacing-sm, 0.5rem); /* Use global var */
 }
 
 .chip {
-  margin-right: auto;
+  margin-right: auto; /* This handles layout, not direct spacing token */
 }
 
 .progress {
-  flex-basis: 100%;
-  margin-top: 0.5rem;
+  flex-basis: 100%; /* Layout property */
+  margin-top: var(--spacing-sm, 0.5rem); /* Use global var */
 }
 
 .actions {

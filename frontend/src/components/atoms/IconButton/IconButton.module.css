@@ -1,28 +1,27 @@
+/* IconButton specific styles that override or complement Button's isIconOnly appearance */
 .iconButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  border-radius: 50%;
-  padding: 0.3em;
-  cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s;
-  outline: none;
+  background: transparent !important; /* Ensure it's transparent over any variant */
+  border: none !important; /* Ensure no border from variant */
+  padding: var(--icon-button-padding, 0.3em) !important; /* Specific padding, !important if needed to override base button size padding */
+  color: inherit; /* Inherit color from parent or variant, Icon component can override this */
+  /* display, align-items, justify-content, border-radius, cursor, outline, transition are handled by Button or Icon */
 }
 
 .iconButton:hover,
 .iconButton:focus {
-  background: var(--secondary-color, #e2e2e2);
-  box-shadow: 0 0 0 2px var(--primary-color, #0070f3, 0.2);
+  background: var(--icon-button-hover-bg, var(--secondary-color, #e2e2e2)) !important;
+  box-shadow: var(--icon-button-hover-shadow, 0 0 0 2px rgba(0, 112, 243, 0.2)); /* Using rgba for primary color shadow */
+  color: inherit; /* Ensure text/icon color on hover is managed correctly, could be specific if needed */
 }
 
-.iconButton:disabled {
-  opacity: var(--opacity-disabled, 0.5);
-  cursor: not-allowed;
-}
+/* Disabled state is handled by the main Button component's styles */
+/* .iconButton:disabled { ... } */
 
 .dark .iconButton:hover,
 .dark .iconButton:focus {
-  background: var(--surface-dark, #23272f);
-} 
+  background: var(--icon-button-dark-hover-bg, var(--surface-dark, #23272f)) !important;
+}
+
+/* If the base Button's isIconOnly sets a color, and we want icon to be different, Icon prop 'iconColor' should be used. */
+/* If we want the icon to inherit button's text color (from variant), then Icon's color prop should be 'currentColor' or unset. */
+/* The IconButton.jsx already passes iconColor to Icon, which defaults to Icon's 'currentColor' if not provided */

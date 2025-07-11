@@ -30,6 +30,17 @@
   font-size: var(--font-size-lg, 1.25rem);
 }
 
+/* Font weights */
+.weightNormal {
+  font-weight: var(--font-weight-normal, 400);
+}
+.weightMedium {
+  font-weight: var(--font-weight-medium, 500);
+}
+.weightBold {
+  font-weight: var(--font-weight-bold, 700);
+}
+
 .dark .text {
   color: var(--text-color, #f3f3f3);
 }

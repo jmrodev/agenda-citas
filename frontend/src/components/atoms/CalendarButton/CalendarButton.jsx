@@ -1,12 +1,20 @@
 import React from 'react';
+import Button from '../Button/Button'; // Import the main Button component
 import styles from './CalendarButton.module.css';
 
 const CalendarButton = ({ children, onClick, disabled, className = '', ...rest }) => {
   return (
-    <button type='button' className={[styles.calendarButton, className].join(' ').trim()} onClick={onClick} disabled={disabled} {...rest}>
+    <Button
+      className={[styles.calendarButton, className].join(' ').trim()}
+      onClick={onClick}
+      disabled={disabled}
+      {...rest} // Pass other props like aria-label
+    >
       {children}
-    </button>
+    </Button>
   );
 };
+
+CalendarButton.displayName = 'CalendarButton';
 
 export default CalendarButton; 

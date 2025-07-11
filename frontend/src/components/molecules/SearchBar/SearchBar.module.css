@@ -1,11 +1,11 @@
 .searchBar {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-sm, 0.5rem);
   width: 100%;
-  background: var(--surface-color, #f3f4f6); /* Corregido */
-  border-radius: 999px;
-  padding: 0.2rem 0.7rem;
+  background: var(--background-color-secondary); /* Use a standard light gray background */
+  border-radius: var(--border-radius-pill);
+  padding: var(--spacing-xxs) var(--spacing-sm); /* Approx 0.2rem 0.7rem */
 }
 
 .input {
@@ -13,26 +13,23 @@
   background: transparent;
   border: none;
   outline: none;
-  font-size: 1rem;
+  font-size: var(--font-size-base); /* Use global var */
+  color: var(--text-color); /* Ensure input text color is from theme */
 }
 
+/* IconButton already has transparent background and appropriate padding.
+   These classes might only be needed for very specific tweaks not achievable via IconButton props.
+   For now, assuming IconButton's default styling is mostly sufficient.
+   If specific font-size scaling for the icon button itself is needed, these can be kept.
+*/
 .iconBtn {
-  background: none;
-  border: none;
-  padding: 0.2rem;
-  cursor: pointer;
-  font-size: 1.2em;
+  /* font-size: 1.2em; /* This scales the icon if iconSize is not absolute px */
+  /* Custom padding if IconButton's default is not suitable */
 }
 
 .clearBtn {
-  background: none;
-  border: none;
-  padding: 0.2rem;
-  cursor: pointer;
-  font-size: 1.1em;
-  color: var(--danger-color, #dc2626); /* Corregido */
+  /* font-size: 1.1em; */
+  /* No need to set color here, should be passed as iconColor to IconButton */
 }
 
-.dark .searchBar {
-  background: var(--surface-dark, #23272f); /* Esto está bien, --surface-dark está definido */
-} 
+/* .dark .searchBar: No specific override needed if --background-color-secondary handles dark mode. */

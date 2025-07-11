@@ -1,12 +1,16 @@
 import React from 'react';
+import Icon from '../Icon/Icon'; // Import the generic Icon component
 import styles from './CloseIcon.module.css';
 
-const CloseIcon = ({ onClick }) => (
-  <button className={styles.closeButton} onClick={onClick} aria-label='Cerrar'>
-    <svg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
-      <line x1='18' y1='6' x2='6' y2='18' />
-      <line x1='6' y1='6' x2='18' y2='18' />
-    </svg>
+const CloseIcon = ({ onClick, className = '', ...rest }) => (
+  <button
+    type="button" // Good practice for buttons not submitting forms
+    className={[styles.closeButton, className].join(' ').trim()}
+    onClick={onClick}
+    aria-label='Cerrar' // Retain specific aria-label for this context
+    {...rest}
+  >
+    <Icon name='close' /> {/* Use the generic Icon component, default size is 24 */}
   </button>
 );
 

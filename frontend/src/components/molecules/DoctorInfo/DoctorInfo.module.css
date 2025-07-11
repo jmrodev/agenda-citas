@@ -30,8 +30,17 @@
   font-weight: 500;
 }
 
-.error {
-  color: var(--text-color-danger);
-  font-size: var(--font-size-sm);
-  margin-top: var(--spacing-xs);
-} 
+/* .error class is removed as FormField handles error display via HelperText */
+
+/* Optional: if FormField needs a specific wrapper style when used by DoctorInfo */
+.formFieldWrapper {
+  /* Custom styles for the FormField div wrapper if needed */
+}
+
+/* Renamed from .doctorInfo to avoid potential conflicts if .doctorInfo had fieldset-like styles */
+.doctorInfoContent {
+  padding: var(--spacing-sm);
+  background-color: var(--alert-success-bg); /* Using alert variables for similar appearance */
+  border: 1px solid var(--success-color);
+  border-radius: var(--border-radius);
+}

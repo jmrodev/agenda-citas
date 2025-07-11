@@ -3,11 +3,11 @@
   align-items: center;
   gap: 0.4em;
   padding: 0.2em 0.8em;
-  border-radius: 16px;
-  background: var(--secondary-color, #e2e2e2);
-  color: var(--primary-color, #0070f3);
-  font-size: var(--font-size-sm, 0.875rem);
-  font-weight: 500;
+  border-radius: var(--border-radius-pill); /* Use global var */
+  background: var(--background-color-secondary); /* Default to light gray */
+  color: var(--text-color); /* Default to standard text color */
+  font-size: var(--font-size-sm); /* Use global var, remove fallback */
+  font-weight: var(--font-weight-medium); /* Use global var */
   line-height: 1.2;
   border: none;
   user-select: none;
@@ -15,24 +15,24 @@
 }
 
 .primary {
-  background: var(--primary-color, #0070f3);
-  color: #fff;
+  background: var(--primary-color);
+  color: var(--text-color-light);
 }
-.secondary {
-  background: var(--secondary-color, #e2e2e2);
-  color: var(--primary-color, #0070f3);
+.secondary { /* This variant will now be pink with light text */
+  background: var(--secondary-color);
+  color: var(--text-color-light);
 }
 .danger {
-  background: var(--danger-color, #e00);
-  color: #fff;
+  background: var(--error-color); /* Use theme var */
+  color: var(--text-color-light);
 }
 .success {
-  background: var(--success-color, #21c87a);
-  color: #fff;
+  background: var(--success-color);
+  color: var(--text-color-light);
 }
 .warning {
-  background: var(--warning-color, #ffb300);
-  color: #222;
+  background: var(--warning-color);
+  color: var(--text-color); /* Dark text on light orange */
 }
 
 .sm {
