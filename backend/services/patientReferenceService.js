@@ -1,31 +1,28 @@
-const patientReferenceModel = require('../models/patientReferenceModel');
-const patientModel = require('../models/patientModel'); // Para verificar existencia del paciente
+const PatientReferenceModel = require('../models/relations/patientReferenceModel');
+const PatientModel = require('../models/entities/patientModel');
 
 async function createReference(patientId, data) {
-  const patient = await patientModel.getPatientById(patientId);
+  const patient = await PatientModel.findById(patientId);
   if (!patient) {
     const error = new Error('Paciente no encontrado.');
     error.statusCode = 404;
     throw error;
   }
-  // El modelo addReference ya maneja la lógica de DNI duplicado para el mismo paciente.
-  return patientReferenceModel.addReference(patientId, data);
+  return PatientReferenceModel.addReference(patientId, data);
 }
 
 async function getReferencesByPatientId(patientId) {
-  const patient = await patientModel.getPatientById(patientId);
+  const patient = await PatientModel.findById(patientId);
   if (!patient) {
-    // Podríamos optar por devolver un array vacío si el paciente no existe,
-    // o lanzar un error. Lanzar error es más explícito.
     const error = new Error('Paciente no encontrado.');
     error.statusCode = 404;
     throw error;
   }
-  return patientReferenceModel.getReferencesByPatientId(patientId);
+  return PatientReferenceModel.getReferencesByPatientId(patientId);
 }
 
 async function getReferenceById(referenceId) {
-  const reference = await patientReferenceModel.getReferenceById(referenceId);
+  const reference = await PatientReferenceModel.findById(referenceId);
   if (!reference) {
     const error = new Error('Persona de referencia no encontrada.');
     error.statusCode = 404;
@@ -35,31 +32,25 @@ async function getReferenceById(referenceId) {
 }
 
 async function updateReference(referenceId, data) {
-  const reference = await patientReferenceModel.getReferenceById(referenceId);
+  const reference = await PatientReferenceModel.findById(referenceId);
   if (!reference) {
     const error = new Error('Persona de referencia no encontrada.');
     error.statusCode = 404;
     throw error;
   }
 
-  // Nota: La restricción UNIQUE(patient_id, dni) en la BBDD
-  // se encargará de prevenir que este update cree un DNI duplicado
-  // para el mismo patient_id si el DNI se está cambiando.
-  // Una validación más explícita aquí podría hacerse si se quiere un mensaje de error más específico
-  // antes de golpear la base de datos.
-
-  await patientReferenceModel.updateReference(referenceId, data);
-  return patientReferenceModel.getReferenceById(referenceId); // Devolver la referencia actualizada
+  await PatientReferenceModel.update(referenceId, data);
+  return PatientReferenceModel.findById(referenceId);
 }
 
 async function deleteReference(referenceId) {
-  const reference = await patientReferenceModel.getReferenceById(referenceId);
+  const reference = await PatientReferenceModel.findById(referenceId);
   if (!reference) {
     const error = new Error('Persona de referencia no encontrada.');
     error.statusCode = 404;
     throw error;
   }
-  await patientReferenceModel.deleteReference(referenceId);
+  await PatientReferenceModel.delete(referenceId);
   return { message: 'Persona de referencia eliminada exitosamente.' };
 }
 

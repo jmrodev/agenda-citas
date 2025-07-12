@@ -1,4 +1,4 @@
-const consultationHourModel = require('../models/doctorConsultationHourModel');
+const DoctorConsultationHourModel = require('../models/relations/doctorConsultationHourModel');
 const db = require('../config/db');
 
 function timeToMinutes(time) {
@@ -11,41 +11,35 @@ function isOverlap(startA, endA, startB, endB) {
 }
 
 async function listConsultationHours() {
-  return await consultationHourModel.getAllConsultationHours();
+  return await DoctorConsultationHourModel.findAll();
 }
 
 async function createConsultationHour(data) {
   const { doctor_id, day_of_week, start_time, end_time } = data;
-  const existing = await consultationHourModel.getConsultationHoursByDoctorAndDay(doctor_id, day_of_week);
+  const existing = await DoctorConsultationHourModel.getConsultationHoursByDoctorAndDay(doctor_id, day_of_week);
   for (const hour of existing) {
     if (isOverlap(start_time, end_time, hour.start_time, hour.end_time)) {
       throw new Error('El horario se solapa con otro existente para este médico y día.');
     }
   }
-  return await consultationHourModel.createConsultationHour(data);
+  return await DoctorConsultationHourModel.create(data);
 }
 
 async function updateConsultationHour(id, data) {
   const { doctor_id, day_of_week, start_time, end_time } = data;
-  const existing = await consultationHourModel.getConsultationHoursByDoctorAndDay(doctor_id, day_of_week);
+  const existing = await DoctorConsultationHourModel.getConsultationHoursByDoctorAndDay(doctor_id, day_of_week);
   for (const hour of existing) {
     if (hour.consultation_hour_id !== Number(id) && isOverlap(start_time, end_time, hour.start_time, hour.end_time)) {
       throw new Error('El horario se solapa con otro existente para este médico y día.');
     }
   }
-  return await consultationHourModel.updateConsultationHour(id, data);
+  return await DoctorConsultationHourModel.update(id, data);
 }
 
 async function deleteConsultationHour(id) {
-  return await consultationHourModel.deleteConsultationHour(id);
+  return await DoctorConsultationHourModel.delete(id);
 }
 
-/**
- * Obtiene los horarios de consulta de un doctor para un día específico
- * @param {number} doctorId - ID del doctor
- * @param {string} dayOfWeek - Día de la semana en español
- * @returns {Promise<Array>} Array de horarios de consulta
- */
 async function getDoctorScheduleByDay(doctorId, dayOfWeek) {
   try {
     const query = `
@@ -65,11 +59,6 @@ async function getDoctorScheduleByDay(doctorId, dayOfWeek) {
   }
 }
 
-/**
- * Obtiene los horarios de consulta de todos los doctores para un día específico
- * @param {string} dayOfWeek - Día de la semana en español
- * @returns {Promise<Object>} Objeto con doctor_id como key y horarios como value
- */
 async function getAllDoctorsScheduleByDay(dayOfWeek) {
   try {
     const query = `
@@ -85,7 +74,6 @@ async function getAllDoctorsScheduleByDay(dayOfWeek) {
     
     const [rows] = await db.execute(query, [dayOfWeek]);
     
-    // Agrupar por doctor
     const scheduleByDoctor = {};
     rows.forEach(row => {
       if (!scheduleByDoctor[row.doctor_id]) {
@@ -111,4 +99,4 @@ async function getAllDoctorsScheduleByDay(dayOfWeek) {
   }
 }
 
-module.exports = { listConsultationHours, createConsultationHour, updateConsultationHour, deleteConsultationHour, getDoctorScheduleByDay, getAllDoctorsScheduleByDay }; 
+module.exports = { listConsultationHours, createConsultationHour, updateConsultationHour, deleteConsultationHour, getDoctorScheduleByDay, getAllDoctorsScheduleByDay };

@@ -1,27 +1,27 @@
-const patientHealthInsuranceModel = require('../models/patientHealthInsuranceModel');
+const PatientHealthInsuranceModel = require('../models/relations/patientHealthInsuranceModel');
 
 async function getPatientHealthInsurances(patientId) {
-  return await patientHealthInsuranceModel.getPatientHealthInsurances(patientId);
+  return await PatientHealthInsuranceModel.getPatientHealthInsurances(patientId);
 }
 
 async function addHealthInsuranceToPatient(patientId, insuranceId, memberNumber = null, isPrimary = false) {
-  return await patientHealthInsuranceModel.addHealthInsuranceToPatient(patientId, insuranceId, memberNumber, isPrimary);
+  return await PatientHealthInsuranceModel.addHealthInsuranceToPatient(patientId, insuranceId, memberNumber, isPrimary);
 }
 
 async function updatePatientHealthInsurance(patientInsuranceId, data) {
-  return await patientHealthInsuranceModel.updatePatientHealthInsurance(patientInsuranceId, data);
+  return await PatientHealthInsuranceModel.updatePatientHealthInsurance(patientInsuranceId, data);
 }
 
 async function removeHealthInsuranceFromPatient(patientInsuranceId) {
-  return await patientHealthInsuranceModel.removeHealthInsuranceFromPatient(patientInsuranceId);
+  return await PatientHealthInsuranceModel.removeHealthInsuranceFromPatient(patientInsuranceId);
 }
 
 async function getPrimaryHealthInsurance(patientId) {
-  return await patientHealthInsuranceModel.getPrimaryHealthInsurance(patientId);
+  return await PatientHealthInsuranceModel.getPrimaryHealthInsurance(patientId);
 }
 
 async function setPrimaryHealthInsurance(patientId, insuranceId) {
-  return await patientHealthInsuranceModel.setPrimaryHealthInsurance(patientId, insuranceId);
+  return await PatientHealthInsuranceModel.setPrimaryHealthInsurance(patientId, insuranceId);
 }
 
 module.exports = {
@@ -31,4 +31,4 @@ module.exports = {
   removeHealthInsuranceFromPatient,
   getPrimaryHealthInsurance,
   setPrimaryHealthInsurance
-}; 
+};

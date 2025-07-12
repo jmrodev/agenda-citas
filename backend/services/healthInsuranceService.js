@@ -1,32 +1,33 @@
-const healthInsuranceModel = require('../models/healthInsuranceModel');
+const HealthInsuranceModel = require('../models/entities/healthInsuranceModel');
 
 async function listHealthInsurances() {
-  return await healthInsuranceModel.getAllHealthInsurances();
+  return await HealthInsuranceModel.findAll();
 }
 
 async function listHealthInsurancesWithFilters(query) {
-  return await healthInsuranceModel.findHealthInsurancesWithFilters(query);
+  return await HealthInsuranceModel.findWithFilters(query);
 }
 
 async function createHealthInsurance(data) {
-  return await healthInsuranceModel.createHealthInsurance(data);
+  return await HealthInsuranceModel.create(data);
 }
 
 async function updateHealthInsurance(id, data) {
-  return await healthInsuranceModel.updateHealthInsurance(id, data);
+  await HealthInsuranceModel.update(id, data);
+  return await HealthInsuranceModel.findById(id);
 }
 
 async function deleteHealthInsurance(id, action = 'delete') {
-  return await healthInsuranceModel.deleteHealthInsurance(id, action);
+  return await HealthInsuranceModel.deleteHealthInsurance(id, action);
 }
 
 async function getHealthInsuranceById(id) {
-  return await healthInsuranceModel.getHealthInsuranceById(id);
+  return await HealthInsuranceModel.findById(id);
 }
 
 async function getHealthInsuranceReferences(id) {
   console.log('🔍 [HealthInsuranceService] getHealthInsuranceReferences llamado con ID:', id);
-  const result = await healthInsuranceModel.getHealthInsuranceReferences(id);
+  const result = await HealthInsuranceModel.getHealthInsuranceReferences(id);
   console.log('🔍 [HealthInsuranceService] Resultado del modelo:', result);
   return result;
 }
