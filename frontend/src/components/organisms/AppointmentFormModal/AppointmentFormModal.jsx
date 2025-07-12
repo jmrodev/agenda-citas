@@ -77,34 +77,13 @@ const AppointmentFormModal = ({
   // Inicializar formulario al abrir el modal o cambiar datos
   useEffect(() => {
     if (isOpen) {
-      console.log('🔍 [AppointmentFormModal] Inicializando formulario:', {
-        isEditing,
-        selectedDoctorId,
-        selectedDateISO,
-        selectedTime,
-        appointment
-      });
-      
       if (isEditing && appointment) {
-        console.log('🔍 [AppointmentFormModal] Inicializando para edición:', appointment);
         initializeForEdit(appointment);
       } else {
-        console.log('🔍 [AppointmentFormModal] Inicializando para nueva cita:', {
-          selectedDoctorId,
-          selectedDateISO,
-          selectedTime
-        });
         initializeForCreate(selectedDoctorId, selectedDateISO, selectedTime);
       }
     }
   }, [isOpen, appointment, selectedDateISO, selectedTime, selectedDoctorId, isEditing, initializeForEdit, initializeForCreate]);
-
-  // Log para verificar el estado del formulario
-  useEffect(() => {
-    if (isOpen) {
-      console.log('🔍 [AppointmentFormModal] Estado actual del formulario:', formData);
-    }
-  }, [isOpen, formData]);
 
   // Validar formulario cuando cambien los datos
   useEffect(() => {
@@ -118,7 +97,6 @@ const AppointmentFormModal = ({
     // Validar antes de enviar
     const validationErrors = validateAppointmentForm();
     if (Object.keys(validationErrors).length > 0) {
-      console.log('🔍 [AppointmentFormModal] Errores de validación:', validationErrors);
       setErrors(validationErrors);
       // Marcar todos los campos como tocados para mostrar errores
       const allTouched = Object.keys(formData).reduce((acc, key) => {
@@ -148,25 +126,7 @@ const AppointmentFormModal = ({
           </Alert>
         )}
 
-        {/* Debug temporal */}
-        {process.env.NODE_ENV === 'development' && (
-          <div style={{ 
-            background: '#f0f0f0', 
-            padding: '10px', 
-            margin: '10px 0', 
-            border: '1px solid #ccc',
-            fontSize: '12px'
-          }}>
-            <strong>DEBUG - Estado del formulario:</strong>
-            <pre>{JSON.stringify(formData, null, 2)}</pre>
-            <strong>Errores:</strong>
-            <pre>{JSON.stringify(errors, null, 2)}</pre>
-            <strong>Campos tocados:</strong>
-            <pre>{JSON.stringify(touched, null, 2)}</pre>
-            <strong>Doctor seleccionado:</strong>
-            <pre>{JSON.stringify({ selectedDoctorId, selectedDoctorName }, null, 2)}</pre>
-          </div>
-        )}
+
 
         <AppointmentFormFields
           formData={formData}

@@ -41,7 +41,6 @@ export const useForm = (initialValues = {}, validationSchema = {}) => {
   // Manejar cambio de campo
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
-    console.log('🔍 [useForm] handleChange:', { name, value, currentValues: values });
     setValues(prev => ({ ...prev, [name]: value }));
     
     // Validar el campo inmediatamente si ya fue tocado

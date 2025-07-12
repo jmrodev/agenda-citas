@@ -150,10 +150,10 @@ const createUpdateSchema = (fields) => {
 
 // Función para crear esquema con validación condicional por rol
 const createRoleConditionalSchema = (baseFields, roleCondition) => {
-    return Joi.object(baseFields).when(
-        Joi.object({ '$userRole': Joi.string().valid(roleCondition.role).required() }).unknown(),
-        roleCondition.then
-    );
+    return Joi.object(baseFields).when('$userRole', {
+        is: roleCondition.role,
+        then: roleCondition.then
+    });
 };
 
 module.exports = {

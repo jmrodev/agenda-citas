@@ -22,12 +22,6 @@ export const useAppointmentInitialization = (setValues) => {
   }, [setValues]);
 
   const initializeForCreate = useCallback((selectedDoctorId, selectedDateISO, selectedTime) => {
-    console.log('🔍 [useAppointmentInitialization] initializeForCreate:', {
-      selectedDoctorId,
-      selectedDateISO,
-      selectedTime
-    });
-    
     const formValues = {
       patient_id: '',
       doctor_id: selectedDoctorId ? String(selectedDoctorId) : '',
@@ -41,7 +35,6 @@ export const useAppointmentInitialization = (setValues) => {
       payment_method: 'efectivo'
     };
     
-    console.log('🔍 [useAppointmentInitialization] Valores del formulario:', formValues);
     setValues(formValues);
   }, [setValues]);
 

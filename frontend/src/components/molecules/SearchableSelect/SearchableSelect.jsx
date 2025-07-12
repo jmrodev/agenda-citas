@@ -47,11 +47,6 @@ const SearchableSelect = ({
   // }, [filteredOptionsMemo]);
 
   const handleSelectChange = (e) => {
-    console.log('🔍 [SearchableSelect] handleSelectChange:', {
-      name: e.target.name,
-      value: e.target.value,
-      originalEvent: e
-    });
     onChange(e);
     setIsOpen(false);
     setSearchTerm('');
@@ -118,17 +113,7 @@ const SearchableSelect = ({
 
   const selectedOption = options.find(option => option.value === value);
 
-  // Log para debuggear las opciones
-  useEffect(() => {
-    if (isOpen) {
-      console.log('🔍 [SearchableSelect] Opciones disponibles:', {
-        options,
-        filteredOptions: filteredOptionsMemo,
-        selectedValue: value,
-        selectedOption
-      });
-    }
-  }, [isOpen, options, filteredOptionsMemo, value, selectedOption]);
+
 
   return (
     <div className={`${styles.searchableSelect} ${className}`} ref={containerRef}>

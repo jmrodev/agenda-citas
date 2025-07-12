@@ -31,13 +31,6 @@ export const useAppointmentValidation = (formData, selectedDoctorId) => {
     // Validar el formulario
     const errors = validate(formData, validationSchema);
     
-    console.log('🔍 [useAppointmentValidation] Validación:', {
-      formData,
-      selectedDoctorId,
-      validationSchema,
-      errors
-    });
-
     return errors;
   }, [formData, selectedDoctorId]);
 

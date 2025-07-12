@@ -18,7 +18,7 @@ export const usePatientOptions = (patients) => {
       }))
     ];
     
-    console.log('🔍 [usePatientOptions] Opciones generadas:', options);
+  console.log('🔍 [usePatientOptions] Opciones generadas:', options);
     return options;
   }, [patients]);
 }; 

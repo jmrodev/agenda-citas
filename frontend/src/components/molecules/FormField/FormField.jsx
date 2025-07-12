@@ -117,7 +117,7 @@ const FormField = React.memo(({
       )}
       <div className={styles.inputWrapper}>
         {children ? (
-          children
+          React.isValidElement(children) ? children : null
         ) : type === 'textarea' ? (
           <Textarea 
             id={name} 

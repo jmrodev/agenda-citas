@@ -42,18 +42,27 @@ const TimeSlot = ({
   };
 
   const getStatusIcon = () => {
-    switch (getSlotStatus()) {
+    const status = getSlotStatus();
+    let icon;
+    
+    switch (status) {
       case 'booked':
-        return 'user';
+        icon = 'user';
+        break;
       case 'out-of-schedule':
-        return 'clock';
+        icon = 'clock';
+        break;
       case 'available':
-        return 'check';
+        icon = 'plus';
+        break;
       case 'unavailable':
-        return 'close';
+        icon = 'close';
+        break;
       default:
-        return 'check';
+        icon = 'plus';
     }
+    
+    return icon;
   };
 
   const handleClick = () => {

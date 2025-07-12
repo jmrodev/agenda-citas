@@ -213,7 +213,7 @@ const CalendarPage = () => {
         slots.push({
           time,
           appointment,
-          isAvailable: !appointment,
+          isAvailable: !appointment && isInSchedule,
           isInSchedule: isInSchedule
         });
       }
@@ -318,7 +318,7 @@ const CalendarPage = () => {
                 <TimeSlot
                   key={slot.time}
                   time={slot.time}
-                  appointment={slot.appointment?.appointment}
+                  appointment={slot.appointment}
                   isInSchedule={slot.isInSchedule}
                   isAvailable={slot.isAvailable}
                   isSelected={selectedTime === slot.time}
