@@ -1,75 +1,69 @@
 const Joi = require('joi');
+const {
+    nameSchema,
+    optionalNameSchema,
+    requiredEmailSchema,
+    emailSchema,
+    phoneSchema,
+    addressSchema,
+    optionalPositiveIdSchema,
+    timeSchema,
+    createUpdateSchema
+} = require('./baseSchemas');
+const {
+    CHAR_LIMITS,
+    MEDICAL_SPECIALTIES
+} = require('./constants');
 
-// Helper para validar fecha que puede ser string YYYY-MM-DD o objeto {day, month, year}
-const dateOrDateObjectOptionalSchema = Joi.alternatives().try(
-    Joi.string().isoDate().messages({ // Acepta 'YYYY-MM-DD'
-        'string.isoDate': 'El formato de fecha debe ser YYYY-MM-DD.'
-    }),
-    Joi.object({
-        day: Joi.number().integer().min(1).max(31).required(),
-        month: Joi.number().integer().min(1).max(12).required(),
-        year: Joi.number().integer().min(1900).max(2100).required()
-    })
-).optional().allow(null);
-
-const timeSchemaOptional = Joi.string().pattern(/^([01]\d|2[0-3]):([0-5]\d)$/).optional().allow(null, '').messages({ // HH:MM
-    'string.pattern.base': 'El formato de hora debe ser HH:MM.'
-});
-
+// Esquema base para doctores
 const doctorBaseSchema = {
-    first_name: Joi.string().min(2).max(100).required().messages({
+    first_name: nameSchema.messages({
         'string.empty': 'El nombre es requerido.',
         'any.required': 'El nombre es requerido.'
     }),
-    last_name: Joi.string().min(2).max(100).required().messages({
+    last_name: nameSchema.messages({
         'string.empty': 'El apellido es requerido.',
         'any.required': 'El apellido es requerido.'
     }),
-    specialty: Joi.string().max(100).required().messages({
+    specialty: Joi.string().valid(...MEDICAL_SPECIALTIES).max(CHAR_LIMITS.SPECIALTY).required().messages({
         'string.empty': 'La especialidad es requerida.',
-        'any.required': 'La especialidad es requerida.'
+        'any.required': 'La especialidad es requerida.',
+        'any.only': 'La especialidad seleccionada no es válida.'
     }),
-    email: Joi.string().email().required().messages({
+    email: requiredEmailSchema.messages({
         'string.email': 'Debe ingresar un email válido.',
         'string.empty': 'El email es requerido.',
         'any.required': 'El email es requerido.'
     }),
-    phone: Joi.string().pattern(/^[0-9+\-\s()]*$/).max(30).optional().allow(null, ''),
-    license_number: Joi.string().max(50).optional().allow(null, ''),
-    office_address: Joi.string().max(255).optional().allow(null, ''),
-    office_phone: Joi.string().pattern(/^[0-9+\-\s()]*$/).max(30).optional().allow(null, ''),
-
-    // working_days puede ser complejo: podría ser un string CSV, un array de números (0-6), o un JSON.
-    // Por simplicidad, lo dejaremos como string opcional por ahora.
-    // Una validación más robusta podría necesitar una función custom.
-    working_days: Joi.string().max(100).optional().allow(null, ''),
-
-    working_hours_start: timeSchemaOptional,
-    working_hours_end: timeSchemaOptional,
-    appointment_duration_minutes: Joi.number().integer().min(5).max(120).optional().allow(null),
-
-    // user_id se maneja usualmente en el servicio al crear/vincular usuario
-    // last_earnings_collection_date: dateOrDateObjectOptionalSchema // Comentado porque el controlador lo parsea manualmente
+    phone: phoneSchema,
+    license_number: Joi.string().max(CHAR_LIMITS.LICENSE_NUMBER).optional().allow(null, ''),
+    office_address: addressSchema,
+    office_phone: phoneSchema,
+    working_days: Joi.string().max(CHAR_LIMITS.NAME).optional().allow(null, ''),
+    working_hours_start: timeSchema.optional().allow(null, ''),
+    working_hours_end: timeSchema.optional().allow(null, ''),
+    appointment_duration_minutes: Joi.number().integer().min(5).max(120).optional().allow(null)
 };
 
+// Esquema para crear doctor
 const createDoctorSchema = Joi.object(doctorBaseSchema);
 
-const updateDoctorSchema = Joi.object({
-    first_name: Joi.string().min(2).max(100).optional(),
-    last_name: Joi.string().min(2).max(100).optional(),
-    specialty: Joi.string().max(100).optional(),
-    email: Joi.string().email().optional(),
-    phone: Joi.string().pattern(/^[0-9+\-\s()]*$/).max(30).optional().allow(null, ''),
-    license_number: Joi.string().max(50).optional().allow(null, ''),
-    office_address: Joi.string().max(255).optional().allow(null, ''),
-    office_phone: Joi.string().pattern(/^[0-9+\-\s()]*$/).max(30).optional().allow(null, ''),
-    working_days: Joi.string().max(100).optional().allow(null, ''),
-    working_hours_start: timeSchemaOptional,
-    working_hours_end: timeSchemaOptional,
-    appointment_duration_minutes: Joi.number().integer().min(5).max(120).optional().allow(null),
-    // last_earnings_collection_date: dateOrDateObjectOptionalSchema // Comentado
-}).min(1).messages({
-    'object.min': 'Debe proporcionar al menos un campo para actualizar el doctor.'
+// Esquema para actualizar doctor
+const updateDoctorSchema = createUpdateSchema({
+    first_name: optionalNameSchema,
+    last_name: optionalNameSchema,
+    specialty: Joi.string().valid(...MEDICAL_SPECIALTIES).max(CHAR_LIMITS.SPECIALTY).optional().messages({
+        'any.only': 'La especialidad seleccionada no es válida.'
+    }),
+    email: emailSchema,
+    phone: phoneSchema,
+    license_number: Joi.string().max(CHAR_LIMITS.LICENSE_NUMBER).optional().allow(null, ''),
+    office_address: addressSchema,
+    office_phone: phoneSchema,
+    working_days: Joi.string().max(CHAR_LIMITS.NAME).optional().allow(null, ''),
+    working_hours_start: timeSchema.optional().allow(null, ''),
+    working_hours_end: timeSchema.optional().allow(null, ''),
+    appointment_duration_minutes: Joi.number().integer().min(5).max(120).optional().allow(null)
 });
 
 module.exports = {

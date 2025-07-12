@@ -41,7 +41,6 @@ const Input = React.memo(({
     <input
       value={currentValue}
       type={type}
-      value={value}
       onChange={onChange}
       placeholder={placeholder}
       className={[styles.input, className].join(' ').trim()}

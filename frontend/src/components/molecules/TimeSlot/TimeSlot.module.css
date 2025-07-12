@@ -19,6 +19,17 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+.timeSlot.selected {
+  border-color: var(--primary-color, #3b82f6);
+  background-color: var(--primary-bg, #eff6ff);
+  box-shadow: 0 0 0 2px var(--primary-color, #3b82f6);
+}
+
+.timeSlot.selected:hover {
+  border-color: var(--primary-hover, #2563eb);
+  background-color: var(--primary-hover-bg, #dbeafe);
+}
+
 /* Estados del slot */
 .timeSlot.available {
   border-color: var(--success-color, #10b981);

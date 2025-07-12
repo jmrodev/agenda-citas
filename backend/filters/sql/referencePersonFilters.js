@@ -1,34 +1,26 @@
+const { FIELDS } = require('./constants');
+const {
+  validateQuery,
+  initializeSQL,
+  addIdFilter,
+  addTextSearchFilter
+} = require('./helpers');
+
 function buildReferencePersonFilters(query) {
-  let sql = 'WHERE 1=1';
-  const params = [];
-  if (query.paciente_id) {
-    sql += ' AND paciente_id = ?';
-    params.push(query.paciente_id);
-  }
-  if (query.dni) {
-    sql += ' AND dni = ?';
-    params.push(query.dni);
-  }
-  if (query.nombre) {
-    sql += ' AND nombre LIKE ?';
-    params.push(`%${query.nombre}%`);
-  }
-  if (query.apellido) {
-    sql += ' AND apellido LIKE ?';
-    params.push(`%${query.apellido}%`);
-  }
-  if (query.telefono) {
-    sql += ' AND telefono LIKE ?';
-    params.push(`%${query.telefono}%`);
-  }
-  if (query.direccion) {
-    sql += ' AND direccion LIKE ?';
-    params.push(`%${query.direccion}%`);
-  }
-  if (query.parentesco) {
-    sql += ' AND parentesco LIKE ?';
-    params.push(`%${query.parentesco}%`);
-  }
+  query = validateQuery(query);
+  let { sql, params } = initializeSQL();
+
+  // Filtros de IDs
+  addIdFilter(sql, params, FIELDS.PATIENT_ID, query.paciente_id);
+  addIdFilter(sql, params, FIELDS.DNI, query.dni);
+
+  // Filtros de búsqueda de texto (LIKE)
+  addTextSearchFilter(sql, params, FIELDS.FIRST_NAME, query.nombre);
+  addTextSearchFilter(sql, params, FIELDS.LAST_NAME, query.apellido);
+  addTextSearchFilter(sql, params, FIELDS.PHONE, query.telefono);
+  addTextSearchFilter(sql, params, FIELDS.ADDRESS, query.direccion);
+  addTextSearchFilter(sql, params, FIELDS.RELATIONSHIP, query.parentesco);
+
   return { sql, params };
 }
 

@@ -1,32 +1,46 @@
 import React from 'react';
-import Input from '../../atoms/Input/Input'; // Replaced DateField and TimeField
+import FormField from '../FormField/FormField';
+import Input from '../../atoms/Input/Input';
 import styles from './DateTimeFields.module.css';
 
 const DateTimeFields = ({
   formData,
   onChange,
+  onBlur,
   errors = {},
   touched = {}
 }) => {
   return (
     <div className={styles.row}>
-      <Input
+      <FormField
+        label="Fecha"
         name="date"
-        type="date"
-        value={formData.date}
-        onChange={onChange}
-        errors={errors}
-        touched={touched}
-      />
+        error={touched.date && errors.date ? errors.date : undefined}
+        required
+      >
+        <Input
+          name="date"
+          type="date"
+          value={formData.date}
+          onChange={onChange}
+          onBlur={onBlur}
+        />
+      </FormField>
 
-      <Input
+      <FormField
+        label="Hora"
         name="time"
-        type="time"
-        value={formData.time}
-        onChange={onChange}
-        errors={errors}
-        touched={touched}
-      />
+        error={touched.time && errors.time ? errors.time : undefined}
+        required
+      >
+        <Input
+          name="time"
+          type="time"
+          value={formData.time}
+          onChange={onChange}
+          onBlur={onBlur}
+        />
+      </FormField>
     </div>
   );
 };

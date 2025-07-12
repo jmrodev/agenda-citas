@@ -275,14 +275,14 @@ export const SCHEMAS = {
 
   APPOINTMENT: {
     patient_id: ['required'],
-    doctor_id: ['required'], // En el modal, doctor_id viene de `selectedDoctorId`, no es un campo de form directo. El hook useForm lo manejará si se pasa en initialValues.
+    doctor_id: [], // Opcional porque puede venir del contexto (selectedDoctorId)
     date: ['required', 'date'],
     time: ['required', 'time'],
     reason: ['required', { type: 'maxLength', params: [255] }],
     type: [], // Opcional, o ['required']
     status: [], // Opcional, o ['required']
     service_type: [{ type: 'maxLength', params: [100] }], // Opcional
-    amount: ['required', { type: 'minValue', params: [0.01] }],
+    amount: [{ type: 'minValue', params: [0.01] }], // Opcional, pero si se proporciona debe ser mayor a 0
     payment_method: [], // Opcional, o ['required']
     notes: [{ type: 'maxLength', params: [500] }] // Opcional
   }

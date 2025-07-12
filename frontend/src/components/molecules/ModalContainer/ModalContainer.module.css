@@ -8,6 +8,6 @@
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
-  z-index: var(--z-index-modal);
+  z-index: calc(var(--z-index-modal) + 1);
   opacity: 1;
 } 

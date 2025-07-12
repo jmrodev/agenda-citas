@@ -1,125 +1,118 @@
 const Joi = require('joi');
+const {
+    nameSchema,
+    optionalNameSchema,
+    dniSchema,
+    optionalDniSchema,
+    birthDateSchema,
+    emailSchema,
+    requiredEmailSchema,
+    phoneSchema,
+    addressSchema,
+    optionalPositiveIdSchema,
+    positiveIdsArraySchema,
+    passwordSchema,
+    createUpdateSchema,
+    createRoleConditionalSchema
+} = require('./baseSchemas');
+const {
+    CHAR_LIMITS,
+    REFERENCE_RELATIONSHIPS,
+    PAYMENT_METHODS
+} = require('./constants');
 
-// Helper para validar fecha que puede ser string YYYY-MM-DD o objeto {day, month, year}
-const dateOrDateObjectSchema = Joi.alternatives().try(
-    Joi.string().isoDate().messages({ // Acepta 'YYYY-MM-DD'
-        'string.isoDate': 'El formato de fecha debe ser YYYY-MM-DD.'
-    }),
-    Joi.object({
-        day: Joi.number().integer().min(1).max(31).required(),
-        month: Joi.number().integer().min(1).max(12).required(),
-        year: Joi.number().integer().min(1900).max(new Date().getFullYear()).required() // Año hasta el actual
-    }).required()
-).messages({
-    'alternatives.types': 'La fecha debe ser una cadena YYYY-MM-DD o un objeto con propiedades day, month, year.'
-});
-
-// Esquema para la persona de referencia (simplificado para anidar, o podríamos importar el completo)
+// Esquema para la persona de referencia
 const nestedReferencePersonSchema = Joi.object({
-    name: Joi.string().min(2).max(100).optional().allow(null, ''),
-    last_name: Joi.string().min(2).max(100).optional().allow(null, ''),
-    phone: Joi.string().pattern(/^[0-9+\-\s()]*$/).max(30).optional().allow(null, ''),
-    relationship: Joi.string().max(50).optional().allow(null, ''),
-    address: Joi.string().max(255).optional().allow(null, '')
+    name: optionalNameSchema,
+    last_name: optionalNameSchema,
+    phone: phoneSchema,
+    relationship: Joi.string().valid(...REFERENCE_RELATIONSHIPS).max(CHAR_LIMITS.RELATIONSHIP).optional().allow(null, ''),
+    address: addressSchema
 });
 
+// Esquema base para pacientes
 const patientBaseSchemaFields = {
-    first_name: Joi.string().min(2).max(100).required().messages({
-        'string.empty': 'El nombre es requerido.', 'any.required': 'El nombre es requerido.'
+    first_name: nameSchema.messages({
+        'string.empty': 'El nombre es requerido.',
+        'any.required': 'El nombre es requerido.'
     }),
-    last_name: Joi.string().min(2).max(100).required().messages({
-        'string.empty': 'El apellido es requerido.', 'any.required': 'El apellido es requerido.'
+    last_name: nameSchema.messages({
+        'string.empty': 'El apellido es requerido.',
+        'any.required': 'El apellido es requerido.'
     }),
-    dni: Joi.string().alphanum().min(7).max(20).required().messages({ // DNI puede ser alfanumérico en algunos países
-        'string.empty': 'El DNI es requerido.', 'any.required': 'El DNI es requerido.',
-        'string.min': 'El DNI debe tener al menos 7 caracteres.', 'string.max': 'El DNI no puede exceder los 20 caracteres.'
-    }),
-    // El controlador usa 'birth_date' en el body y lo convierte a 'date_of_birth'
-    // Así que validaremos 'birth_date' como entrada.
-    birth_date: dateOrDateObjectSchema.required().messages({ // Renombrado a birth_date para el input
+    dni: dniSchema,
+    birth_date: birthDateSchema.required().messages({
         'any.required': 'La fecha de nacimiento es requerida.'
     }),
-    email: Joi.string().email().optional().allow(null, ''),
-    phone: Joi.string().pattern(/^[0-9+\-\s()]*$/).max(30).optional().allow(null, ''),
-    address: Joi.string().max(255).optional().allow(null, ''),
-    health_insurance_id: Joi.number().integer().positive().optional().allow(null),
-    health_insurance_member_number: Joi.string().max(50).optional().allow(null, ''),
-    preferred_payment_methods: Joi.string().max(100).optional().allow(null, ''),
-    doctor_ids: Joi.array().items(Joi.number().integer().positive()).optional().allow(null),
+    email: emailSchema,
+    phone: phoneSchema,
+    address: addressSchema,
+    health_insurance_id: optionalPositiveIdSchema,
+    health_insurance_member_number: Joi.string().max(CHAR_LIMITS.MEMBER_NUMBER).optional().allow(null, ''),
+    preferred_payment_methods: Joi.string().valid(...PAYMENT_METHODS).max(CHAR_LIMITS.PAYMENT_METHOD).optional().allow(null, ''),
+    doctor_ids: positiveIdsArraySchema,
     reference_person: nestedReferencePersonSchema.optional().allow(null)
 };
 
-// Esquema para crear un paciente
-const createPatientSchema = Joi.object(patientBaseSchemaFields)
-    .when(Joi.object({ '$userRole': Joi.string().valid('secretary').required() }).unknown(), {
-        then: Joi.object({
-            doctor_ids: Joi.array().items(Joi.number().integer().positive()).min(1).required().messages({
-                'array.min': 'Debe asignar al menos un doctor al paciente cuando crea como secretaria.',
-                'any.required': 'La asignación de doctores es requerida para secretarias.'
-            })
+// Esquema para crear un paciente con validación condicional por rol
+const createPatientSchema = createRoleConditionalSchema(patientBaseSchemaFields, {
+    role: 'secretary',
+    then: Joi.object({
+        doctor_ids: positiveIdsArraySchema.min(1).required().messages({
+            'array.min': 'Debe asignar al menos un doctor al paciente cuando crea como secretaria.',
+            'any.required': 'La asignación de doctores es requerida para secretarias.'
         })
-    });
-
+    })
+});
 
 // Esquema para actualizar un paciente
-const updatePatientSchema = Joi.object({
-    first_name: Joi.string().min(2).max(100).optional(),
-    last_name: Joi.string().min(2).max(100).optional(),
-    dni: Joi.string().alphanum().min(7).max(20).optional(),
-    birth_date: dateOrDateObjectSchema.optional(), // Renombrado a birth_date para el input
-    email: Joi.string().email().optional().allow(null, ''),
-    phone: Joi.string().pattern(/^[0-9+\-\s()]*$/).max(30).optional().allow(null, ''),
-    address: Joi.string().max(255).optional().allow(null, ''),
-    health_insurance_id: Joi.number().integer().positive().optional().allow(null),
-    health_insurance_member_number: Joi.string().max(50).optional().allow(null, ''),
-    preferred_payment_methods: Joi.string().max(100).optional().allow(null, ''),
-    doctor_ids: Joi.array().items(Joi.number().integer().positive()).optional().allow(null),
+const updatePatientSchema = createUpdateSchema({
+    first_name: optionalNameSchema,
+    last_name: optionalNameSchema,
+    dni: optionalDniSchema,
+    birth_date: birthDateSchema.optional(),
+    email: emailSchema,
+    phone: phoneSchema,
+    address: addressSchema,
+    health_insurance_id: optionalPositiveIdSchema,
+    health_insurance_member_number: Joi.string().max(CHAR_LIMITS.MEMBER_NUMBER).optional().allow(null, ''),
+    preferred_payment_methods: Joi.string().valid(...PAYMENT_METHODS).max(CHAR_LIMITS.PAYMENT_METHOD).optional().allow(null, ''),
+    doctor_ids: positiveIdsArraySchema,
     reference_person: nestedReferencePersonSchema.optional().allow(null)
-}).min(1).messages({
-    'object.min': 'Debe proporcionar al menos un campo para actualizar el paciente.'
 });
 
-// Esquema para registrar paciente con usuario (usado en patientController.registerPatientWithUser)
-// Este es un subconjunto de createPatientSchema + campos de usuario.
+// Esquema para registrar paciente con usuario
 const registerPatientWithUserSchema = Joi.object({
     // Campos del paciente
-    first_name: Joi.string().min(2).max(100).required(),
-    last_name: Joi.string().min(2).max(100).required(),
-    dni: Joi.string().alphanum().min(7).max(20).required(),
-    birth_date: dateOrDateObjectSchema.required(), // Renombrado a birth_date
-    email: Joi.string().email().required().messages({ // Email es requerido para el usuario
-         'string.empty': 'El email es requerido para la cuenta de usuario.',
-         'any.required': 'El email es requerido para la cuenta de usuario.'
+    first_name: nameSchema,
+    last_name: nameSchema,
+    dni: dniSchema,
+    birth_date: birthDateSchema.required(),
+    email: requiredEmailSchema.messages({
+        'string.empty': 'El email es requerido para la cuenta de usuario.',
+        'any.required': 'El email es requerido para la cuenta de usuario.'
     }),
-    phone: Joi.string().pattern(/^[0-9+\-\s()]*$/).max(30).optional().allow(null, ''),
-    address: Joi.string().max(255).optional().allow(null, ''),
+    phone: phoneSchema,
+    address: addressSchema,
     // Campos del usuario
-    password: Joi.string().min(8).pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/).required().messages({
-        'string.min': 'La contraseña debe tener al menos 8 caracteres.',
-        'string.pattern.base': 'La contraseña debe contener al menos una mayúscula, una minúscula y un número.',
-        'string.empty': 'La contraseña es requerida.',
-        'any.required': 'La contraseña es requerida.'
-    }),
-    // Otros campos opcionales del paciente pueden ir aquí
-    health_insurance_id: Joi.number().integer().positive().optional().allow(null),
-    health_insurance_member_number: Joi.string().max(50).optional().allow(null, ''),
-    preferred_payment_methods: Joi.string().max(100).optional().allow(null, ''),
-    doctor_ids: Joi.array().items(Joi.number().integer().positive()).optional().allow(null),
+    password: passwordSchema,
+    // Otros campos opcionales del paciente
+    health_insurance_id: optionalPositiveIdSchema,
+    health_insurance_member_number: Joi.string().max(CHAR_LIMITS.MEMBER_NUMBER).optional().allow(null, ''),
+    preferred_payment_methods: Joi.string().valid(...PAYMENT_METHODS).max(CHAR_LIMITS.PAYMENT_METHOD).optional().allow(null, ''),
+    doctor_ids: positiveIdsArraySchema,
 });
 
-// Esquema para actualizar datos del propio paciente (rol 'patient' en /me)
-// Similar a updatePatientSchema pero podría tener menos campos permitidos si fuera necesario.
-const updateMyPatientProfileSchema = updatePatientSchema; // Por ahora igual, se puede diferenciar después.
-
+// Esquema para actualizar datos del propio paciente
+const updateMyPatientProfileSchema = updatePatientSchema;
 
 // Esquema para actualizar los doctores de un paciente
 const updatePatientDoctorsSchema = Joi.object({
-    doctor_ids: Joi.array().items(Joi.number().integer().positive()).min(1).required().messages({
+    doctor_ids: positiveIdsArraySchema.min(1).required().messages({
         'array.min': 'Debe asignar al menos un doctor.',
         'any.required': 'La lista de IDs de doctores es requerida.'
     })
 });
-
 
 module.exports = {
     createPatientSchema,

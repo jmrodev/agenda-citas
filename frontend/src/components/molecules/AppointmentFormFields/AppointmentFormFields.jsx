@@ -10,6 +10,7 @@ const AppointmentFormFields = ({
   patientOptions,
   selectedDoctorName,
   onChange,
+  onBlur,
   errors = {},
   touched = {}
 }) => {
@@ -20,6 +21,7 @@ const AppointmentFormFields = ({
         patientOptions={patientOptions}
         selectedDoctorName={selectedDoctorName}
         onChange={onChange}
+        onBlur={onBlur}
         errors={errors}
         touched={touched}
       />
@@ -27,6 +29,7 @@ const AppointmentFormFields = ({
       <DateTimeFields
         formData={formData}
         onChange={onChange}
+        onBlur={onBlur}
         errors={errors}
         touched={touched}
       />
@@ -34,6 +37,7 @@ const AppointmentFormFields = ({
       <AppointmentDetailsFields
         formData={formData}
         onChange={onChange}
+        onBlur={onBlur}
         errors={errors}
         touched={touched}
       />
@@ -41,6 +45,7 @@ const AppointmentFormFields = ({
       <PaymentFields
         formData={formData}
         onChange={onChange}
+        onBlur={onBlur}
         errors={errors}
         touched={touched}
       />

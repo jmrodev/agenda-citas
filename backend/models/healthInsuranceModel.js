@@ -1,5 +1,5 @@
 const pool = require('../config/db');
-const { buildHealthInsuranceFilters } = require('../filters/sql/healthInsuranceFilters');
+const { buildHealthInsuranceFilters } = require('../filters/sql');
 const { buildPaginationAndOrder } = require('../filters/paginationUtils');
 
 async function getAllHealthInsurances() {

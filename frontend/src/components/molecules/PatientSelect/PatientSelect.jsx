@@ -39,6 +39,13 @@ const PatientSelect = ({
   // Props specifically for SearchableSelect
   const { className, ...searchableSelectProps } = rest;
 
+  // Log para debuggear
+  console.log('🔍 [PatientSelect] Renderizando:', {
+    value,
+    patientOptions: patientOptions?.length,
+    errorMessage,
+    touched: touched[name]
+  });
 
   return (
     <FormField

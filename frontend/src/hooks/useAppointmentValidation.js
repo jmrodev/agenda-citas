@@ -1,59 +1,47 @@
 import { useCallback } from 'react';
+import { validate } from '../utils/validation';
 
 /**
- * Hook personalizado para validación específica de citas
+ * Hook personalizado para validación específica de formularios de citas
  * @param {Object} formData - Datos del formulario
- * @param {string} selectedDoctorId - ID del doctor seleccionado
+ * @param {string|number} selectedDoctorId - ID del doctor seleccionado
  * @returns {Object} - Funciones de validación
  */
 export const useAppointmentValidation = (formData, selectedDoctorId) => {
   const validateAppointmentForm = useCallback(() => {
-    const errors = {};
+    // Crear un esquema de validación dinámico basado en el contexto
+    const validationSchema = {
+      patient_id: ['required'],
+      date: ['required', 'date'],
+      time: ['required', 'time'],
+      reason: ['required', { type: 'maxLength', params: [255] }],
+      type: [], // Opcional
+      status: [], // Opcional
+      service_type: [{ type: 'maxLength', params: [100] }], // Opcional
+      amount: [{ type: 'minValue', params: [0.01] }], // Opcional
+      payment_method: [], // Opcional
+      notes: [{ type: 'maxLength', params: [500] }] // Opcional
+    };
 
-    // Validación de paciente
-    if (!formData.patient_id) {
-      errors.patient_id = 'Seleccione un paciente';
-    }
-
-    // Validación de doctor
+    // Solo validar doctor_id si no hay un doctor seleccionado en el contexto
     if (!selectedDoctorId) {
-      errors.doctor_id = 'Debe seleccionar un doctor en el calendario';
+      validationSchema.doctor_id = ['required'];
     }
 
-    // Validación de fecha
-    if (!formData.date) {
-      errors.date = 'Seleccione una fecha';
-    }
-
-    // Validación de hora
-    if (!formData.time) {
-      errors.time = 'Seleccione una hora';
-    }
-
-    // Validación de motivo
-    if (!formData.reason?.trim()) {
-      errors.reason = 'Ingrese el motivo de la consulta';
-    }
-
-    // Validación de monto
-    if (!formData.amount || parseFloat(formData.amount) <= 0) {
-      errors.amount = 'Ingrese un monto válido';
-    }
+    // Validar el formulario
+    const errors = validate(formData, validationSchema);
+    
+    console.log('🔍 [useAppointmentValidation] Validación:', {
+      formData,
+      selectedDoctorId,
+      validationSchema,
+      errors
+    });
 
     return errors;
   }, [formData, selectedDoctorId]);
 
-  const validateTimeSlot = useCallback((time, date) => {
-    // Validación específica de horarios
-    const hour = parseInt(time.split(':')[0]);
-    if (hour < 8 || hour > 18) {
-      return 'El horario debe estar entre 8:00 y 18:00';
-    }
-    return null;
-  }, []);
-
   return {
-    validateAppointmentForm,
-    validateTimeSlot
+    validateAppointmentForm
   };
 }; 

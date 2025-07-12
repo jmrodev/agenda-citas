@@ -1,5 +1,5 @@
 const pool = require('../config/db');
-const { buildPrescriptionFilters } = require('../filters/sql/prescriptionFilters');
+const { buildPrescriptionFilters } = require('../filters/sql');
 const { buildPaginationAndOrder } = require('../filters/paginationUtils');
 
 async function getAllPrescriptions() {

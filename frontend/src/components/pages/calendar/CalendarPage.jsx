@@ -123,14 +123,22 @@ const CalendarPage = () => {
 
   const handleDayClick = (dateKey) => {
     const [year, month, day] = dateKey.split('-').map(Number);
-    setSelectedDate(new Date(year, month - 1, day));
-    setSelectedTime(null);
+    const newDate = new Date(year, month - 1, day);
+    setSelectedDate(newDate);
+    // Solo limpiar selectedTime si cambiamos de día
+    if (selectedDate.toISOString().split('T')[0] !== dateKey) {
+      setSelectedTime(null);
+    }
   };
 
   const handleCalendarToday = (dateKey) => {
     const [year, month, day] = dateKey.split('-').map(Number);
-    setSelectedDate(new Date(year, month - 1, day));
-    setSelectedTime(null);
+    const newDate = new Date(year, month - 1, day);
+    setSelectedDate(newDate);
+    // Solo limpiar selectedTime si cambiamos de día
+    if (selectedDate.toISOString().split('T')[0] !== dateKey) {
+      setSelectedTime(null);
+    }
   };
 
   const handleTimeClick = (time, appointment = null) => {
@@ -138,6 +146,11 @@ const CalendarPage = () => {
     setSelectedTime(time);
     setEditingAppointment(appointment);
     setShowAppointmentForm(true);
+    
+    // Mostrar mensaje de confirmación
+    if (!appointment) {
+      console.log(`✅ Cita programada para ${time} - Abriendo formulario...`);
+    }
   };
 
   const handleOutOfScheduleConfirm = (time) => {
@@ -265,15 +278,21 @@ const CalendarPage = () => {
         {/* Panel derecho - Detalles del día */}
         <div className={styles.dayDetailsPanel}>
           <div className={styles.dayHeader}>
-            <h3>{selectedDate.toLocaleDateString('es-ES', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}</h3>
+            <div className={styles.dayInfo}>
+              <h3>{selectedDate.toLocaleDateString('es-ES', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}</h3>
+              {!selectedTime && (
+                <p className={styles.dayHint}>
+                  💡 Haz clic en cualquier horario disponible para crear una cita
+                </p>
+              )}
+            </div>
             <Button 
               onClick={() => {
-                setSelectedTime(null);
                 setEditingAppointment(null);
                 setShowAppointmentForm(true);
               }}
@@ -302,6 +321,7 @@ const CalendarPage = () => {
                   appointment={slot.appointment?.appointment}
                   isInSchedule={slot.isInSchedule}
                   isAvailable={slot.isAvailable}
+                  isSelected={selectedTime === slot.time}
                   onTimeClick={handleTimeClick}
                   onOutOfScheduleConfirm={handleOutOfScheduleConfirm}
                 />
@@ -311,6 +331,15 @@ const CalendarPage = () => {
         </div>
       </div>
       )}
+
+      {/* Debug: Log de valores antes del modal */}
+      {showAppointmentForm && console.log('🔍 [CalendarPage] Valores para el modal:', {
+        selectedDateISO: selectedDate ? selectedDate.toISOString().split('T')[0] : '',
+        selectedTime,
+        selectedDoctorId,
+        selectedDoctorName,
+        editingAppointment
+      })}
 
       {/* Modal de formulario de cita */}
       {showAppointmentForm && (

@@ -1,7 +1,7 @@
 const patientModel = require('../models/patientModel');
 const patientReferenceModel = require('../models/patientReferenceModel');
 const { debugPatients } = require('../utils/debug');
-const { buildPersonFilters } = require('../filters/sql/personFilters');
+const { buildPersonFilters } = require('../filters/sql');
 const pool = require('../config/db');
 
 // mapReferencePerson ya no es necesaria, se elimina.

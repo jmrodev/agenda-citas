@@ -44,6 +44,8 @@
   --border-color: #e0e0e0;          /* Default borders */
   --border-color-light: #eeeeee;    /* Lighter borders/dividers */
   --overlay-color: rgba(0, 0, 0, 0.5); /* Modal backdrops etc (new) */
+  --overlay-bg: rgba(0, 0, 0, 0.7); /* Modal backdrop background */
+  --backdrop-blur: blur(4px); /* Backdrop blur effect */
   /* --overlay-bg from old was rgba(0,0,0,0.8) - new is a bit lighter */
 
   /* -------------------------------------------------------------------------- */
@@ -221,6 +223,7 @@
 
   /* Modals */
   --modal-background-color: var(--surface-color); /* Renamed */
+  --modal-bg: var(--surface-color); /* Modal background */
 
   /* Layout Helpers */
   --layout-max-width: 1200px; /* Renamed */

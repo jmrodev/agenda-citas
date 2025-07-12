@@ -6,14 +6,19 @@ import { useMemo } from 'react';
  * @returns {Array} - Opciones formateadas para select
  */
 export const usePatientOptions = (patients) => {
-  return useMemo(() => [
-    { value: '', label: 'Seleccionar paciente' },
-    ...patients.map(patient => ({
-      value: String(patient.patient_id),
-      label: `${patient.first_name} ${patient.last_name} - DNI: ${patient.dni}`,
-      firstName: patient.first_name,
-      lastName: patient.last_name,
-      dni: patient.dni
-    }))
-  ], [patients]);
+  return useMemo(() => {
+    const options = [
+      { value: '', label: 'Seleccionar paciente' },
+      ...patients.map(patient => ({
+        value: String(patient.patient_id),
+        label: `${patient.first_name} ${patient.last_name} - DNI: ${patient.dni}`,
+        firstName: patient.first_name,
+        lastName: patient.last_name,
+        dni: patient.dni
+      }))
+    ];
+    
+    console.log('🔍 [usePatientOptions] Opciones generadas:', options);
+    return options;
+  }, [patients]);
 }; 

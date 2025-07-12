@@ -10,7 +10,8 @@ const TimeSlot = ({
   isAvailable = true,
   onTimeClick,
   onOutOfScheduleConfirm,
-  className = ''
+  className = '',
+  isSelected = false
 }) => {
   const getSlotStatus = () => {
     if (appointment) {
@@ -77,6 +78,7 @@ const TimeSlot = ({
         ${styles.timeSlot} 
         ${styles[getSlotStatus()]} 
         ${isClickable ? styles.clickable : ''} 
+        ${isSelected ? styles.selected : ''}
         ${className}
       `}
       onClick={isClickable ? handleClick : undefined}

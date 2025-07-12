@@ -18,7 +18,7 @@ const SearchableSelect = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredOptions, setFilteredOptions] = useState(options);
+  // const [filteredOptions, setFilteredOptions] = useState(options); // Removed state
   const containerRef = useRef(null);
   const searchInputRef = useRef(null);
 
@@ -42,11 +42,16 @@ const SearchableSelect = ({
   }, [options, searchTerm, searchFields]);
 
   // Actualizar opciones filtradas cuando cambien
-  useEffect(() => {
-    setFilteredOptions(filteredOptionsMemo);
-  }, [filteredOptionsMemo]);
+  // useEffect(() => { // This useEffect was causing an infinite loop with setFilteredOptions
+  //   setFilteredOptions(filteredOptionsMemo);
+  // }, [filteredOptionsMemo]);
 
   const handleSelectChange = (e) => {
+    console.log('🔍 [SearchableSelect] handleSelectChange:', {
+      name: e.target.name,
+      value: e.target.value,
+      originalEvent: e
+    });
     onChange(e);
     setIsOpen(false);
     setSearchTerm('');
@@ -93,6 +98,13 @@ const SearchableSelect = ({
       }
     };
 
+    const handleEscapeKey = (event) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+        setSearchTerm('');
+      }
+    };
+
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('keydown', handleEscapeKey);
@@ -104,14 +116,19 @@ const SearchableSelect = ({
     };
   }, [isOpen]);
 
-  const handleEscapeKey = (event) => {
-    if (event.key === 'Escape') {
-      setIsOpen(false);
-      setSearchTerm('');
-    }
-  };
-
   const selectedOption = options.find(option => option.value === value);
+
+  // Log para debuggear las opciones
+  useEffect(() => {
+    if (isOpen) {
+      console.log('🔍 [SearchableSelect] Opciones disponibles:', {
+        options,
+        filteredOptions: filteredOptionsMemo,
+        selectedValue: value,
+        selectedOption
+      });
+    }
+  }, [isOpen, options, filteredOptionsMemo, value, selectedOption]);
 
   return (
     <div className={`${styles.searchableSelect} ${className}`} ref={containerRef}>
@@ -150,8 +167,8 @@ const SearchableSelect = ({
         </div>
           
           <div className={styles.optionsContainer} role="listbox">
-            {filteredOptions.length > 0 ? (
-              filteredOptions.map((option) => (
+            {filteredOptionsMemo.length > 0 ? (
+              filteredOptionsMemo.map((option) => (
                 <div
                   key={option.value}
                   className={`${styles.option} ${value === option.value ? styles.selected : ''}`}

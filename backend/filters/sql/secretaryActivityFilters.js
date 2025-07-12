@@ -1,26 +1,27 @@
+const { FIELDS } = require('./constants');
+const {
+  validateQuery,
+  initializeSQL,
+  addIdFilter,
+  addDateFilter,
+  addDateRangeFilter,
+  addTextSearchFilter
+} = require('./helpers');
+
 function buildSecretaryActivityFilters(query) {
-  let sql = 'WHERE 1=1';
-  const params = [];
-  if (query.secretary_id) {
-    sql += ' AND secretary_id = ?';
-    params.push(query.secretary_id);
-  }
-  if (query.fecha) {
-    sql += ' AND fecha = ?';
-    params.push(query.fecha);
-  }
-  if (query.fecha_desde) {
-    sql += ' AND fecha >= ?';
-    params.push(query.fecha_desde);
-  }
-  if (query.fecha_hasta) {
-    sql += ' AND fecha <= ?';
-    params.push(query.fecha_hasta);
-  }
-  if (query.tipo_actividad) {
-    sql += ' AND tipo_actividad = ?';
-    params.push(query.tipo_actividad);
-  }
+  query = validateQuery(query);
+  let { sql, params } = initializeSQL();
+
+  // Filtros de IDs
+  addIdFilter(sql, params, FIELDS.SECRETARY_ID, query.secretary_id);
+
+  // Filtros de fecha
+  addDateFilter(sql, params, FIELDS.DATE, query.fecha);
+  addDateRangeFilter(sql, params, FIELDS.DATE, query.fecha_desde, query.fecha_hasta);
+
+  // Filtro de tipo de actividad
+  addTextSearchFilter(sql, params, FIELDS.ACTIVITY_TYPE, query.tipo_actividad);
+
   return { sql, params };
 }
 

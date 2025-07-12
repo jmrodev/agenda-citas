@@ -39,7 +39,9 @@ export const useForm = (initialValues = {}, validationSchema = {}) => {
   }, [validationSchema]);
 
   // Manejar cambio de campo
-  const handleChange = useCallback((name, value) => {
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target;
+    console.log('🔍 [useForm] handleChange:', { name, value, currentValues: values });
     setValues(prev => ({ ...prev, [name]: value }));
     
     // Validar el campo inmediatamente si ya fue tocado
@@ -50,10 +52,11 @@ export const useForm = (initialValues = {}, validationSchema = {}) => {
         [name]: fieldError
       }));
     }
-  }, [touched, validateField]);
+  }, [touched, validateField, values]);
 
   // Manejar pérdida de foco
-  const handleBlur = useCallback((name) => {
+  const handleBlur = useCallback((e) => {
+    const { name } = e.target;
     setTouched(prev => ({ ...prev, [name]: true }));
     
     const fieldError = validateField(name, values[name]);
@@ -188,5 +191,6 @@ export const usePatientForm = (initialValues = {}) => {
  * @returns {Object} - Funciones y estado del formulario de citas
  */
 export const useAppointmentForm = (initialValues = {}) => {
-  return useFormWithSchema('APPOINTMENT', initialValues);
+  // No usar esquema de validación estándar, usar validación personalizada
+  return useForm(initialValues, {});
 }; 

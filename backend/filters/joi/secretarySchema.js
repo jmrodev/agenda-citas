@@ -1,75 +1,98 @@
 const Joi = require('joi');
+const {
+    nameSchema,
+    optionalNameSchema,
+    requiredEmailSchema,
+    emailSchema,
+    phoneSchema,
+    usernameSchema,
+    optionalPasswordSchema,
+    createUpdateSchema
+} = require('./baseSchemas');
+const {
+    CHAR_LIMITS,
+    SECRETARY_SHIFTS
+} = require('./constants');
 
-// Esquema base para los datos de una secretaria
+// Esquema base para secretarias
 const secretaryBaseSchema = Joi.object({
-    first_name: Joi.string().min(2).max(100).required().messages({
+    first_name: nameSchema.messages({
         'string.base': 'El nombre debe ser texto.',
         'string.empty': 'El nombre es requerido.',
-        'string.min': 'El nombre debe tener al menos 2 caracteres.',
-        'string.max': 'El nombre no puede exceder los 100 caracteres.',
         'any.required': 'El nombre es requerido.'
     }),
-    last_name: Joi.string().min(2).max(100).required().messages({
+    last_name: nameSchema.messages({
         'string.base': 'El apellido debe ser texto.',
         'string.empty': 'El apellido es requerido.',
-        'string.min': 'El apellido debe tener al menos 2 caracteres.',
-        'string.max': 'El apellido no puede exceder los 100 caracteres.',
         'any.required': 'El apellido es requerido.'
     }),
-    email: Joi.string().email().required().messages({
+    email: requiredEmailSchema.messages({
         'string.base': 'El email debe ser texto.',
         'string.empty': 'El email es requerido.',
-        'string.email': 'Debe ingresar un email válido.',
         'any.required': 'El email es requerido.'
     }),
-    phone: Joi.string().pattern(/^[0-9+\-\s()]*$/).max(30).allow(null, '').messages({
+    phone: phoneSchema.messages({
         'string.pattern.base': 'El teléfono contiene caracteres inválidos.',
-        'string.max': 'El teléfono no puede exceder los 30 caracteres.'
+        'string.max': `El teléfono no puede exceder los ${CHAR_LIMITS.PHONE} caracteres.`
     }),
-    // user_id es manejado internamente o por el servicio de creación de usuario asociado
+    shift: Joi.string().valid(...SECRETARY_SHIFTS).optional().allow(null, ''),
+    entry_time: Joi.string().pattern(/^([01]\d|2[0-3]):([0-5]\d)$/).optional().allow(null, '').messages({
+        'string.pattern.base': 'El formato de hora debe ser HH:MM.'
+    }),
+    exit_time: Joi.string().pattern(/^([01]\d|2[0-3]):([0-5]\d)$/).optional().allow(null, '').messages({
+        'string.pattern.base': 'El formato de hora debe ser HH:MM.'
+    })
 });
 
-// Esquema para crear una secretaria (solo datos de la entidad secretaria)
-// La creación del usuario asociado (username, password) se maneja en authController o un esquema combinado.
+// Esquema para crear una secretaria
 const createSecretarySchema = secretaryBaseSchema;
 
 // Esquema para actualizar una secretaria
-const updateSecretarySchema = Joi.object({
-    first_name: Joi.string().min(2).max(100).optional(),
-    last_name: Joi.string().min(2).max(100).optional(),
-    email: Joi.string().email().optional(),
-    phone: Joi.string().pattern(/^[0-9+\-\s()]*$/).max(30).allow(null, '').optional()
-}).min(1).messages({ // Al menos un campo para actualizar
-    'object.min': 'Debe proporcionar al menos un campo para actualizar.'
+const updateSecretarySchema = createUpdateSchema({
+    first_name: optionalNameSchema,
+    last_name: optionalNameSchema,
+    email: emailSchema,
+    phone: phoneSchema,
+    shift: Joi.string().valid(...SECRETARY_SHIFTS).optional().allow(null, ''),
+    entry_time: Joi.string().pattern(/^([01]\d|2[0-3]):([0-5]\d)$/).optional().allow(null, '').messages({
+        'string.pattern.base': 'El formato de hora debe ser HH:MM.'
+    }),
+    exit_time: Joi.string().pattern(/^([01]\d|2[0-3]):([0-5]\d)$/).optional().allow(null, '').messages({
+        'string.pattern.base': 'El formato de hora debe ser HH:MM.'
+    })
 });
-
 
 // Esquema para actualizar secretaria junto con contraseña y datos de usuario
 const updateSecretaryWithDetailsSchema = Joi.object({
-    secretaryData: updateSecretarySchema.optional(), // Datos de la secretaria a actualizar
-    userData: Joi.object({ // Datos del usuario a actualizar (username)
-        username: Joi.string().alphanum().min(3).max(30).optional().messages({ // Asumiendo que el username puede cambiar
+    secretaryData: updateSecretarySchema.optional(),
+    userData: Joi.object({
+        username: usernameSchema.optional().messages({
             'string.alphanum': 'El nombre de usuario solo puede contener letras y números.',
-            'string.min': 'El nombre de usuario debe tener al menos 3 caracteres.',
-            'string.max': 'El nombre de usuario no puede exceder los 30 caracteres.'
+            'string.min': `El nombre de usuario debe tener al menos ${CHAR_LIMITS.USERNAME} caracteres.`,
+            'string.max': `El nombre de usuario no puede exceder los ${CHAR_LIMITS.USERNAME} caracteres.`
         })
     }).optional(),
-    passwordData: Joi.object({ // Datos para el cambio de contraseña
-        currentPassword: Joi.string().when('$isSecretaryEditingSelf', { is: true, then: Joi.required() }).messages({
+    passwordData: Joi.object({
+        currentPassword: Joi.string().when('$isSecretaryEditingSelf', { 
+            is: true, 
+            then: Joi.required() 
+        }).messages({
             'any.required': 'La contraseña actual es requerida para que la secretaria cambie su propia contraseña.'
         }),
-        adminPassword: Joi.string().when('$isAdminEditing', { is: true, then: Joi.when('newPassword', {is: Joi.exist(), then: Joi.required()}) }).messages({
-             'any.required': 'La contraseña de administrador es requerida si un administrador está cambiando la contraseña.'
+        adminPassword: Joi.string().when('$isAdminEditing', { 
+            is: true, 
+            then: Joi.when('newPassword', {
+                is: Joi.exist(), 
+                then: Joi.required()
+            })
+        }).messages({
+            'any.required': 'La contraseña de administrador es requerida si un administrador está cambiando la contraseña.'
         }),
-        newPassword: Joi.string().min(8).pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/).optional().messages({
-            'string.min': 'La nueva contraseña debe tener al menos 8 caracteres.',
-            'string.pattern.base': 'La nueva contraseña debe contener al menos una mayúscula, una minúscula y un número.'
-        })
+        newPassword: optionalPasswordSchema
     }).optional()
-}).or('secretaryData', 'userData', 'passwordData').messages({ // Al menos uno de los objetos debe estar presente
+}).or('secretaryData', 'userData', 'passwordData').messages({
     'object.missing': 'Debe proporcionar secretaryData, userData o passwordData para la actualización.'
 });
-
 
 module.exports = {
     createSecretarySchema,

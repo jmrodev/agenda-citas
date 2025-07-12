@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import CardBase from '../../atoms/CardBase/CardBase';
-import CardTitle from '../../atoms/CardTitle/CardTitle';
+import Title from '../../atoms/Title/Title';
 import Button from '../../atoms/Button/Button';
 import InfoRow from '../../molecules/InfoRow/InfoRow';
 import Alert from '../../atoms/Alert/Alert';
@@ -176,7 +176,7 @@ const SecretaryView = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <CardTitle>Detalles de la Secretaria</CardTitle>
+        <Title as="h2">Secretaria</Title>
         <div className={styles.actions}>
           <Button
             variant="secondary"

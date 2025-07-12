@@ -8,6 +8,7 @@ const PatientDoctorFields = ({
   patientOptions,
   selectedDoctorName,
   onChange,
+  onBlur,
   errors = {},
   touched = {}
 }) => {
@@ -16,6 +17,7 @@ const PatientDoctorFields = ({
       <PatientSelect
         value={formData.patient_id}
         onChange={onChange}
+        onBlur={onBlur}
         patientOptions={patientOptions}
         errors={errors}
         touched={touched}

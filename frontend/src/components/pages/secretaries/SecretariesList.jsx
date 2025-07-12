@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import CardBase from '../../atoms/CardBase/CardBase';
-import CardTitle from '../../atoms/CardTitle/CardTitle';
+import Title from '../../atoms/Title/Title';
 import Button from '../../atoms/Button/Button';
 import SearchBar from '../../molecules/SearchBar/SearchBar';
 import UserListItem from '../../molecules/UserListItem/UserListItem';
@@ -189,7 +189,7 @@ const SecretariesList = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <CardTitle>Secretarias</CardTitle>
+        <Title as="h2">Secretarias</Title>
         {isAdmin && (
           <Button 
             variant="primary"

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { authFetch } from '../auth/authFetch';
 import { usePatientOptions } from './usePatientOptions';
 
@@ -14,13 +14,15 @@ export const usePatients = () => {
   // Hook ultra-específico para opciones
   const patientOptions = usePatientOptions(patients);
 
-  const fetchPatients = async () => {
+  const fetchPatients = useCallback(async () => {
     try {
+      console.log('🔍 [usePatients] Iniciando carga de pacientes...');
       setLoading(true);
       setError('');
       const res = await authFetch('/api/patients');
       if (res.ok) {
         const data = await res.json();
+        console.log('🔍 [usePatients] Pacientes cargados:', data);
         setPatients(data);
       } else {
         throw new Error('Error al cargar pacientes');
@@ -31,11 +33,11 @@ export const usePatients = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const refreshPatients = () => {
+  const refreshPatients = useCallback(() => {
     fetchPatients();
-  };
+  }, [fetchPatients]);
 
   return {
     patients,

@@ -6,6 +6,7 @@
   height: 100vh;
   background: var(--overlay-bg);
   backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur); /* Safari support */
   z-index: var(--z-index-modal);
   display: flex;
   align-items: center;

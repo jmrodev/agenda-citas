@@ -1,5 +1,5 @@
 const pool = require('../config/db');
-const { buildPersonFilters } = require('../filters/sql/personFilters');
+const { buildPersonFilters } = require('../filters/sql');
 const { buildPaginationAndOrder } = require('../filters/paginationUtils');
 const { debugPatients } = require('../utils/debug');
 
