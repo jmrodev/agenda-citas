@@ -1,7 +1,7 @@
 import React from 'react';
 import FormGroup from '../FormGroup/FormGroup';
 import Select from '../../atoms/Select/Select';
-import AmountField from '../../atoms/AmountField/AmountField';
+import Input from '../../atoms/Input/Input'; // Changed AmountField to Input
 import styles from './PaymentFields.module.css';
 
 const PaymentFields = ({
@@ -12,7 +12,9 @@ const PaymentFields = ({
 }) => {
   return (
     <div className={styles.row}>
-      <AmountField
+      <Input
+        name="amount"
+        type="number"
         value={formData.amount}
         onChange={onChange}
         errors={errors}

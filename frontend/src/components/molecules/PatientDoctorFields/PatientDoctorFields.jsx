@@ -1,6 +1,6 @@
 import React from 'react';
-import PatientSelect from '../../atoms/PatientSelect/PatientSelect';
-import DoctorInfo from '../../atoms/DoctorInfo/DoctorInfo';
+import PatientSelect from '../PatientSelect/PatientSelect';
+import DoctorInfo from '../DoctorInfo/DoctorInfo';
 import styles from './PatientDoctorFields.module.css';
 
 const PatientDoctorFields = ({

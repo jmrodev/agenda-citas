@@ -1,6 +1,5 @@
 import React from 'react';
-import DateField from '../../atoms/DateField/DateField';
-import TimeField from '../../atoms/TimeField/TimeField';
+import Input from '../../atoms/Input/Input'; // Replaced DateField and TimeField
 import styles from './DateTimeFields.module.css';
 
 const DateTimeFields = ({
@@ -11,14 +10,18 @@ const DateTimeFields = ({
 }) => {
   return (
     <div className={styles.row}>
-      <DateField
+      <Input
+        name="date"
+        type="date"
         value={formData.date}
         onChange={onChange}
         errors={errors}
         touched={touched}
       />
 
-      <TimeField
+      <Input
+        name="time"
+        type="time"
         value={formData.time}
         onChange={onChange}
         errors={errors}

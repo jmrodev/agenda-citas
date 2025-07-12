@@ -2,7 +2,7 @@ import React from 'react';
 import FormGroup from '../FormGroup/FormGroup';
 import Input from '../../atoms/Input/Input';
 import Select from '../../atoms/Select/Select';
-import ReasonField from '../../atoms/ReasonField/ReasonField';
+import TextArea from '../../atoms/Textarea/Textarea';
 import styles from './AppointmentDetailsFields.module.css';
 
 const AppointmentDetailsFields = ({
@@ -14,7 +14,8 @@ const AppointmentDetailsFields = ({
   return (
     <>
       <div className={styles.row}>
-        <ReasonField
+        <TextArea
+          name="reason"
           value={formData.reason}
           onChange={onChange}
           errors={errors}

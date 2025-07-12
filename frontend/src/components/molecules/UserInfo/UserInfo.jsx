@@ -3,7 +3,6 @@ import styles from './UserInfo.module.css';
 import Avatar from '../../atoms/Avatar/Avatar';
 import Text from '../../atoms/Text/Text';
 import Badge from '../../atoms/Badge/Badge';
-import CardSubtitle from '../../atoms/CardSubtitle/CardSubtitle';
 
 const UserInfo = ({
   avatarSrc,
@@ -19,7 +18,7 @@ const UserInfo = ({
       <Avatar src={avatarSrc} alt={name} size='md' />
       <div className={styles.infoText}>
         <Text as='span' className={styles.name}>{name}</Text>
-        {subtitle && <CardSubtitle className={styles.subtitle}>{subtitle}</CardSubtitle>}
+        {subtitle && <Text as="p" className={styles.subtitle}>{subtitle}</Text>}
         {badge && <Badge className={styles.badge}>{badge}</Badge>}
       </div>
     </div>
